@@ -1,5 +1,5 @@
 /* eslint-disable */
-
+// import CryptoJS from "crypto-js";
 
 function showInfoDialog(_this,txhash,isBack) {
   _this.$q
@@ -188,11 +188,30 @@ function isEmpty(e){
     return false
   }
 }
+function generateToken(str,timestamp) {
+  // 1315423911=b'1001110011001111100011010100111'
+  str = str === null ? '{}' : str
+  str = str + '900a06ca65a211e98eae00163e11f2fe' + timestamp//key
+  //console.log(str)
+  var hash = 1315423911, i, ch;
+  //console.log('---start:' + new Date().getTime())
+  for (i = str.length - 1; i >= 0; i--) {
+    ch = str.charCodeAt(i);
+    hash ^= ((hash << 5) + ch + (hash >> 2));
+  }
+  //console.log('---end:' + new Date().getTime())
 
+  let result = (hash & 0x7FFFFFFF);
+
+  // //console.log(result)
+
+  return result
+}
 export default {
   showInfoDialog,
   reprotError2Bmob,
   convertUTCTimeToLocalTime,
   randomWord,
-  isEmpty
+  isEmpty,
+  generateToken
 };

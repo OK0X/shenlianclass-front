@@ -8,6 +8,7 @@
           </a>-->
           <q-btn flat label="首页" to="/" />
           <q-btn flat label="我的课程" />
+          <q-btn flat label="Test" to="/CreateQQUser"/>
         </div>
         <div style="display:flex;">
           <q-btn flat label="登陆" to="/Login" ><img src="statics/weixin.png" style="margin-left:5px;width:18px;height:18px;"/></q-btn>

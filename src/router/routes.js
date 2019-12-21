@@ -29,8 +29,8 @@ const routes = [
         component: () => import('pages/ArticleDetail.vue')
       },
       {
-        path: '/AboutMe',
-        component: () => import('pages/AboutMe.vue')
+        path: '/CreateQQUser',
+        component: () => import('pages/CreateQQUser.vue')
       }
     ]
   }
