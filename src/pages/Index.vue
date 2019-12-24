@@ -1,10 +1,26 @@
 <template>
   <q-page class="mypage" style="background-color:#f8f8f8;">
     <div class="gallery">
-      <img src="statics/test-gallery1.png" style="width:100%;height:100%;" />
+      <q-carousel arrows animated v-model="slide" height="400px" :autoplay="5000" :infinite="true">
+        <q-carousel-slide name="first" img-src="statics/test-gallery1.png">
+        </q-carousel-slide>
+        <!-- <q-carousel-slide name="second" img-src="https://cdn.quasar.dev/img/parallax1.jpg">
+          <div class="absolute-bottom custom-caption">
+            <div class="text-h2">Second stop</div>
+            <div class="text-subtitle1">Famous City</div>
+          </div>
+        </q-carousel-slide>
+        <q-carousel-slide name="third" img-src="https://cdn.quasar.dev/img/parallax2.jpg">
+          <div class="absolute-bottom custom-caption">
+            <div class="text-h2">Third stop</div>
+            <div class="text-subtitle1">Famous Bridge</div>
+          </div>
+        </q-carousel-slide> -->
+      </q-carousel>
     </div>
     <div class="class-list">
       <span style="color:#1f2328;font-size:24px;margin-top:60px;">精品课程</span>
+      <q-separator />
       <div class="card-list">
         <div class="class-card">
           <img src="statics/test-card1.jpg" class="card-img" />
@@ -110,11 +126,11 @@
         </div>
         <div style="display:flex;">
           <div style="display: flex;flex-direction: column;">
-            <img src="statics/wx-gh-qrcode.jpg" style="width:90px;height:90px;"/>
+            <img src="statics/wx-gh-qrcode.jpg" style="width:90px;height:90px;" />
             <span class="wx-img-tx">关注深链网官方公众号</span>
           </div>
           <div style="display: flex;flex-direction: column;margin-left:20px;">
-            <img src="statics/wx-gh-qrcode.jpg" style="width:90px;height:90px;"/>
+            <img src="statics/wx-gh-qrcode.jpg" style="width:90px;height:90px;" />
             <span class="wx-img-tx">关注深链网官方公众号</span>
           </div>
         </div>
@@ -128,6 +144,7 @@
 export default {
   data() {
     return {
+      slide: "first",
       courses: []
     };
   },
@@ -138,8 +155,14 @@ export default {
 <style scoped>
 .gallery {
   width: 100%;
-  height: 350px;
+  height: 400px;
   overflow: hidden;
+}
+.custom-caption {
+  text-align: center;
+  padding: 12px;
+  color: white;
+  background-color: rgba(0, 0, 0, 0.3);
 }
 .class-list {
   width: 100%;
@@ -215,11 +238,11 @@ export default {
   display: flex;
   flex-direction: column;
 }
-.wx-img-tx{
+.wx-img-tx {
   width: 90px;
-    margin: 0 auto;
-    color: #55595c;
-    font-size: 12px;
-    text-align: center;
+  margin: 0 auto;
+  color: #55595c;
+  font-size: 12px;
+  text-align: center;
 }
 </style>
