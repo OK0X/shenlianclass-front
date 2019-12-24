@@ -1,18 +1,28 @@
 <template>
   <q-layout view="hHh LpR fFf">
-    <q-header class="myheader" height-hint="50">
-      <div class="title-bar">
-        <div class="menu-left">
-          <!-- <a href="https://b.ok0x.com">
-            <img style="height: 45px;" src="statics/logo1.png" />
-          </a>-->
-          <q-btn flat label="首页" to="/" />
-          <q-btn flat label="我的课程" />
-          <q-btn flat label="Test" to="/CreateQQUser"/>
-        </div>
-        <div style="display:flex;">
-          <q-btn flat label="登陆" to="/Login" ><img src="statics/weixin.png" style="margin-left:5px;width:18px;height:18px;"/></q-btn>
-        </div>
+    <q-header class="myheader">
+      <div class="title">
+        <img
+          src="statics/test-logo.png"
+          style="width:131px;height:51px;align-self: center;margin-left:50px;"
+        />
+        <q-input bottom-slots v-model="text" :dense="true" class="search-bar">
+          <template v-slot:append>
+            <q-icon name="search" />
+          </template>
+        </q-input>
+        <img src="statics/wx-gh-qrcode.jpg" style="width:90px;height:90px;align-self: center;" />
+        <img
+          src="statics/default.png"
+          style="width:40px;height:40px;align-self: center;margin-left:50px;border-radius: 50%;"
+        />
+        <span style="align-self: center;margin-left:10px;">用户微信昵称</span>
+      </div>
+      <div class="menu">
+        <q-btn flat label="首页" class="menu-text" />
+        <q-btn flat label="我的课程" class="menu-text" />
+        <q-btn flat label="智能问答" class="menu-text" />
+        <q-btn flat label="课程发布" class="menu-text" />
       </div>
     </q-header>
     <q-page-container style="background-color: #f2f5f9;">
@@ -24,7 +34,9 @@
 /* eslint-disable */
 export default {
   data() {
-    return {};
+    return {
+      text:''
+    };
   },
   methods: {}
 };
@@ -32,32 +44,38 @@ export default {
 <style scoped>
 .myheader {
   background-color: white;
-  box-shadow: 0px 2px 9px 0px #1918184a;
+  /* box-shadow: 0px 2px 9px 0px #1918184a; */
   color: black;
-}
-.title-bar {
-  padding-left: 20%;
-  padding-right: 20%;
+  height: 186px;
+  width: 100%;
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
 }
-.menu-left {
+.title {
+  width: 100%;
+  max-width: 1200px;
+  height: 136px;
   display: flex;
+  align-self: center;
 }
 .menu {
+  width: 100%;
+  max-width: 1200px;
   display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
+  align-self: center;
+  padding-left: 50px;
 }
-.mobile-menu {
-  display: none;
+.search-bar {
+  height: 35px;
+  width: 509px;
+  margin-left: auto;
+  margin-right: auto;
+  align-self: center;
 }
-@media screen and (orientation: portrait) {
-  .menu {
-    display: none;
-  }
-  .mobile-menu {
-    display: block;
-  }
+.menu-text {
+  font-size: 18px;
+  color: #333333;
+  height: 50px;
+  width: 160px;
 }
 </style>
