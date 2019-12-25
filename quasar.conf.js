@@ -52,7 +52,11 @@ module.exports = function (ctx) {
         'QSeparator',
         'QCarousel',
         'QCarouselControl',
-        'QCarouselSlide'
+        'QCarouselSlide',
+        'QTabPanels',
+        'QTabPanel',
+        'QTimeline',
+        'QTimelineEntry'
       ],
       directives: [],
 

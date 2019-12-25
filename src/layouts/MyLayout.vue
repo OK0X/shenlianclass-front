@@ -19,7 +19,7 @@
         <span style="align-self: center;margin-left:10px;">用户微信昵称</span>
       </div>
       <div class="menu">
-        <q-btn flat label="首页" class="menu-text" />
+        <q-btn flat label="首页" class="menu-text" to="/"/>
         <q-btn flat label="我的课程" class="menu-text" />
         <q-btn flat label="智能问答" class="menu-text" />
         <q-btn flat label="课程发布" class="menu-text" />

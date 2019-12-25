@@ -1,5 +1,5 @@
 <template>
-  <q-page class="mypage" style="background-color:#f8f8f8;">
+  <q-page class="mypage">
     <div class="gallery">
       <q-carousel arrows animated v-model="slide" height="400px" :autoplay="5000" :infinite="true">
         <q-carousel-slide name="first" img-src="statics/test-gallery1.png">
@@ -22,7 +22,7 @@
       <span style="color:#1f2328;font-size:24px;margin-top:60px;">精品课程</span>
       <q-separator />
       <div class="card-list">
-        <div class="class-card">
+        <div class="class-card" @click="toDetail">
           <img src="statics/test-card1.jpg" class="card-img" />
           <span class="card-title">web前端0基础教室</span>
           <div class="more-text">
@@ -149,7 +149,11 @@ export default {
     };
   },
   mounted() {},
-  methods: {}
+  methods: {
+    toDetail(){
+      this.$router.push('/ClassDetail')
+    }
+  }
 };
 </script>
 <style scoped>

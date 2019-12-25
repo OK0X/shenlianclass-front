@@ -2,8 +2,6 @@
   <div style="display:flex;    flex-direction: column;">
     <q-input :dense="true" v-model.trim="text" type="textarea" style="width:100%;margin:20px;" />
     <q-btn label="开始导入" @click="addUser" />
-    <q-btn label="获取数据" @click="getUser" />
-    <q-btn label="写入数据" @click="writeUser" />
   </div>
 </template>
 
