@@ -108,40 +108,17 @@
         </div>
       </div>
     </div>
-    <div class="relate-link">
-      <div class="relate-content">
-        <span class="link-tx">友情链接</span>
-        <q-btn flat label="比特币" />
-        <q-btn flat label="以太坊" />
-        <q-btn flat label="智能问答" />
-        <q-btn flat label="课程发布" />
-      </div>
-    </div>
-    <div class="footer">
-      <div class="footer-content">
-        <div class="beian">
-          <img src="statics/test-fot.jpg" style="width:156px;50px;" />
-          <span style="color:#a1a1a3;margin-top:10px;">备案号：粤ICP备19159723号</span>
-          <span style="color:#a1a1a3;margin-top:10px;">Copyright © 2019 深圳市深链网络科技有限公司 版权所有</span>
-        </div>
-        <div style="display:flex;">
-          <div style="display: flex;flex-direction: column;">
-            <img src="statics/wx-gh-qrcode.jpg" style="width:90px;height:90px;" />
-            <span class="wx-img-tx">关注深链网官方公众号</span>
-          </div>
-          <div style="display: flex;flex-direction: column;margin-left:20px;">
-            <img src="statics/wx-gh-qrcode.jpg" style="width:90px;height:90px;" />
-            <span class="wx-img-tx">关注深链网官方公众号</span>
-          </div>
-        </div>
-      </div>
-    </div>
+    <MyFooter />
   </q-page>
 </template>
 
 <script>
 /* eslint-disable */
+import MyFooter from "../components/MyFooter";
 export default {
+  components: {
+    MyFooter
+  },
   data() {
     return {
       slide: "first",

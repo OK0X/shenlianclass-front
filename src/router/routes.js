@@ -29,12 +29,16 @@ const routes = [
         component: () => import('pages/ArticleDetail.vue')
       },
       {
-        path: '/CreateQQUser',
-        component: () => import('pages/CreateQQUser.vue')
+        path: '/QQTest',
+        component: () => import('pages/QQTest.vue')
       },
       {
         path: '/ClassDetail',
         component: () => import('pages/ClassDetail.vue')
+      },
+      {
+        path: '/ClassPub',
+        component: () => import('pages/ClassPub.vue')
       }
     ]
   }
