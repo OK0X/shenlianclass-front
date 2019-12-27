@@ -21,9 +21,9 @@
       <div class="menu">
         <q-btn flat label="首页" class="menu-text" to="/"/>
         <q-btn flat label="我的课程" class="menu-text" />
-        <q-btn flat label="智能问答" class="menu-text" />
+        <q-btn flat label="问答" class="menu-text" />
         <q-btn flat label="课程发布" class="menu-text" to="/ClassPub"/>
-        <q-btn flat label="Test" class="menu-text" to="/QQTest" v-if="false"/>
+        <q-btn flat label="Test" class="menu-text" to="/QQTest" v-if="true"/>
       </div>
     </q-header>
     <q-page-container style="background-color: #f2f5f9;">
@@ -67,11 +67,12 @@ export default {
   padding-left: 50px;
 }
 .search-bar {
-  height: 35px;
+  /* height: 35px; */
   width: 509px;
   margin-left: auto;
   margin-right: auto;
   align-self: center;
+  flex-shrink: 0; 
 }
 .menu-text {
   font-size: 18px;

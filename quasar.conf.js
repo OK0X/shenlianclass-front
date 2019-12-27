@@ -47,16 +47,16 @@ module.exports = function (ctx) {
       all: 'auto',
 
       components: [
-        'QBtn',
-        'QForm',
-        'QSeparator',
-        'QCarousel',
-        'QCarouselControl',
-        'QCarouselSlide',
-        'QTabPanels',
-        'QTabPanel',
-        'QTimeline',
-        'QTimelineEntry'
+        // 'QBtn',
+        // 'QForm',
+        // 'QSeparator',
+        // 'QCarousel',
+        // 'QCarouselControl',
+        // 'QCarouselSlide',
+        // 'QTabPanels',
+        // 'QTabPanel',
+        // 'QTimeline',
+        // 'QTimelineEntry'
       ],
       directives: [],
 
