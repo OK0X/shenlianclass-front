@@ -2,13 +2,6 @@
   <div style="display:flex;    flex-direction: column;">
     <q-input :dense="true" v-model.trim="text" type="textarea" style="width:100%;margin:20px;" />
     <q-btn label="开始导入" @click="addUser" />
-    <span>昵称：</span>
-    <q-input v-model.trim="nick" :dense="true" style="width:300px;" />
-    <span>qq号：</span>
-    <q-input v-model.trim="uin" :dense="true" style="width:300px;" />
-    <!-- <span>年龄：</span>
-    <q-input v-model.trim="age" :dense="true" style="width:300px;" /> -->
-    <q-btn label="添加" @click="addUser2" />
     <div class="upload">
       <div>
         <input type="file" id="fileUpload" @change="fileChange($event)">
