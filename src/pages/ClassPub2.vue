@@ -114,7 +114,6 @@ export default {
         })
     },
     fileChange(e, index) {
-      // debugger
       console.log(index, this.chpters[index]);
       this.chpters[index].file = e.target.files[0];
       if (!this.chpters[index].file) {
@@ -130,7 +129,7 @@ export default {
       }
       this.chpters[index].uploader = this.createUploader(index);
       //console.log(userData);
-      this.chpters[index].uploader.addFile( this.chpters[index].file, null, null, null, userData);
+      this.chpters[index].uploader.addFile(this.file, null, null, null, userData);
       this.chpters[index].uploadDisabled = false;
       this.chpters[index].pauseDisabled = true;
       this.chpters[index].resumeDisabled = true;
@@ -174,7 +173,7 @@ export default {
         userId: "1681475359105542",
         // 添加文件成功
         addFileSuccess: function(uploadInfo) {
-          // debugger
+          debugger
           self.chpters[index].uploadDisabled = false;
           self.chpters[index].resumeDisabled = false;
           self.chpters[index].statusText = "添加文件成功, 等待上传...";
@@ -185,7 +184,7 @@ export default {
         onUploadstarted: function(uploadInfo) {
           //doc:https://help.aliyun.com/document_detail/52204.html?spm=a2c4g.11186623.6.1049.6fa16bd1tkvnYT
           let params = {
-            Title: self.classname+'第'+(index+1)+'节视频',
+            Title: self.classname+'第'+index+'节视频',
             FileName: uploadInfo.file.name
           };
           self.createUploadVideo(params, response => {

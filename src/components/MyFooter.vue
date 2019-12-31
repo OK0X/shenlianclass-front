@@ -12,7 +12,7 @@
     <div class="footer">
       <div class="footer-content">
         <div class="beian">
-          <img src="statics/test-fot.jpg" style="width:156px;50px;" />
+          <img src="statics/test-fot.png" style="width:156px;50px;" />
           <span style="color:#a1a1a3;margin-top:10px;">备案号：粤ICP备19159723号</span>
           <span style="color:#a1a1a3;margin-top:10px;">Copyright © 2019 深圳市深链网络科技有限公司 版权所有</span>
         </div>

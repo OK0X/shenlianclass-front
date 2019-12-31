@@ -29,8 +29,8 @@ const routes = [
         component: () => import('pages/ArticleDetail.vue')
       },
       {
-        path: '/QQTest',
-        component: () => import('pages/QQTest.vue')
+        path: '/Test',
+        component: () => import('pages/Test.vue')
       },
       {
         path: '/ClassDetail',

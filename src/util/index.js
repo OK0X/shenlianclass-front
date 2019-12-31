@@ -22,33 +22,7 @@ function showInfoDialog(_this,txhash,isBack) {
     });
 }
 
-function reprotError2Bmob(_this, method, error, params) {
-  if ((error + "").indexOf("insufficient funds") >= 0) {
-    toast(_this.$t("ethnotenough"));
-    return
-  } else if ((error + "").indexOf("timeout") >= 0) {
-    toast('Network Timeout');
-  } else {
-    toast(_this.$t("error"));
-  }
-  _this.$axios
-    .post(
-      _this.global.apiconfig.BmobRestAPIUrl + "classes/errorlog",
-      {
-        address: _this.global.wallet.ethAddress,
-        error: error + "",
-        method: method,
-        params: params,
-        version: _this.global.versionCode + ''
-      },
-      {
-        headers: _this.global.apiconfig.BmobRestAPIHeaders
-      }
-    )
-    .then(function (response) {
-      // console.log(response);
-    });
-}
+
 
 function convertUTCTimeToLocalTime(UTCDateString) {
   // if (!UTCDateString) {
@@ -123,7 +97,6 @@ function generateToken(str,timestamp) {
 }
 export default {
   showInfoDialog,
-  reprotError2Bmob,
   convertUTCTimeToLocalTime,
   randomWord,
   isEmpty,
