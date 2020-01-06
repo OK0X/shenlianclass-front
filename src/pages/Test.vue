@@ -1,53 +1,6 @@
 <template>
   <q-page class="mypage">
     <div class="white-block">
-      <span>课程名称：</span>
-      <q-input v-model="classname" :dense="true" style="width:300px;" />
-      <span style="margin-top:30px;">课程简介：</span>
-      <q-input
-        :dense="true"
-        v-model.trim="classsummary"
-        type="textarea"
-        style="width:100%;height:100px;"
-      />
-      <span style="margin-top:30px;">详细介绍：</span>
-      <VueEditor
-        v-model="classdetail"
-        useCustomImageHandler
-        @image-added="handleImageAdded"
-        style="height: 580px;width:100%;margin-bottom:50px;"
-      />
-      <div class="chapters" v-for="(item,index) in chpters" v-bind:key="index">
-        <span>第{{index+1}}节</span>
-        <q-input v-model.trim="item.title" :dense="true" style="width:300px;" placeholder="章节标题" />
-        <q-input
-          :dense="true"
-          v-model.trim="item.summary"
-          type="textarea"
-          style="width:100%;height:100px;"
-          placeholder="章节简介"
-        />
-        <div class="upload">
-          <div>
-            <input type="file" @change="fileChange($event,index)" />
-            <label class="status">
-              上传状态:
-              <span>{{item.statusText}}</span>
-            </label>
-          </div>
-          <div class="upload-type">
-            <button @click="authUpload(index)" :disabled="item.uploadDisabled">开始上传</button>
-            <span class="progress">
-              上传进度:
-              <i id="auth-progress">{{item.authProgress}}</i> %
-            </span>
-          </div>
-        </div>
-        <q-btn unelevated color="red" label="删除章节" style="width:100px;margin-top:10px;" @click="deletechapters(index)" v-if="index!==0"/>
-      </div>
-      <q-btn unelevated color="primary" label="添加章节" style="width:100px;margin-top:10px;" @click="addchapters"/>
-      <span style="margin-top:30px;">课程价格：</span>
-      <q-input v-model="classname" :dense="true" style="width:300px;" />
     </div>
     <MyFooter />
   </q-page>
@@ -89,8 +42,11 @@ export default {
     };
   },
   mounted() {
-    this.showDraft();
-    this.saveDraft();
+    // for(let i=0;i<10;i++){
+this.testapi();
+    // }
+    
+    // this.saveDraft();
   },
   beforeDestroy() {
     clearInterval(this.saveTxInterval);
@@ -206,6 +162,8 @@ export default {
         // 文件上传成功
         onUploadSucceed: function(uploadInfo) {
           //console.log("onUploadSucceed: ");
+
+          //记录videoId以便播放用
           self.chpters[index].statusText = "文件上传成功!";
         },
         // 文件上传失败
@@ -246,10 +204,15 @@ export default {
       });
       return uploader;
     },
-    createUploadVideo(params, successCallback) {
+    testapi() {
       let timestamp = new Date().getTime();
+      let params={
+        // Ciphertext:'NWNiOTNlMTAtMDQyZS00MjM5LWJlNDctZTkzODFiZDU4ZTNmcldZSzZkNnYrVGR0SmQ2NjAyVWJraXlRZGgwVnd2R0NBQUFBQUFBQUFBQTVybXRCWG0rZGkzbGRJVXYzaTZFbmVlbC9oeExVaDYyRmJJTWhXZmdEV3RXZTl6RXh2b2JYU0pTUlhUbGVRU3l2cG4rSVkrVCtvQzdnS3RJPQ==',
+        TranscodeTaskId:"e319aaa8aadac83b453aa56eb13ae0fe"
+        // MtsHlsUriToken:"U2FsdGVkX1+d970ZyjqF27tSJM3rHDleMtfr+zAGSF5eKO2jPxCmYwjq5xuKbrhCqsaWLeqYXufNetb3/5HdsMHZ/iBotG7zIliunndwIh9WTZcBcju9SGT7nBUMpxc/"
+      }
       this.$axios
-        .get(this.global.apiconfig.otcbackapi + "vod/CreateUploadVideo", {
+        .get(this.global.apiconfig.otcbackapi + "vod/getTranscodeTask", {
           params: params,
           headers: {
             "access-token": this.util.generateToken(
@@ -260,8 +223,8 @@ export default {
           }
         })
         .then(response => {
-          //console.log(response);
-          successCallback(response);
+          console.log(response);
+          // successCallback(response);
         });
     },
     refreshUploadVideo(params, successCallback, failedCallBack) {
