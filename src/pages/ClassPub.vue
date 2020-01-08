@@ -47,8 +47,9 @@
       </div>
       <q-btn unelevated color="primary" label="添加章节" style="width:100px;margin-top:10px;" @click="addchapters"/>
       <span style="margin-top:30px;">课程价格：</span>
-      <q-input v-model="classname" :dense="true" style="width:300px;" />
+      <q-input v-model="classprice" :dense="true" style="width:300px;" />
     </div>
+    <q-btn unelevated color="primary" label="提交" style="width:150px;margin-bottom:30px;" @click="submit"/>
     <MyFooter />
   </q-page>
 </template>
@@ -68,10 +69,11 @@ export default {
   },
   data() {
     return {
+      saveTxInterval: "",
       classname: "",
       classsummary: "",
       classdetail: "",
-      saveTxInterval: "",
+      classprice:'',
       chpters: [
         {
           title: "",
@@ -115,7 +117,7 @@ export default {
     },
     fileChange(e, index) {
       // debugger
-      console.log(index, this.chpters[index]);
+      //console.log(index, this.chpters[index]);
       this.chpters[index].file = e.target.files[0];
       if (!this.chpters[index].file) {
         alert("请先选择需要上传的文件!");
@@ -163,7 +165,7 @@ export default {
     createUploader(index) {
       
       let self = this;
-      console.log(self.chpters[index])
+      //console.log(self.chpters[index])
       let uploader = new AliyunUpload.Vod({
         // timeout: self.timeout || 60000,
         partSize: 1048576, //分片大小默认1M，不能小于100K
@@ -206,7 +208,7 @@ export default {
         // 文件上传成功
         onUploadSucceed: function(uploadInfo) {
           //console.log("onUploadSucceed: ");
-          self.chpters[index].statusText = "文件上传成功!";
+          self.chpters[index].statusText = "文件上传成功";
         },
         // 文件上传失败
         onUploadFailed: function(uploadInfo, code, message) {
@@ -287,21 +289,27 @@ export default {
         });
     },
     showDraft() {
+      var _this=this
       localforage.getItem("draft").then(value => {
         //console.log("草稿：" + value);
-        if (!this.util.isEmpty(value)) {
-          this.draft = JSON.parse(value);
-          this.$q
+        if (!_this.util.isEmpty(value)) {
+          // debugger
+          _this.draft = JSON.parse(value);
+          //console.log(value)
+          _this.$q
             .dialog({
-              // title: _this.$t("havenew"),
-              message: "你上一次有未发布的课程，编辑时间：" + this.draft.time,
+              // title: __this.$t("havenew"),
+              message: "你上一次有未发布的课程，编辑时间：" + _this.draft.time,
               ok: "使用草稿",
               cancel: "丢弃"
             })
             .onOk(() => {
-              this.classname = this.draft.classname;
-              this.classsummary = this.draft.classsummary;
-              this.classdetail = this.draft.classdetail;
+              //console.log(_this.draft)
+              _this.classname = _this.draft.classname;
+              _this.classsummary = _this.draft.classsummary;
+              _this.classdetail = _this.draft.classdetail;
+              _this.classprice=_this.draft.classprice;
+              _this.chpters=_this.draft.chpters
             })
             .onCancel(() => {
               localforage.removeItem("draft");
@@ -312,12 +320,30 @@ export default {
     saveDraft() {
       this.saveTxInterval = setInterval(() => {
         //每分钟保存一次
-        // debugger
+        
+        let chpters2=[]
+        for(let i=0;i<this.chpters.length;i++){
+          chpters2.push({
+          title: this.chpters[i].title,
+          summary: this.chpters[i].summary,
+          video: null,
+          file: null,
+          authProgress: 0,
+          uploadDisabled: true,
+          resumeDisabled: true,
+          pauseDisabled: true,
+          uploader: null,
+          statusText: this.chpters[i].statusText
+        })
+        }
+
         this.draft = {
           classname: this.classname,
           classsummary: this.classsummary,
           classdetail: this.classdetail,
-          time: new Date().toLocaleString()
+          classprice:this.classprice,
+          chpters:chpters2,
+          time: new Date().toLocaleString(),
         };
 
         if (
@@ -326,11 +352,62 @@ export default {
           this.classsummary !== ""
         ) {
           localforage.setItem("draft", JSON.stringify(this.draft));
-          //console.log("saved，" + new Date().toLocaleString());
+          //console.log("saved，" + new Date().toLocaleString(),this.draft);
         }
-      }, 60 * 5000);
+      }, 1 * 60 * 1000);
     },
-    pushClass() {},
+    checkInfoOk(){
+// debugger
+      if(this.classname===''){
+        toast('请填写课程名称')
+        return false
+      }
+
+      if(this.classsummary===''){
+        toast('请填写课程简介')
+        return false
+      }
+
+      if(this.classdetail===''){
+        toast('请填写课程详情')
+        return false
+      }
+
+      if(this.classprice===''){
+        toast('请填写课程售价')
+        return false
+      }
+
+      for(let i=0;i<this.chpters.length;i++){
+        if(this.chpters[i].title===''){
+
+          toast('请填写第'+(i+1)+'节标题')
+          return false
+        }
+
+        if(this.chpters[i].summary===''){
+
+          toast('请填写第'+(i+1)+'节简介')
+          return false
+        }
+
+        if(this.chpters[i].statusText !== "文件上传成功"){
+
+          toast('第'+(i+1)+'节视频未上传成功')
+          return false
+        }
+        
+      }
+
+      return true
+    },
+    submit() {
+      // debugger
+      if(this.checkInfoOk()){
+        
+
+      }
+    },
     handleImageAdded: function(file, Editor, cursorLocation, resetUploader) {
       var formData = new FormData();
       formData.append("image", file);
@@ -373,7 +450,7 @@ export default {
   display: flex;
   flex-direction: column;
   background-color: white;
-  margin: 50px 0 50px 0;
+  margin: 50px 0 30px 0;
   justify-content: flex-start;
   padding: 20px;
 }

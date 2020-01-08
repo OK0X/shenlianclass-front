@@ -1,6 +1,6 @@
 
 /* eslint-disable */
-const debug = true
+const debug = false
 const apiconfig = {
   BmobRestAPIUrl: 'https://api2.bmob.cn/1/',
   BmobRestAPIHeaders: {
@@ -14,7 +14,7 @@ const apiconfig = {
   etherscanAPIKey: '7PJM9WX71AEI9SF29XG318XMB9CE4JWMYP',
   etherscanapi: debug?'https://ropsten.etherscan.io/':'https://api-cn.etherscan.com/', 
   etherscancn: debug?'https://ropsten.etherscan.io/':'https://cn.etherscan.com/', 
-  otcbackapi: debug?'http://localhost/api/v1/':'https://api.ok0x.com/api/v1/',
+  otcbackapi: debug?'http://localhost/api/v1/':'https://api.shenlianclass.com/api/v1/',
   ethgasstationapi: 'https://ethgasstation.info/json/ethgasAPI.json',
   aliyunosshost:'https://otcfiles.oss-cn-shenzhen.aliyuncs.com',
   aliyunossaccessid:'LTAI4Fcj6yde1NHcFQ8Wc4yf',

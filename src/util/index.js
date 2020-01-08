@@ -95,10 +95,16 @@ function generateToken(str,timestamp) {
 
   return result
 }
+function awaitWrap(promise) {
+  return promise
+      .then(data => [null, data])
+      .catch(err => [err, null])
+}
 export default {
   showInfoDialog,
   convertUTCTimeToLocalTime,
   randomWord,
   isEmpty,
-  generateToken
+  generateToken,
+  awaitWrap
 };
