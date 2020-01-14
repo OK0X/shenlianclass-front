@@ -139,16 +139,20 @@ export default {
           console.log(response);
           _this.$q.loading.hide();
           if (response.status === 200 && response.data.code === 0) {
-            if (response.data.data.type === "login") {
-              this.user = response.data.data.result[0];
+
+            let data=response.data.data
+            if (data.type === "login") {
+              delete data.type
+              
             } else {
-              let data={
-                uuid:response.data.data.result,
-                mobile:this.mobile + "",
-                nick:'设置昵称'
-              }
-              this.user=data
+              data.mobile=this.mobile + ""
+              data.nick='设置昵称'
+
+
             }
+
+            this.user = data;
+            console.log(this.user);
 
             localforage.setItem("user",JSON.stringify(this.user))
 

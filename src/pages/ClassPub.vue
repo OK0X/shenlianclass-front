@@ -121,6 +121,16 @@ export default {
       ]
     };
   },
+  computed: {
+    user: {
+      get() {
+        return this.$store.state.user.user;
+      },
+      set(val) {
+        this.$store.commit("user/updateUser", val);
+      }
+    }
+  },
   mounted() {
     this.showDraft();
     this.saveDraft();
@@ -235,6 +245,7 @@ export default {
             let uploadAuth = response.data.data.UploadAuth;
             let uploadAddress = response.data.data.UploadAddress;
             let videoId = response.data.data.VideoId;
+            self.chpters[index].video=videoId
             uploader.setUploadAuthAndAddress(
               uploadInfo,
               uploadAuth,
@@ -431,8 +442,8 @@ export default {
           return false;
         }
 
-        if (this.chpters[i].statusText !== "文件上传成功") {
-          toast("第" + (i + 1) + "节视频未上传成功");
+        if (this.chpters[i].statusText !== "文件上传完毕") {
+          toast("第" + (i + 1) + "文件上传完毕");
           return false;
         }
       }
@@ -442,6 +453,28 @@ export default {
     submit() {
       // debugger
       if (this.checkInfoOk()) {
+        let params = {
+          author: this.user.uuid,
+          classname:this.classname,
+          classsummary:this.classsummary,
+          classdetail:this.classdetail,
+          classprice:this.classprice,
+          videos:this.chpters
+        };
+        let timestamp = new Date().getTime() + 1 * 60 * 1000;
+        this.$axios
+          .post(this.global.api.backurl + "course/createCourse", params, {
+            headers: {
+              "access-token": this.util.generateToken(
+                JSON.stringify(params),
+                timestamp
+              ),
+              timestamp2: timestamp
+            }
+          })
+          .then(response => {
+            console.log(response);
+          });
       }
     },
     handleImageAdded: function(file, Editor, cursorLocation, resetUploader) {

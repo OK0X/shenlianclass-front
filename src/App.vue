@@ -49,7 +49,7 @@ export default {
           console.log(response);
           if (response.status === 200 && response.data.code === 0) {
             
-            this.user = response.data.data[0];
+            this.user = response.data.data;
             localforage.setItem("user",JSON.stringify(this.user))
           }
         })
