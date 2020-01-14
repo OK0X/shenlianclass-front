@@ -16,11 +16,11 @@
           src="statics/default.png"
           style="width:40px;height:40px;align-self: center;margin-left:50px;border-radius: 50%;"
         />
-        <span style="align-self: center;margin-left:10px;">用户微信昵称</span>
+        <span style="align-self: center;margin-left:10px;">{{user.nick==null?'游客':user.nick}}</span>
       </div>
       <div class="menu">
         <q-btn flat label="首页" class="menu-text" to="/"/>
-        <q-btn flat label="我的课程" class="menu-text" />
+        <q-btn flat label="我的课程" class="menu-text" to="/MyClass"/>
         <q-btn flat label="问答" class="menu-text" />
         <q-btn flat label="课程发布" class="menu-text" to="/ClassPub"/>
         <q-btn flat label="Test" class="menu-text" to="/Test" v-if="true"/>
@@ -38,6 +38,16 @@ export default {
     return {
       text:''
     };
+  },
+  computed: {
+    user: {
+      get() {
+        return this.$store.state.user.user;
+      },
+      set(val) {
+        this.$store.commit("user/updateUser", val);
+      }
+    }
   },
   methods: {}
 };

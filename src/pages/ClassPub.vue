@@ -2,13 +2,15 @@
   <q-page class="mypage">
     <div class="white-block">
       <span>课程名称：</span>
-      <q-input v-model="classname" :dense="true" style="width:300px;" />
+      <q-input v-model="classname" :dense="true" style="width:300px;" counter maxlength="20" />
       <span style="margin-top:30px;">课程简介：</span>
       <q-input
         :dense="true"
         v-model.trim="classsummary"
         type="textarea"
         style="width:100%;height:100px;"
+        counter
+        maxlength="300"
       />
       <span style="margin-top:30px;">详细介绍：</span>
       <VueEditor
@@ -17,15 +19,25 @@
         @image-added="handleImageAdded"
         style="height: 580px;width:100%;margin-bottom:50px;"
       />
+      <span style="align-self: flex-end;color: rgba(0, 0, 0, 0.54);">{{detailLength()}} / 2000</span>
       <div class="chapters" v-for="(item,index) in chpters" v-bind:key="index">
         <span>第{{index+1}}节</span>
-        <q-input v-model.trim="item.title" :dense="true" style="width:300px;" placeholder="章节标题" />
+        <q-input
+          v-model.trim="item.title"
+          :dense="true"
+          style="width:300px;"
+          placeholder="章节标题"
+          counter
+          maxlength="20"
+        />
         <q-input
           :dense="true"
           v-model.trim="item.summary"
           type="textarea"
           style="width:100%;height:100px;"
           placeholder="章节简介"
+          counter
+          maxlength="300"
         />
         <div class="upload">
           <div>
@@ -43,13 +55,32 @@
             </span>
           </div>
         </div>
-        <q-btn unelevated color="red" label="删除章节" style="width:100px;margin-top:10px;" @click="deletechapters(index)" v-if="index!==0"/>
+        <q-btn
+          unelevated
+          color="red"
+          label="删除章节"
+          style="width:100px;margin-top:10px;"
+          @click="deletechapters(index)"
+          v-if="index!==0"
+        />
       </div>
-      <q-btn unelevated color="primary" label="添加章节" style="width:100px;margin-top:10px;" @click="addchapters"/>
+      <q-btn
+        unelevated
+        color="primary"
+        label="添加章节"
+        style="width:100px;margin-top:10px;"
+        @click="addchapters"
+      />
       <span style="margin-top:30px;">课程价格：</span>
-      <q-input v-model="classprice" :dense="true" style="width:300px;" />
+      <q-input v-model="classprice" :dense="true" style="width:300px;" counter maxlength="10" />
     </div>
-    <q-btn unelevated color="primary" label="提交" style="width:150px;margin-bottom:30px;" @click="submit"/>
+    <q-btn
+      unelevated
+      color="primary"
+      label="提交"
+      style="width:150px;margin-bottom:30px;"
+      @click="submit"
+    />
     <MyFooter />
   </q-page>
 </template>
@@ -73,7 +104,7 @@ export default {
       classname: "",
       classsummary: "",
       classdetail: "",
-      classprice:'',
+      classprice: "",
       chpters: [
         {
           title: "",
@@ -98,22 +129,27 @@ export default {
     clearInterval(this.saveTxInterval);
   },
   methods: {
-    deletechapters(index){
-      this.chpters.splice(index,1)
+    detailLength() {
+      let text = this.classdetail.replace(/<\/?[^>]+(>|$)/g, "");
+      let len = text.length;
+      return len;
     },
-    addchapters(){
+    deletechapters(index) {
+      this.chpters.splice(index, 1);
+    },
+    addchapters() {
       this.chpters.push({
-          title: "",
-          summary: "",
-          video: null,
-          file: null,
-          authProgress: 0,
-          uploadDisabled: true,
-          resumeDisabled: true,
-          pauseDisabled: true,
-          uploader: null,
-          statusText: ""
-        })
+        title: "",
+        summary: "",
+        video: null,
+        file: null,
+        authProgress: 0,
+        uploadDisabled: true,
+        resumeDisabled: true,
+        pauseDisabled: true,
+        uploader: null,
+        statusText: ""
+      });
     },
     fileChange(e, index) {
       // debugger
@@ -131,8 +167,14 @@ export default {
         this.chpters[index].statusText = "";
       }
       this.chpters[index].uploader = this.createUploader(index);
-      //console.log(userData);
-      this.chpters[index].uploader.addFile( this.chpters[index].file, null, null, null, userData);
+      console.log(this.chpters[index].file);
+      this.chpters[index].uploader.addFile(
+        this.chpters[index].file,
+        null,
+        null,
+        null,
+        userData
+      );
       this.chpters[index].uploadDisabled = false;
       this.chpters[index].pauseDisabled = true;
       this.chpters[index].resumeDisabled = true;
@@ -163,7 +205,6 @@ export default {
       }
     },
     createUploader(index) {
-      
       let self = this;
       //console.log(self.chpters[index])
       let uploader = new AliyunUpload.Vod({
@@ -187,11 +228,10 @@ export default {
         onUploadstarted: function(uploadInfo) {
           //doc:https://help.aliyun.com/document_detail/52204.html?spm=a2c4g.11186623.6.1049.6fa16bd1tkvnYT
           let params = {
-            Title: self.classname+'第'+(index+1)+'节视频',
+            Title: self.classname + "第" + (index + 1) + "节视频",
             FileName: uploadInfo.file.name
           };
           self.createUploadVideo(params, response => {
-
             let uploadAuth = response.data.data.UploadAuth;
             let uploadAddress = response.data.data.UploadAddress;
             let videoId = response.data.data.VideoId;
@@ -212,17 +252,14 @@ export default {
         },
         // 文件上传失败
         onUploadFailed: function(uploadInfo, code, message) {
-
           self.chpters[index].statusText = "文件上传失败!";
         },
         // 取消文件上传
         onUploadCanceled: function(uploadInfo, code, message) {
-
           self.chpters[index].statusText = "文件已暂停上传";
         },
         // 文件上传进度，单位：字节, 可以在这个函数中拿到上传进度并显示在页面上
         onUploadProgress: function(uploadInfo, totalSize, progress) {
-
           let progressPercent = Math.ceil(progress * 100);
           self.chpters[index].authProgress = progressPercent;
           self.chpters[index].statusText = "文件上传中...";
@@ -249,16 +286,16 @@ export default {
       return uploader;
     },
     createUploadVideo(params, successCallback) {
-      let timestamp = new Date().getTime();
+      let timestamp = new Date().getTime() + 1000 * 60 * 1;
       this.$axios
-        .get(this.global.apiconfig.otcbackapi + "vod/CreateUploadVideo", {
+        .get(this.global.api.backurl + "vod/CreateUploadVideo", {
           params: params,
           headers: {
             "access-token": this.util.generateToken(
               JSON.stringify(params),
               timestamp
             ),
-            "otc-timestamp": timestamp
+            timestamp2: timestamp
           }
         })
         .then(response => {
@@ -267,16 +304,16 @@ export default {
         });
     },
     refreshUploadVideo(params, successCallback, failedCallBack) {
-      let timestamp = new Date().getTime();
+      let timestamp = new Date().getTime() + 1000 * 60 * 1;
       this.$axios
-        .get(this.global.apiconfig.otcbackapi + "vod/RefreshUploadVideo", {
+        .get(this.global.api.backurl + "vod/RefreshUploadVideo", {
           params: params,
           headers: {
             "access-token": this.util.generateToken(
               JSON.stringify(params),
               timestamp
             ),
-            "otc-timestamp": timestamp
+            timestamp2: timestamp
           }
         })
         .then(response => {
@@ -289,7 +326,7 @@ export default {
         });
     },
     showDraft() {
-      var _this=this
+      var _this = this;
       localforage.getItem("draft").then(value => {
         //console.log("草稿：" + value);
         if (!_this.util.isEmpty(value)) {
@@ -308,8 +345,8 @@ export default {
               _this.classname = _this.draft.classname;
               _this.classsummary = _this.draft.classsummary;
               _this.classdetail = _this.draft.classdetail;
-              _this.classprice=_this.draft.classprice;
-              _this.chpters=_this.draft.chpters
+              _this.classprice = _this.draft.classprice;
+              _this.chpters = _this.draft.chpters;
             })
             .onCancel(() => {
               localforage.removeItem("draft");
@@ -320,30 +357,30 @@ export default {
     saveDraft() {
       this.saveTxInterval = setInterval(() => {
         //每分钟保存一次
-        
-        let chpters2=[]
-        for(let i=0;i<this.chpters.length;i++){
+
+        let chpters2 = [];
+        for (let i = 0; i < this.chpters.length; i++) {
           chpters2.push({
-          title: this.chpters[i].title,
-          summary: this.chpters[i].summary,
-          video: null,
-          file: null,
-          authProgress: 0,
-          uploadDisabled: true,
-          resumeDisabled: true,
-          pauseDisabled: true,
-          uploader: null,
-          statusText: this.chpters[i].statusText
-        })
+            title: this.chpters[i].title,
+            summary: this.chpters[i].summary,
+            video: null,
+            file: null,
+            authProgress: 0,
+            uploadDisabled: true,
+            resumeDisabled: true,
+            pauseDisabled: true,
+            uploader: null,
+            statusText: ""
+          });
         }
 
         this.draft = {
           classname: this.classname,
           classsummary: this.classsummary,
           classdetail: this.classdetail,
-          classprice:this.classprice,
-          chpters:chpters2,
-          time: new Date().toLocaleString(),
+          classprice: this.classprice,
+          chpters: chpters2,
+          time: new Date().toLocaleString()
         };
 
         if (
@@ -356,56 +393,55 @@ export default {
         }
       }, 1 * 60 * 1000);
     },
-    checkInfoOk(){
-// debugger
-      if(this.classname===''){
-        toast('请填写课程名称')
-        return false
+    checkInfoOk() {
+      // debugger
+      if (this.classname === "") {
+        toast("请填写课程名称");
+        return false;
       }
 
-      if(this.classsummary===''){
-        toast('请填写课程简介')
-        return false
+      if (this.classsummary === "") {
+        toast("请填写课程简介");
+        return false;
       }
 
-      if(this.classdetail===''){
-        toast('请填写课程详情')
-        return false
+      if (this.classdetail === "") {
+        toast("请填写课程详情");
+        return false;
       }
 
-      if(this.classprice===''){
-        toast('请填写课程售价')
-        return false
+      if (this.classdetail.replace(/<\/?[^>]+(>|$)/g, "").length > 2000) {
+        toast("课程详情需小于2000字");
+        return false;
       }
 
-      for(let i=0;i<this.chpters.length;i++){
-        if(this.chpters[i].title===''){
+      if (this.classprice === "") {
+        toast("请填写课程售价");
+        return false;
+      }
 
-          toast('请填写第'+(i+1)+'节标题')
-          return false
+      for (let i = 0; i < this.chpters.length; i++) {
+        if (this.chpters[i].title === "") {
+          toast("请填写第" + (i + 1) + "节标题");
+          return false;
         }
 
-        if(this.chpters[i].summary===''){
-
-          toast('请填写第'+(i+1)+'节简介')
-          return false
+        if (this.chpters[i].summary === "") {
+          toast("请填写第" + (i + 1) + "节简介");
+          return false;
         }
 
-        if(this.chpters[i].statusText !== "文件上传成功"){
-
-          toast('第'+(i+1)+'节视频未上传成功')
-          return false
+        if (this.chpters[i].statusText !== "文件上传成功") {
+          toast("第" + (i + 1) + "节视频未上传成功");
+          return false;
         }
-        
       }
 
-      return true
+      return true;
     },
     submit() {
       // debugger
-      if(this.checkInfoOk()){
-        
-
+      if (this.checkInfoOk()) {
       }
     },
     handleImageAdded: function(file, Editor, cursorLocation, resetUploader) {
@@ -462,10 +498,10 @@ export default {
   background-color: rgb(241, 216, 127);
   padding: 10px;
 }
-.upload{
+.upload {
   margin-top: 30px;
 }
-.upload-type{
+.upload-type {
   margin-top: 10px;
 }
 </style>

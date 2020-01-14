@@ -56,19 +56,19 @@ export default {
   },
   methods: {
     getPlayToken() {
-      let timestamp = new Date().getTime();
+      let timestamp = new Date().getTime()+1000*60*1;
       let params = {
         videoid: "1082165df61f405aac17e9d25e58c1a2"
       };
       this.$axios
-        .get(this.global.apiconfig.otcbackapi + "vod/generateToken", {
+        .get(this.global.api.backurl + "vod/generateToken", {
           params: params,
           headers: {
             "access-token": this.util.generateToken(
               JSON.stringify(params),
               timestamp
             ),
-            "otc-timestamp": timestamp
+            "timestamp2": timestamp
           }
         })
         .then(response => {
@@ -109,21 +109,21 @@ export default {
         });
     },
     getPlayAuth() {
-      let timestamp = new Date().getTime();
+      let timestamp = new Date().getTime()+1000*60*1;
       let params = {
         // Ciphertext:'NWNiOTNlMTAtMDQyZS00MjM5LWJlNDctZTkzODFiZDU4ZTNmcldZSzZkNnYrVGR0SmQ2NjAyVWJraXlRZGgwVnd2R0NBQUFBQUFBQUFBQTVybXRCWG0rZGkzbGRJVXYzaTZFbmVlbC9oeExVaDYyRmJJTWhXZmdEV3RXZTl6RXh2b2JYU0pTUlhUbGVRU3l2cG4rSVkrVCtvQzdnS3RJPQ==',
         VideoId: "1082165df61f405aac17e9d25e58c1a2"
         // MtsHlsUriToken:"U2FsdGVkX1+d970ZyjqF27tSJM3rHDleMtfr+zAGSF5eKO2jPxCmYwjq5xuKbrhCqsaWLeqYXufNetb3/5HdsMHZ/iBotG7zIliunndwIh9WTZcBcju9SGT7nBUMpxc/"
       };
       this.$axios
-        .get(this.global.apiconfig.otcbackapi + "vod/getVideoPlayAuth", {
+        .get(this.global.api.backurl + "vod/getVideoPlayAuth", {
           params: params,
           headers: {
             "access-token": this.util.generateToken(
               JSON.stringify(params),
               timestamp
             ),
-            "otc-timestamp": timestamp
+            "timestamp2": timestamp
           }
         })
         .then(response => {

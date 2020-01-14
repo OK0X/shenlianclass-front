@@ -39,6 +39,10 @@ const routes = [
       {
         path: '/ClassPub',
         component: () => import('pages/ClassPub.vue')
+      },
+      {
+        path: '/MyClass',
+        component: () => import('pages/MyClass.vue')
       }
     ]
   }
