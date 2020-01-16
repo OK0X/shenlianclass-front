@@ -1,5 +1,5 @@
 /* eslint-disable */
-// import CryptoJS from "crypto-js";
+import CryptoJS from "crypto-js";
 
 function showInfoDialog(_this,txhash,isBack) {
   _this.$q
@@ -91,11 +91,40 @@ function awaitWrap(promise) {
       .then(data => [null, data])
       .catch(err => [err, null])
 }
+
+function makeImgUrl(_this,filename) {
+  let Expires = parseInt(new Date().getTime() / 1000) + 600;
+  let StringToSign =
+    "GET\n\n\n" + Expires + "\n" + "/shenlianclass/" + filename;
+
+  let Signature = encodeURIComponent(
+    CryptoJS.enc.Base64.stringify(
+      CryptoJS.HmacSHA1(
+        StringToSign,
+        _this.global.api.aliyunossaccesskey
+      )
+    )
+  );
+
+  return (
+    _this.global.api.aliyunosshost +
+    "/" +
+    filename +
+    "?OSSAccessKeyId=" +
+    _this.global.api.aliyunossaccessid +
+    "&Expires=" +
+    Expires +
+    "&Signature=" +
+    Signature
+  );
+}
+
 export default {
   showInfoDialog,
   convertUTCTimeToLocalTime,
   randomWord,
   isEmpty,
   generateToken,
-  awaitWrap
+  awaitWrap,
+  makeImgUrl
 };

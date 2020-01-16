@@ -22,87 +22,17 @@
       <span style="color:#1f2328;font-size:24px;margin-top:60px;">精品课程</span>
       <q-separator />
       <div class="card-list">
-        <div class="class-card" @click="toDetail">
-          <img src="statics/test-card1.jpg" class="card-img" />
-          <span class="card-title">web前端0基础教室</span>
+        <div class="class-card" @click="toDetail(item)" v-for="(item,index) in courses" :key="index" >
+          <img :src="getImgUrl(item.converimg)" class="card-img" />
+          <span class="card-title">{{item.classname}}</span>
           <div class="more-text">
             <span>
               学习人数：
-              <span style="color: orange;">3000</span>
+              <span style="color: orange;">{{item.studynum}}</span>
             </span>
             <span>
               价格：
-              <span style="color: orange;">￥：30</span>
-            </span>
-          </div>
-        </div>
-        <div class="class-card">
-          <img src="statics/test-card1.jpg" class="card-img" />
-          <span class="card-title">web前端0基础教室</span>
-          <div class="more-text">
-            <span>
-              学习人数：
-              <span style="color: orange;">3000</span>
-            </span>
-            <span>
-              价格：
-              <span style="color: orange;">￥：30</span>
-            </span>
-          </div>
-        </div>
-        <div class="class-card">
-          <img src="statics/test-card1.jpg" class="card-img" />
-          <span class="card-title">web前端0基础教室</span>
-          <div class="more-text">
-            <span>
-              学习人数：
-              <span style="color: orange;">3000</span>
-            </span>
-            <span>
-              价格：
-              <span style="color: orange;">￥：30</span>
-            </span>
-          </div>
-        </div>
-        <div class="class-card">
-          <img src="statics/test-card1.jpg" class="card-img" />
-          <span class="card-title">web前端0基础教室</span>
-          <div class="more-text">
-            <span>
-              学习人数：
-              <span style="color: orange;">3000</span>
-            </span>
-            <span>
-              价格：
-              <span style="color: orange;">￥：30</span>
-            </span>
-          </div>
-        </div>
-        <div class="class-card">
-          <img src="statics/test-card1.jpg" class="card-img" />
-          <span class="card-title">web前端0基础教室</span>
-          <div class="more-text">
-            <span>
-              学习人数：
-              <span style="color: orange;">3000</span>
-            </span>
-            <span>
-              价格：
-              <span style="color: orange;">￥：30</span>
-            </span>
-          </div>
-        </div>
-        <div class="class-card">
-          <img src="statics/test-card1.jpg" class="card-img" />
-          <span class="card-title">web前端0基础教室</span>
-          <div class="more-text">
-            <span>
-              学习人数：
-              <span style="color: orange;">3000</span>
-            </span>
-            <span>
-              价格：
-              <span style="color: orange;">￥：30</span>
+              <span style="color: orange;">￥：{{item.classprice}}</span>
             </span>
           </div>
         </div>
@@ -125,10 +55,46 @@ export default {
       courses: []
     };
   },
-  mounted() {},
+  mounted() {
+    this.getCourses()
+  },
   methods: {
-    toDetail(){
-      this.$router.push('/ClassDetail')
+    getImgUrl(filename) {
+      return this.util.makeImgUrl(this, filename);
+    },
+    getCourses(){
+      let timestamp = new Date().getTime() + 1000 * 60 * 1;
+
+      let params = {
+        status: 0+''//正式发布改成审核通过的课程
+      };
+
+      this.$axios
+        .get(this.global.api.backurl + "course/getMyCourses", {
+          params: params,
+          headers: {
+            "access-token": this.util.generateToken(
+              JSON.stringify(params),
+              timestamp
+            ),
+            timestamp2: timestamp
+          }
+        })
+        .then(response => {
+          console.log(response);
+          if (response.status === 200 && response.data.code === 0) {
+            this.courses = response.data.data;
+          }
+        });
+    },
+    toDetail(item){
+
+      this.$router.push({
+        path:'/ClassDetail',
+        query:{
+          arg:item
+        }
+      })
     }
   }
 };

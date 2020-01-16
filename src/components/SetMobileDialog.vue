@@ -93,7 +93,7 @@ export default {
         spinnerSize: 50
       });
       this.smscodecheck();
-      this.dialogData.show = false;
+      
     },
     smscodecheck() {
       var _this = this;
@@ -146,6 +146,7 @@ export default {
               
             } else {
               data.mobile=this.mobile + ""
+              data.role=0
               data.nick='设置昵称'
 
 
@@ -155,6 +156,8 @@ export default {
             console.log(this.user);
 
             localforage.setItem("user",JSON.stringify(this.user))
+            toast('登陆成功')
+            this.dialogData.show = false;
 
           }
         });

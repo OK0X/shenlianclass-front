@@ -3,9 +3,9 @@
 const debug = true
 const api = {
   backurl: debug?'http://localhost/api/v1/':'https://api.shenlianclass.com/api/v1/',
-  aliyunosshost:'https://otcfiles.oss-cn-shenzhen.aliyuncs.com',
-  aliyunossaccessid:'LTAI4Fcj6yde1NHcFQ8Wc4yf',
-  aliyunossaccesskey:'Fcleo7v1Xfn9SAAz9y0vH5wA1uVjU6',
+  aliyunosshost:'https://shenlianclass.oss-cn-shanghai.aliyuncs.com',
+  aliyunossaccessid:'LTAI4FmgqTnRgG8ibrsXmDEF',
+  aliyunossaccesskey:'vQ6FlwR8H1IOnVIthQp5XSTciQg6EQ',
   bombsmsurl:'https://api2.bmob.cn/1/',
   bombheader:{
     "X-Bmob-Application-Id": "ac7f17d258941e666eb88514048c351a",

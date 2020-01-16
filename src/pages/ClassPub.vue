@@ -3,6 +3,16 @@
     <div class="white-block">
       <span>课程名称：</span>
       <q-input v-model="classname" :dense="true" style="width:300px;" counter maxlength="20" />
+      <span>课程封面：</span>
+      <input type="file" accept="image/*" style="margin-top:10px;" @change="converFileChange" />
+      <img :src="imgsrc" style="margin-top:10px;width:530px;height:320px;" v-show="imgShow" />
+      <span style="color:red;">请上传尺寸为530×320像素的jpg图片</span>
+      <button
+        type="button"
+        style="width:72px;margin-top:10px;"
+        v-show="imgShow"
+        @click="uploadConverImg"
+      >开始上传</button>
       <span style="margin-top:30px;">课程简介：</span>
       <q-input
         :dense="true"
@@ -102,6 +112,9 @@ export default {
     return {
       saveTxInterval: "",
       classname: "",
+      imgsrc: "",
+      imgShow: false,
+      converimg: "",
       classsummary: "",
       classdetail: "",
       classprice: "",
@@ -139,6 +152,77 @@ export default {
     clearInterval(this.saveTxInterval);
   },
   methods: {
+    converFileChange(e) {
+      let _this = this;
+      let files = e.target.files || e.dataTransfer.files;
+      if (!files.length) return;
+      let file = files[0]; //File对象
+      this.imgfile = file;
+      let reader = new FileReader(); //FileReader对象
+      reader.readAsDataURL(file); //该方法会读取指定的 Blob 或 File 对象。读取操作完成的时候，readyState 会变成已完成（DONE），并触发 loadend 事件，同时 result 属性将包含一个data:URL格式的字符串（base64编码）以表示所读取文件的内容。
+
+      reader.onload = function(e) {
+        _this.imgsrc = e.target.result; //图片内容的base64编码
+        _this.imgShow = true;
+      };
+    },
+    uploadConverImg() {
+      //aliyun oss
+      this.$q.loading.show({
+        message: this.$t("submiting"),
+        spinnerSize: 50
+      });
+
+      var expireTime = new Date();
+      expireTime.setSeconds(expireTime.getSeconds() + 600);
+
+      var policyText = {
+        expiration: expireTime.toISOString(), //设置该Policy的失效时间，超过这个失效时间之后，就没有办法通过这个policy上传文件了
+        conditions: [
+          ["content-length-range", 0, 1048576000] // 设置上传文件的大小限制
+        ]
+      };
+
+      var policyBase64 = Base64.encode(JSON.stringify(policyText));
+      var encrypted = CryptoJS.HmacSHA1(
+        policyBase64,
+        this.global.api.aliyunossaccesskey
+      );
+      var signature = CryptoJS.enc.Base64.stringify(encrypted);
+
+      let filename = this.user.uuid + new Date().getTime() + ".jpg";
+      let formData = new FormData();
+      formData.append("key", filename);
+      formData.append("policy", policyBase64);
+      formData.append("OSSAccessKeyId", this.global.api.aliyunossaccessid);
+      formData.append("success_action_status", "200");
+      formData.append("signature", signature);
+      formData.append("file", this.imgfile, filename);
+
+      this.$axios
+        .post(this.global.api.aliyunosshost, formData, {
+          headers: {
+            "Content-Type":
+              "application/x-www-form-urlencoded;boundary=----WebKitFormBoundarytkUbKWcxgeMi1fIr"
+          }
+        })
+        .then(response => {
+          console.log(response);
+          if (response.status === 200) {
+            toast("上传成功");
+            this.converimg = filename;
+            // this.imgbmobUrl = filename
+            // this.submit2bmob();
+            // this.getFile();
+          }
+          this.$q.loading.hide();
+        })
+        .catch(error => {
+          console.error(error);
+          // toast(_this.$t("smscodeerror"));
+          this.$q.loading.hide();
+        });
+    },
     detailLength() {
       let text = this.classdetail.replace(/<\/?[^>]+(>|$)/g, "");
       let len = text.length;
@@ -245,7 +329,7 @@ export default {
             let uploadAuth = response.data.data.UploadAuth;
             let uploadAddress = response.data.data.UploadAddress;
             let videoId = response.data.data.VideoId;
-            self.chpters[index].video=videoId
+            self.chpters[index].video = videoId;
             uploader.setUploadAuthAndAddress(
               uploadInfo,
               uploadAuth,
@@ -411,6 +495,11 @@ export default {
         return false;
       }
 
+      if (this.converimg === "") {
+        toast("课程封面未上传");
+        return false;
+      }
+
       if (this.classsummary === "") {
         toast("请填写课程简介");
         return false;
@@ -455,11 +544,12 @@ export default {
       if (this.checkInfoOk()) {
         let params = {
           author: this.user.uuid,
-          classname:this.classname,
-          classsummary:this.classsummary,
-          classdetail:this.classdetail,
-          classprice:this.classprice,
-          videos:this.chpters
+          classname: this.classname,
+          converimg: this.converimg,
+          classsummary: this.classsummary,
+          classdetail: this.classdetail,
+          classprice: this.classprice,
+          videos: this.chpters
         };
         let timestamp = new Date().getTime() + 1 * 60 * 1000;
         this.$axios
@@ -473,7 +563,19 @@ export default {
             }
           })
           .then(response => {
-            console.log(response);
+            // console.log(response);
+            if (response.status === 200 && response.data.code === 0) {
+              this.$q
+                .dialog({
+                  title: "提交成功",
+                  message: "请等待审核，稍后您可以在我发布的课程中查看结果",
+                  ok: '确定',
+                  persistent: true
+                })
+                .onOk(()=>{
+                  this.$router.push('/MyPub')
+                });
+            }
           });
       }
     },

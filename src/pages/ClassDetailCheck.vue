@@ -13,7 +13,7 @@
           </div>
         </div>
         <span style="margin-top:20px;">学习人数：{{item.studynum}}人</span>
-        <q-btn unelevated label="购买学习" class="study"/>
+        <q-btn unelevated :label="item.status===0?'审核中':'审核通过'" class="study" color="primary" />
       </div>
     </div>
     <div class="detail">
@@ -144,7 +144,7 @@ export default {
   width: 145px;
   height: 50px;
   font-size: 18px;
-  background-image: linear-gradient(to right, #ff7a00, #fe560a); 
-  color: white;
+  /* background-image: linear-gradient(to right, #ff7a00, #fe560a); */
+  /* color: white; */
 }
 </style>

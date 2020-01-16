@@ -23,7 +23,7 @@ export default {
       setMobileDialogData: {
         show: false,
         title: '快捷登陆'
-      },
+      }
     };
   },
   computed: {

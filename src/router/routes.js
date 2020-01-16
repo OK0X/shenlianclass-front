@@ -21,8 +21,8 @@ const routes = [
         component: () => import('pages/Login.vue')
       },
       {
-        path: '/PushArticle',
-        component: () => import('pages/PushArticle.vue')
+        path: '/CreatePost',
+        component: () => import('pages/CreatePost.vue')
       },
       {
         path: '/ArticleDetail',
@@ -43,6 +43,18 @@ const routes = [
       {
         path: '/MyClass',
         component: () => import('pages/MyClass.vue')
+      },
+      {
+        path: '/MyPub',
+        component: () => import('pages/MyPub.vue')
+      },
+      {
+        path: '/CourseCheck',
+        component: () => import('pages/CourseCheck.vue')
+      },
+      {
+        path: '/ClassDetailCheck',
+        component: () => import('pages/ClassDetailCheck.vue')
       }
     ]
   }
