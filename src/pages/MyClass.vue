@@ -3,20 +3,20 @@
     <div class="white-block">
     </div>
     <MyFooter />
-    <SetMobileDialog :dialogData="setMobileDialogData" />
+    <LoginDialog :dialogData="setMobileDialogData" />
   </q-page>
 </template>
 
 <script>
 /* eslint-disable */
 import MyFooter from "../components/MyFooter";
-import SetMobileDialog from "../components/SetMobileDialog";
+import LoginDialog from "../components/LoginDialog";
 
 
 export default {
   components: {
     MyFooter,
-    SetMobileDialog
+    LoginDialog
   },
   data() {
     return {

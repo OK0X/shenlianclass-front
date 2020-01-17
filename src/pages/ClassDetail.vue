@@ -36,43 +36,24 @@
         </q-tab-panel>
         <q-tab-panel name="chapters">
           <q-timeline color="secondary">
-            <q-timeline-entry heading>Timeline heading</q-timeline-entry>
-            <q-timeline-entry title="Event Title" subtitle="February 22, 1986">
-              <div>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</div>
-            </q-timeline-entry>
-            <q-timeline-entry title="Event Title" subtitle="February 21, 1986" icon="delete">
-              <div>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</div>
-            </q-timeline-entry>
-
-            <q-timeline-entry heading>November, 2017</q-timeline-entry>
             <q-timeline-entry
-              title="Event Title"
-              subtitle="February 22, 1986"
-              avatar="https://cdn.quasar.dev/img/avatar2.jpg"
+              :title="item.title"
+              subtitle
+              v-for="(item,index) in videos"
+              :key="index"
             >
-              <div>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</div>
-            </q-timeline-entry>
-            <q-timeline-entry title="Event Title" subtitle="February 22, 1986">
-              <div>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</div>
-            </q-timeline-entry>
-            <q-timeline-entry
-              title="Event Title"
-              subtitle="February 22, 1986"
-              color="orange"
-              icon="done_all"
-            >
-              <div>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</div>
-            </q-timeline-entry>
-            <q-timeline-entry title="Event Title" subtitle="February 22, 1986">
-              <div>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</div>
-            </q-timeline-entry>
-            <q-timeline-entry title="Event Title" subtitle="February 22, 1986">
-              <div>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</div>
+              <div>{{item.summary}}</div>
+              <div style="display:flex;margin-top: 10px;">
+                <img src="statics/play.png" style="width:40px;height:40px;" />
+                <q-btn unelevated label="学习该章节" class="study-chapter" @click="chapterPlay(item)"/>
+                <!-- <q-btn flat color="primary" label="学习该小节" style="align-self:center;"/> -->
+              </div>
             </q-timeline-entry>
           </q-timeline>
         </q-tab-panel>
       </q-tab-panels>
     </div>
+    <VideoDialog :video="video"/>
     <MyFooter />
   </q-page>
 </template>
@@ -80,20 +61,58 @@
 <script>
 /* eslint-disable */
 import MyFooter from "../components/MyFooter";
+import VideoDialog from "../components/VideoDialog";
+
 export default {
   components: {
-    MyFooter
+    MyFooter,
+    VideoDialog
   },
   data() {
     return {
       tab:'detail',
-      item: this.$route.query.arg
+      item: this.$route.query.arg,
+      videos: [],
+      video:{
+        show:false
+      }
     };
   },
   mounted() {
     console.log(this.$route.query)
+    this.getVideos();
   },
   methods: {
+    chapterPlay(item){
+      console.log(item)
+      this.video.id=item.video_id
+      this.video.show=true
+    },
+    getVideos() {
+      let timestamp = new Date().getTime() + 1000 * 60 * 1;
+      let params = {
+        course_id: this.item.id + ""
+      };
+      this.$axios
+        .get(this.global.api.backurl + "video/getVideos", {
+          params: params,
+          headers: {
+            "access-token": this.util.generateToken(
+              JSON.stringify(params),
+              timestamp
+            ),
+            timestamp2: timestamp
+          }
+        })
+        .then(response => {
+          console.log(response);
+          if (response.status === 200 && response.data.code === 0) {
+            this.videos = response.data.data;
+
+            
+          }
+        });
+    },
     getImgUrl(filename) {
       return this.util.makeImgUrl(this, filename);
     }
@@ -144,6 +163,12 @@ export default {
   width: 145px;
   height: 50px;
   font-size: 18px;
+  background-image: linear-gradient(to right, #ff7a00, #fe560a); 
+  color: white;
+}
+.study-chapter{
+  align-self:center;
+  margin-left: 10px;
   background-image: linear-gradient(to right, #ff7a00, #fe560a); 
   color: white;
 }

@@ -145,7 +145,7 @@ export default {
           return false
         }
         for (let i = 0; i < this.videos.length; i++) {
-          if (this.videos[index].status <= 1) {
+          if (this.videos[i].status <= 1) {
             return false;
           }
         }

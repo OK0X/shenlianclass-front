@@ -48,18 +48,18 @@
     <q-page-container style="background-color: #f2f5f9;">
       <router-view />
     </q-page-container>
-    <SetMobileDialog :dialogData="setMobileDialogData" />
+    <LoginDialog :dialogData="setMobileDialogData" />
   </q-layout>
 </template>
 <script>
 /* eslint-disable */
 import localforage from "localforage";
-import SetMobileDialog from "../components/SetMobileDialog";
+import LoginDialog from "../components/LoginDialog";
 
 
 export default {
   components: {
-    SetMobileDialog
+    LoginDialog
   },
   data() {
     return {
