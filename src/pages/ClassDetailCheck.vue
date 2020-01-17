@@ -70,6 +70,14 @@
         </q-tab-panel>
       </q-tab-panels>
     </div>
+    <q-btn
+      unelevated
+      color="primary"
+      label="发布"
+      style="width:100px;margin-bottom:30px;"
+      @click="pubMyCourse"
+      v-show="isCanPub"
+    />
     <MyFooter />
   </q-page>
 </template>
@@ -103,10 +111,49 @@ export default {
     this.getVideos();
   },
   methods: {
-    getTranscodeTask(index){
+    pubMyCourse() {
+      let params = {
+        status: 1
+      };
+      let timestamp = new Date().getTime() + 1000 * 60 * 1;
+      this.$axios
+        .put(
+          this.global.api.backurl + "course/updateStatusById?id=" + this.item.id,
+          params,
+          {
+            headers: {
+              "access-token": this.util.generateToken(
+                JSON.stringify(params),
+                timestamp
+              ),
+              timestamp2: timestamp
+            }
+          }
+        )
+        .then(function(response) {
+          console.log(response);
+          if (response.status === 200 && response.data.code === 0){
+            toast('发布成功')
+          }
+        });
+    },
+    isCanPub() {
+      if (this.user.role <= 0) {
+        return false;
+      } else {
+        for (let i = 0; i < this.videos.length; i++) {
+          if (this.videos[index].status <= 1) {
+            return false;
+          }
+        }
+
+        return true;
+      }
+    },
+    getTranscodeTask(index) {
       let timestamp = new Date().getTime() + 1000 * 60 * 1;
       let params = {
-        TranscodeTaskId: videos[index].transcode_task_id
+        TranscodeTaskId: this.videos[index].transcode_task_id
       };
       this.$axios
         .get(this.global.api.backurl + "vod/getTranscodeTask", {
@@ -122,7 +169,10 @@ export default {
         .then(response => {
           console.log(response);
           if (response.status === 200 && response.data.code === 0) {
-            // toast("提交转码成功");
+            if (
+              response.data.data.TranscodeTask.TaskStatus === "CompleteAllSucc"
+            )
+              this.videos[index].status = 2;
           }
         });
     },
@@ -156,7 +206,7 @@ export default {
         case 1:
           return "转码中";
         case 2:
-          return "转码完成";
+          return "转码成功";
         default:
           break;
       }
@@ -184,6 +234,15 @@ export default {
           console.log(response);
           if (response.status === 200 && response.data.code === 0) {
             this.videos = response.data.data;
+
+            //查询转码中的状态
+            for (let i = 0; i < this.videos.length; i++) {
+              if (this.videos[i].status === 1) {
+                this.getTranscodeTask(i);
+              } else {
+                this.videos[i].transresult = "";
+              }
+            }
           }
         });
     }
@@ -196,7 +255,7 @@ export default {
   max-width: 1200px;
   display: flex;
   background-color: white;
-  margin: 0 0 50px 0;
+  margin: 0 0 30px 0;
   /* height: 800px; */
   flex-direction: column;
 }
