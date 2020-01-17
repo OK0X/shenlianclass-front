@@ -3,7 +3,7 @@
     <div class="page-content">
       <!-- <span style="color:#1f2328;font-size:24px;">我发布的课程</span> -->
       <!-- <q-separator /> -->
-      <div style=" height: 355px;display: flex;" v-for="(item,index) in myCourses" :key="index">
+      <div style=" height: 355px;display: flex;" v-for="(item,index) in myCourses" :key="index"  @click="toCheckDetail(item)">
         <img :src="getImgUrl(item.converimg)" class="videoimg" />
         <div class="summary-tx">
           <span style="font-size:24px;color:#1f2328;">{{item.classname}}</span>
@@ -50,6 +50,14 @@ export default {
     this.getMyPubCourses();
   },
   methods: {
+    toCheckDetail(item){
+      this.$router.push({
+        path:'/ClassDetailCheck',
+        query:{
+          arg:item
+        }
+      })
+    },
     getImgUrl(filename) {
       return this.util.makeImgUrl(this, filename);
     },

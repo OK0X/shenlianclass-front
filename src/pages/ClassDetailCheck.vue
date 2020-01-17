@@ -6,7 +6,9 @@
         <span style="font-size:24px;color:#1f2328;">{{item.classname}}</span>
         <span>{{item.classsummary}}</span>
         <div class="price">
-          <span style="align-self: center;margin-left:10px;font-size:24px;color: orange;">￥ {{item.classprice}}元</span>
+          <span
+            style="align-self: center;margin-left:10px;font-size:24px;color: orange;"
+          >￥ {{item.classprice}}元</span>
           <div style="display:flex;align-self: center;margin-right:10px;">
             <img src="statics/share.png" style="width:20px;height:20px;" />
             <span style="margin-left:5px;">分享</span>
@@ -36,25 +38,6 @@
         </q-tab-panel>
         <q-tab-panel name="chapters">
           <q-timeline color="secondary">
-            <q-timeline-entry heading>Timeline heading</q-timeline-entry>
-            <q-timeline-entry title="Event Title" subtitle="February 22, 1986">
-              <div>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</div>
-            </q-timeline-entry>
-            <q-timeline-entry title="Event Title" subtitle="February 21, 1986" icon="delete">
-              <div>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</div>
-            </q-timeline-entry>
-
-            <q-timeline-entry heading>November, 2017</q-timeline-entry>
-            <q-timeline-entry
-              title="Event Title"
-              subtitle="February 22, 1986"
-              avatar="https://cdn.quasar.dev/img/avatar2.jpg"
-            >
-              <div>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</div>
-            </q-timeline-entry>
-            <q-timeline-entry title="Event Title" subtitle="February 22, 1986">
-              <div>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</div>
-            </q-timeline-entry>
             <q-timeline-entry
               title="Event Title"
               subtitle="February 22, 1986"
@@ -63,11 +46,25 @@
             >
               <div>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</div>
             </q-timeline-entry>
-            <q-timeline-entry title="Event Title" subtitle="February 22, 1986">
-              <div>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</div>
-            </q-timeline-entry>
-            <q-timeline-entry title="Event Title" subtitle="February 22, 1986">
-              <div>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</div>
+            <q-timeline-entry
+              :title="item.title"
+              subtitle
+              v-for="(item,index) in videos"
+              :key="index"
+            >
+              <div>{{item.summary}}</div>
+              <div>
+                视频状态：
+                <span style="color: rgb(255, 122, 0);">{{getVideoStatus(item.status)}}</span>
+              </div>
+              <q-btn
+                unelevated
+                color="primary"
+                label="转码"
+                style="width:100px;margin-top:10px;"
+                @click="videoMgr(item.video_id)"
+                v-show="user.role>=2&&item.status===0"
+              />
             </q-timeline-entry>
           </q-timeline>
         </q-tab-panel>
@@ -84,18 +81,111 @@ export default {
   components: {
     MyFooter
   },
+  computed: {
+    user: {
+      get() {
+        return this.$store.state.user.user;
+      },
+      set(val) {
+        this.$store.commit("user/updateUser", val);
+      }
+    }
+  },
   data() {
     return {
-      tab:'detail',
-      item: this.$route.query.arg
+      tab: "detail",
+      item: this.$route.query.arg,
+      videos: []
     };
   },
   mounted() {
-    console.log(this.$route.query)
+    console.log(this.$route.query);
+    this.getVideos();
   },
   methods: {
+    getTranscodeTask(index){
+      let timestamp = new Date().getTime() + 1000 * 60 * 1;
+      let params = {
+        TranscodeTaskId: videos[index].transcode_task_id
+      };
+      this.$axios
+        .get(this.global.api.backurl + "vod/getTranscodeTask", {
+          params: params,
+          headers: {
+            "access-token": this.util.generateToken(
+              JSON.stringify(params),
+              timestamp
+            ),
+            timestamp2: timestamp
+          }
+        })
+        .then(response => {
+          console.log(response);
+          if (response.status === 200 && response.data.code === 0) {
+            // toast("提交转码成功");
+          }
+        });
+    },
+    videoMgr(videoID) {
+      let timestamp = new Date().getTime() + 1000 * 60 * 1;
+      let params = {
+        videoid: videoID
+      };
+      this.$axios
+        .get(this.global.api.backurl + "vod/submitTranscodeJob", {
+          params: params,
+          headers: {
+            "access-token": this.util.generateToken(
+              JSON.stringify(params),
+              timestamp
+            ),
+            timestamp2: timestamp
+          }
+        })
+        .then(response => {
+          console.log(response);
+          if (response.status === 200 && response.data.code === 0) {
+            toast("提交转码成功");
+          }
+        });
+    },
+    getVideoStatus(status) {
+      switch (status) {
+        case 0:
+          return "待转码";
+        case 1:
+          return "转码中";
+        case 2:
+          return "转码完成";
+        default:
+          break;
+      }
+    },
     getImgUrl(filename) {
       return this.util.makeImgUrl(this, filename);
+    },
+    getVideos() {
+      let timestamp = new Date().getTime() + 1000 * 60 * 1;
+      let params = {
+        course_id: this.$route.query.arg.id + ""
+      };
+      this.$axios
+        .get(this.global.api.backurl + "video/getVideos", {
+          params: params,
+          headers: {
+            "access-token": this.util.generateToken(
+              JSON.stringify(params),
+              timestamp
+            ),
+            timestamp2: timestamp
+          }
+        })
+        .then(response => {
+          console.log(response);
+          if (response.status === 200 && response.data.code === 0) {
+            this.videos = response.data.data;
+          }
+        });
     }
   }
 };
