@@ -66,7 +66,7 @@ export default {
       let timestamp = new Date().getTime() + 1000 * 60 * 1;
 
       let params = {
-        status: 0+''//正式发布改成审核通过的课程
+        status: 1+''//正式发布改成审核通过的课程
       };
 
       this.$axios

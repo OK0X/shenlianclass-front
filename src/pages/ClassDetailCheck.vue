@@ -15,7 +15,7 @@
           </div>
         </div>
         <span style="margin-top:20px;">学习人数：{{item.studynum}}人</span>
-        <q-btn unelevated :label="item.status===0?'审核中':'审核通过'" class="study" color="primary" />
+        <q-btn unelevated :label="item.status===0?'审核中':'已发布'" class="study" color="primary" />
       </div>
     </div>
     <div class="detail">
@@ -76,7 +76,7 @@
       label="发布"
       style="width:100px;margin-bottom:30px;"
       @click="pubMyCourse"
-      v-show="isCanPub"
+      v-show="isCanPub()"
     />
     <MyFooter />
   </q-page>
@@ -141,6 +141,9 @@ export default {
       if (this.user.role <= 0) {
         return false;
       } else {
+        if(this.item.status===1){
+          return false
+        }
         for (let i = 0; i < this.videos.length; i++) {
           if (this.videos[index].status <= 1) {
             return false;
