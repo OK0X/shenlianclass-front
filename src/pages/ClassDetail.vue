@@ -13,7 +13,7 @@
           </div>
         </div>
         <span style="margin-top:20px;">学习人数：{{item.studynum}}人</span>
-        <q-btn unelevated label="购买学习" class="study"/>
+        <q-btn unelevated label="购买学习" class="study" @click="buyCourse"/>
       </div>
     </div>
     <div class="detail">
@@ -62,6 +62,7 @@
 /* eslint-disable */
 import MyFooter from "../components/MyFooter";
 import VideoDialog from "../components/VideoDialog";
+import { openURL } from 'quasar'
 
 export default {
   components: {
@@ -83,6 +84,31 @@ export default {
     this.getVideos();
   },
   methods: {
+    buyCourse(){
+      let params = {
+          subject_title: 'vue学习指南',
+          subject_id: this.item.uuid,
+          total_amount: this.item.classprice
+        };
+        let timestamp = new Date().getTime() + 1 * 60 * 1000;
+        this.$axios
+          .post(this.global.api.backurl + "alipay/tradepagepay", params, {
+            headers: {
+              "access-token": this.util.generateToken(
+                JSON.stringify(params),
+                timestamp
+              ),
+              timestamp2: timestamp
+            }
+          })
+          .then(response =>{
+             if (response.status === 200 && response.data.code === 0) {
+
+               openURL(response.data.data)
+
+             }
+          })
+    },
     chapterPlay(item){
       console.log(item)
       this.video.id=item.video_id
@@ -91,7 +117,7 @@ export default {
     getVideos() {
       let timestamp = new Date().getTime() + 1000 * 60 * 1;
       let params = {
-        course_id: this.item.id + ""
+        course_id: this.item.uuid + ""
       };
       this.$axios
         .get(this.global.api.backurl + "video/getVideos", {

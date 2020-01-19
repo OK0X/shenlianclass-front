@@ -118,7 +118,7 @@ export default {
       let timestamp = new Date().getTime() + 1000 * 60 * 1;
       this.$axios
         .put(
-          this.global.api.backurl + "course/updateStatusById?id=" + this.item.id,
+          this.global.api.backurl + "course/updateRowByOptions?uuid=" + this.item.uuid,
           params,
           {
             headers: {
@@ -220,7 +220,7 @@ export default {
     getVideos() {
       let timestamp = new Date().getTime() + 1000 * 60 * 1;
       let params = {
-        course_id: this.$route.query.arg.id + ""
+        course_id: this.$route.query.arg.uuid + ""
       };
       this.$axios
         .get(this.global.api.backurl + "video/getVideos", {
