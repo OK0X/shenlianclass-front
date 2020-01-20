@@ -11,7 +11,7 @@
       </div>
       <q-card-actions align="right" class="text-primary">
         <q-btn flat label="取消" v-close-popup />
-        <q-btn flat label="确定" @click="submitinfo2bmob" />
+        <q-btn flat label="确定" @click="onOk" />
       </q-card-actions>
     </div>
   </q-dialog>

@@ -3,10 +3,10 @@
     <div class="relate-link">
       <div class="relate-content">
         <span class="link-tx">友情链接</span>
-        <q-btn flat label="比特币" />
-        <q-btn flat label="以太坊" />
-        <q-btn flat label="智能问答" />
-        <q-btn flat label="课程发布" />
+        <q-btn flat label="以太坊" @click="openLink(0)" />
+        <q-btn flat label="cosmos" style="font-weight: 400;" @click="openLink(1)" />
+        <q-btn flat label="quasar" style="font-weight: 400;" @click="openLink(2)" />
+        <q-btn flat label="vuejs" style="font-weight: 400;" @click="openLink(3)" />
       </div>
     </div>
     <div class="footer">
@@ -14,14 +14,10 @@
         <div class="beian">
           <img src="statics/test-fot.png" style="width:156px;50px;" />
           <span style="color:#a1a1a3;margin-top:10px;">备案号：粤ICP备19159723号</span>
-          <span style="color:#a1a1a3;margin-top:10px;">Copyright © 2019 深圳市深链网络科技有限公司 版权所有</span>
+          <span style="color:#a1a1a3;margin-top:10px;">Copyright © 2020 深圳市深链网络科技有限公司 版权所有</span>
         </div>
         <div style="display:flex;">
           <div style="display: flex;flex-direction: column;">
-            <img src="statics/wx-gh-qrcode.jpg" style="width:90px;height:90px;" />
-            <span class="wx-img-tx">关注深链网官方公众号</span>
-          </div>
-          <div style="display: flex;flex-direction: column;margin-left:20px;">
             <img src="statics/wx-gh-qrcode.jpg" style="width:90px;height:90px;" />
             <span class="wx-img-tx">关注深链网官方公众号</span>
           </div>
@@ -32,8 +28,30 @@
 </template>
 <script>
 /* eslint-disable */
+import { openURL } from "quasar";
+
 export default {
-  name: "MyFooter"
+  name: "MyFooter",
+  methods: {
+    openLink(index) {
+      switch (index) {
+        case 0:
+          openURL("https://ethereum.org/zh/");
+          break;
+        case 1:
+          openURL("https://cosmos.network/");
+          break;
+        case 2:
+          openURL("https://quasar.dev/introduction-to-quasar");
+          break;
+        case 3:
+          openURL("https://cn.vuejs.org/v2/guide/");
+          break;
+        default:
+          break;
+      }
+    }
+  }
 };
 </script>
 <style scoped>

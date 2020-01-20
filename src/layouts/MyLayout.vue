@@ -42,7 +42,6 @@
         <q-btn flat label="我的课程" class="menu-text" to="/MyClass" />
         <q-btn flat label="问答" class="menu-text" />
         <q-btn flat label="课程发布" class="menu-text" to="/ClassPub" />
-        <q-btn flat label="Test" class="menu-text" to="/Test" v-if="true" />
       </div>
     </q-header>
     <q-page-container style="background-color: #f2f5f9;">

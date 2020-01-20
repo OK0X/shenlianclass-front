@@ -92,6 +92,7 @@
       @click="submit"
     />
     <MyFooter />
+    <LoginDialog :dialogData="loginDialog" />
   </q-page>
 </template>
 
@@ -102,11 +103,13 @@ import { VueEditor } from "vue2-editor";
 import localforage from "localforage";
 import CryptoJS from "crypto-js";
 import { Base64 } from "js-base64";
+import LoginDialog from "../components/LoginDialog";
 
 export default {
   components: {
     MyFooter,
-    VueEditor
+    VueEditor,
+    LoginDialog
   },
   data() {
     return {
@@ -131,7 +134,11 @@ export default {
           uploader: null,
           statusText: ""
         }
-      ]
+      ],
+      loginDialog: {
+        show: false,
+        title: "快捷登陆"
+      }
     };
   },
   computed: {
@@ -145,6 +152,9 @@ export default {
     }
   },
   mounted() {
+    if (typeof this.user.uuid === "undefined") {
+      this.loginDialog.show = true;
+    }
     this.showDraft();
     this.saveDraft();
   },
@@ -540,6 +550,10 @@ export default {
       return true;
     },
     submit() {
+      if (typeof this.user.uuid === "undefined") {
+        toast("当前未登陆，无法发布课程");
+        return;
+      }
       // debugger
       if (this.checkInfoOk()) {
         let params = {
@@ -569,11 +583,11 @@ export default {
                 .dialog({
                   title: "提交成功",
                   message: "请等待审核，稍后您可以在我发布的课程中查看结果",
-                  ok: '确定',
+                  ok: "确定",
                   persistent: true
                 })
-                .onOk(()=>{
-                  this.$router.push('/MyPub')
+                .onOk(() => {
+                  this.$router.push("/MyPub");
                 });
             }
           });

@@ -3,7 +3,7 @@
     <div class="white-block">
     </div>
     <MyFooter />
-    <LoginDialog :dialogData="setMobileDialogData" />
+    <LoginDialog :dialogData="loginDialog" />
   </q-page>
 </template>
 
@@ -20,7 +20,7 @@ export default {
   },
   data() {
     return {
-      setMobileDialogData: {
+      loginDialog: {
         show: false,
         title: '快捷登陆'
       }
@@ -38,7 +38,7 @@ export default {
   },
   mounted() {
     if(typeof this.user.uuid==='undefined'){
-      this.setMobileDialogData.show=true
+      this.loginDialog.show=true
     }
   },
   methods: {
