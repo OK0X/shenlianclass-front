@@ -45,7 +45,7 @@ export default {
   methods: {
     showDraftAticle() {
       localforage.getItem("draftAticle").then(value => {
-        // console.log("草稿：" + value);
+        // //console.log("草稿：" + value);
         if (value !== null&&value!=='') {
           this.draftAticle= JSON.parse(value)
           this.$q
@@ -77,15 +77,15 @@ export default {
 
         if(this.content!==''||this.title!==''){
           localforage.setItem("draftAticle", JSON.stringify(this.draftAticle));
-          console.log("saved，"+new Date().toLocaleString());
+          //console.log("saved，"+new Date().toLocaleString());
         }
         
         
       }, 60 * 1000);
     },
     pushArticle() {
-      console.log(this.title);
-      console.log(this.content);
+      //console.log(this.title);
+      //console.log(this.content);
 
       var rdata = new FormData();
       rdata.append("title", this.title);
@@ -99,7 +99,7 @@ export default {
         })
         .then(response => {
           // _this.$q.loading.hide();
-          console.log(response);
+          //console.log(response);
           if (response.data.code === 0) {
             toast("发布成功");
             this.$router.replace({
@@ -118,7 +118,7 @@ export default {
     handleImageAdded: function(file, Editor, cursorLocation, resetUploader) {
       var formData = new FormData();
       formData.append("image", file);
-      // console.log(file)
+      // //console.log(file)
       // return
 
       this.$axios
@@ -136,7 +136,7 @@ export default {
           data: file
         })
         .then(response => {
-          // console.log(response);
+          // //console.log(response);
           if (response.status === 200) {
             let url = response.data.url;
             Editor.insertEmbed(cursorLocation, "image", url);

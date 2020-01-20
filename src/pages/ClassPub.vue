@@ -217,7 +217,7 @@ export default {
           }
         })
         .then(response => {
-          console.log(response);
+          //console.log(response);
           if (response.status === 200) {
             toast("上传成功");
             this.converimg = filename;
@@ -271,7 +271,7 @@ export default {
         this.chpters[index].statusText = "";
       }
       this.chpters[index].uploader = this.createUploader(index);
-      console.log(this.chpters[index].file);
+      //console.log(this.chpters[index].file);
       this.chpters[index].uploader.addFile(
         this.chpters[index].file,
         null,
@@ -577,7 +577,7 @@ export default {
             }
           })
           .then(response => {
-            // console.log(response);
+            // //console.log(response);
             if (response.status === 200 && response.data.code === 0) {
               this.$q
                 .dialog({
@@ -596,7 +596,7 @@ export default {
     handleImageAdded: function(file, Editor, cursorLocation, resetUploader) {
       var formData = new FormData();
       formData.append("image", file);
-      // //console.log(file)
+      //console.log(file)
       // return
 
       this.$axios
@@ -614,7 +614,7 @@ export default {
           data: file
         })
         .then(response => {
-          // //console.log(response);
+          //console.log(response);
           if (response.status === 200) {
             let url = response.data.url;
             Editor.insertEmbed(cursorLocation, "image", url);

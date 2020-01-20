@@ -46,7 +46,7 @@ export default {
     };
   },
   mounted() {
-    // console.log(this.$route.query);
+    // //console.log(this.$route.query);
     this.articleid = this.$route.query.id;
     this.getDetail(this.articleid);
   },
@@ -56,7 +56,7 @@ export default {
         .get(this.global.api.url + "article/detail?id=" + id)
         .then(response => {
           // _this.$q.loading.hide();
-          console.log(response);
+          //console.log(response);
           if (response.data.code === 0) {
             this.article = response.data.data.article;
             if (this.article.markdown) {

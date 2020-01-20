@@ -79,7 +79,7 @@ export default {
       }
     },
     role:function(){
-      console.log(1,this.user.role)
+      //console.log(1,this.user.role)
       if(typeof this.user.role === 'undefined'){
         return '( 注册/登陆 )'
       }

@@ -48,7 +48,7 @@ export default {
         isLive: false
       },
       function(player) {
-        console.log("The player is created");
+        //console.log("The player is created");
       }
     );
     this.getPlayAuth();
@@ -72,7 +72,7 @@ export default {
           }
         })
         .then(response => {
-          console.log(response);
+          //console.log(response);
           if (response.status === 200 && response.data.code === 0) {
             this.MtsHlsUriToken = response.data.data;
 
@@ -102,7 +102,7 @@ export default {
                 }
               },
               function(player) {
-                console.log("The player is created");
+                //console.log("The player is created");
               }
             );
           }
@@ -127,7 +127,7 @@ export default {
           }
         })
         .then(response => {
-          console.log(response);
+          //console.log(response);
           if (response.status === 200 && response.data.code === 0) {
             this.PlayAuth = response.data.data.PlayAuth;
             this.getPlayToken();

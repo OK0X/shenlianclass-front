@@ -80,7 +80,7 @@ export default {
     };
   },
   mounted() {
-    console.log(this.$route.query)
+    //console.log(this.$route.query)
     this.getVideos();
   },
   methods: {
@@ -110,7 +110,7 @@ export default {
           })
     },
     chapterPlay(item){
-      console.log(item)
+      //console.log(item)
       this.video.id=item.video_id
       this.video.show=true
     },
@@ -131,7 +131,7 @@ export default {
           }
         })
         .then(response => {
-          console.log(response);
+          //console.log(response);
           if (response.status === 200 && response.data.code === 0) {
             this.videos = response.data.data;
 

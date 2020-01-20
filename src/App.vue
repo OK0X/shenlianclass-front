@@ -46,7 +46,7 @@ export default {
           }
         })
         .then(response => {
-          console.log(response);
+          //console.log(response);
           if (response.status === 200 && response.data.code === 0) {
             
             this.user = response.data.data;
@@ -55,7 +55,7 @@ export default {
         })
         .catch(error => {
 
-          console.log(error);
+          //console.log(error);
         });
     }
   }

@@ -77,8 +77,8 @@ export default {
           }
         )
         .then(function(response) {
-          // //console.log('add');
-          // //console.log(response);
+          //console.log('add');
+          //console.log(response);
           _this.smsBtnCountdown();
         });
     },
@@ -108,7 +108,7 @@ export default {
           }
         )
         .then(function(response) {
-          // //console.log(response);
+          //console.log(response);
           if (response.data.msg === "ok") {
             _this.submitinfo2bmob();
           }
@@ -136,7 +136,7 @@ export default {
           }
         })
         .then((response)=> {
-          console.log(response);
+          //console.log(response);
           _this.$q.loading.hide();
           if (response.status === 200 && response.data.code === 0) {
 
@@ -153,7 +153,7 @@ export default {
             }
 
             this.user = data;
-            console.log(this.user);
+            //console.log(this.user);
 
             localforage.setItem("user",JSON.stringify(this.user))
             toast('登陆成功')
