@@ -6,14 +6,16 @@
         <span style="font-size:24px;color:#1f2328;">{{item.classname}}</span>
         <span>{{item.classsummary}}</span>
         <div class="price">
-          <span style="align-self: center;margin-left:10px;font-size:24px;color: orange;">￥ {{item.classprice}}元</span>
+          <span
+            style="align-self: center;margin-left:10px;font-size:24px;color: orange;"
+          >￥ {{item.classprice}}元</span>
           <div style="display:flex;align-self: center;margin-right:10px;">
             <img src="statics/share.png" style="width:20px;height:20px;" />
             <span style="margin-left:5px;">分享</span>
           </div>
         </div>
         <span style="margin-top:20px;">学习人数：{{item.studynum}}人</span>
-        <q-btn unelevated label="购买学习" class="study" @click="buyCourse"/>
+        <q-btn unelevated label="购买学习" class="study" @click="buyCourse" />
       </div>
     </div>
     <div class="detail">
@@ -45,7 +47,7 @@
               <div>{{item.summary}}</div>
               <div style="display:flex;margin-top: 10px;">
                 <img src="statics/play.png" style="width:40px;height:40px;" />
-                <q-btn unelevated label="学习该章节" class="study-chapter" @click="chapterPlay(item)"/>
+                <q-btn unelevated label="学习该章节" class="study-chapter" @click="chapterPlay(item)" />
                 <!-- <q-btn flat color="primary" label="学习该小节" style="align-self:center;"/> -->
               </div>
             </q-timeline-entry>
@@ -53,8 +55,9 @@
         </q-tab-panel>
       </q-tab-panels>
     </div>
-    <VideoDialog :video="video"/>
+    <VideoDialog :video="video" />
     <MyFooter />
+    <LoginDialog :dialogData="loginDialog" />
   </q-page>
 </template>
 
@@ -62,57 +65,108 @@
 /* eslint-disable */
 import MyFooter from "../components/MyFooter";
 import VideoDialog from "../components/VideoDialog";
-import { openURL } from 'quasar'
+import { openURL } from "quasar";
+import LoginDialog from "../components/LoginDialog";
 
 export default {
   components: {
     MyFooter,
-    VideoDialog
+    VideoDialog,
+    LoginDialog
   },
   data() {
     return {
-      tab:'detail',
+      tab: "detail",
       item: this.$route.query.arg,
       videos: [],
-      video:{
-        show:false
+      video: {
+        show: false
+      },
+      loginDialog: {
+        show: false,
+        title: "快捷登陆"
       }
     };
   },
+  computed: {
+    user: {
+      get() {
+        return this.$store.state.user.user;
+      },
+      set(val) {
+        this.$store.commit("user/updateUser", val);
+      }
+    }
+  },
   mounted() {
-    //console.log(this.$route.query)
-    this.getVideos();
+    if (typeof this.$route.query.out_trade_no !== "undefined") {
+
+      this.getCourseDetailByOutTradeNo(this.$route.query.out_trade_no)
+    } else {
+      this.getVideos();
+    }
   },
   methods: {
-    buyCourse(){
-      let params = {
-          subject_title: 'vue学习指南',
-          subject_id: this.item.uuid,
-          total_amount: this.item.classprice
-        };
-        let timestamp = new Date().getTime() + 1 * 60 * 1000;
-        this.$axios
-          .post(this.global.api.backurl + "alipay/tradepagepay", params, {
-            headers: {
-              "access-token": this.util.generateToken(
-                JSON.stringify(params),
-                timestamp
-              ),
-              timestamp2: timestamp
-            }
-          })
-          .then(response =>{
-             if (response.status === 200 && response.data.code === 0) {
+    getCourseDetailByOutTradeNo(out_trade_no){
 
-               openURL(response.data.data)
+      let timestamp = new Date().getTime() + 1000 * 60 * 1;
+      let params={
+        out_trade_no:out_trade_no
+      }
+      this.$axios
+        .get(this.global.api.backurl + "course/getCourseDetailByOutTradeNo", {
+          params: params,
+          headers: {
+            "access-token": this.util.generateToken(JSON.stringify(params), timestamp),
+            timestamp2: timestamp
+          }
+        })
+        .then(response => {
+          console.log(response);
+          if (response.status === 200 && response.data.code === 0) {
+            
+            this.item=response.data.data[0]
+          }
+        })
+        .catch(error => {
 
-             }
-          })
+          //console.log(error);
+        });
+
     },
-    chapterPlay(item){
+    buyCourse() {
+      if (typeof this.user.uuid === "undefined") {
+        toast(this.$t("login2buy"));
+        this.loginDialog.show = true;
+        return
+      }
+      let params = {
+        user_id: this.user.uuid,
+        subject_title: "vue学习指南",
+        subject_id: this.item.uuid,
+        total_amount: this.item.classprice
+      };
+      let timestamp = new Date().getTime() + 1 * 60 * 1000;
+      this.$axios
+        .post(this.global.api.backurl + "alipay/tradepagepay", params, {
+          headers: {
+            "access-token": this.util.generateToken(
+              JSON.stringify(params),
+              timestamp
+            ),
+            timestamp2: timestamp
+          }
+        })
+        .then(response => {
+          if (response.status === 200 && response.data.code === 0) {
+            openURL(response.data.data);
+          }
+        });
+    },
+    chapterPlay(item) {
       //console.log(item)
-      this.video.id=item.video_id
-      this.video.show=true
+      this.video.id = item.video_id;
+      this.video.show = true;
     },
     getVideos() {
       let timestamp = new Date().getTime() + 1000 * 60 * 1;
@@ -134,8 +188,6 @@ export default {
           //console.log(response);
           if (response.status === 200 && response.data.code === 0) {
             this.videos = response.data.data;
-
-            
           }
         });
     },
@@ -189,13 +241,13 @@ export default {
   width: 145px;
   height: 50px;
   font-size: 18px;
-  background-image: linear-gradient(to right, #ff7a00, #fe560a); 
+  background-image: linear-gradient(to right, #ff7a00, #fe560a);
   color: white;
 }
-.study-chapter{
-  align-self:center;
+.study-chapter {
+  align-self: center;
   margin-left: 10px;
-  background-image: linear-gradient(to right, #ff7a00, #fe560a); 
+  background-image: linear-gradient(to right, #ff7a00, #fe560a);
   color: white;
 }
 </style>

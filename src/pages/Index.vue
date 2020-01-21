@@ -2,7 +2,7 @@
   <q-page class="mypage">
     <div class="gallery">
       <q-carousel arrows animated v-model="slide" height="400px" :autoplay="5000" :infinite="true">
-        <q-carousel-slide name="first" img-src="statics/test-gallery1.png">
+        <q-carousel-slide name="first" img-src="statics/test-gallery1.jpg">
         </q-carousel-slide>
         <!-- <q-carousel-slide name="second" img-src="https://cdn.quasar.dev/img/parallax1.jpg">
           <div class="absolute-bottom custom-caption">
