@@ -1,7 +1,7 @@
 <template>
   <q-page class="mypage">
     <div class="buywatch">
-      <img :src="getImgUrl(item.converimg)" class="videoimg" />
+      <img :src="getImgUrl(item)" class="videoimg" />
       <div class="summary-tx">
         <span style="font-size:24px;color:#1f2328;">{{item.classname}}</span>
         <span>{{item.classsummary}}</span>
@@ -77,7 +77,7 @@ export default {
   data() {
     return {
       tab: "detail",
-      item: null,
+      item: {},
       videos: [],
       video: {
         show: false
@@ -86,7 +86,7 @@ export default {
         show: false,
         title: "快捷登陆"
       },
-      isPayed:false//是否已购买
+      isPayed: false //是否已购买
     };
   },
   computed: {
@@ -100,49 +100,62 @@ export default {
     }
   },
   mounted() {
+    // console.log(111,this.$route.query.out_trade_no)
     if (typeof this.$route.query.out_trade_no !== "undefined") {
       //支付完成跳转过来
-      this.queryPayResult(this.$route.query.out_trade_no)
+      this.queryPayResult(this.$route.query.out_trade_no);
     } else {
-      this.item=this.$route.query.arg
+
+      this.item = this.$route.query.arg;
       this.getVideos();
     }
   },
   methods: {
-    queryPayResult(out_trade_no){
-
+    queryPayResult(out_trade_no) {
       let timestamp = new Date().getTime() + 1000 * 60 * 1;
-      let params={
-        out_trade_no:out_trade_no
-      }
+      let params = {
+        out_trade_no: out_trade_no
+      };
       this.$axios
         .get(this.global.api.backurl + "alipay/getResult", {
           params: params,
           headers: {
-            "access-token": this.util.generateToken(JSON.stringify(params), timestamp),
+            "access-token": this.util.generateToken(
+              JSON.stringify(params),
+              timestamp
+            ),
             timestamp2: timestamp
           }
         })
         .then(response => {
           console.log(response);
           if (response.status === 200 && response.data.code === 0) {
-            
-            this.item=response.data.data.course
-            this.videos=response.data.data.videos
-            this.isPayed=true
+            this.item = response.data.data.course;
+            this.videos = response.data.data.videos;
+            this.isPayed = true;
           }
         })
         .catch(error => {
-
           //console.log(error);
         });
-
     },
     buyCourse() {
+
+      // this.$q.dialog({
+      //         message:'请在打开页面完成支付',
+      //         // title:'温馨提示',
+      //         ok:'已完成支付',
+      //         cancel:'支付遇到问题',
+      //         persistent:true
+      //       }).onOk(()=>{
+
+      //       }).onCancel(()=>{
+              
+      //       })
       if (typeof this.user.uuid === "undefined") {
         toast(this.$t("login2buy"));
         this.loginDialog.show = true;
-        return
+        return;
       }
       let params = {
         user_id: this.user.uuid,
@@ -163,6 +176,7 @@ export default {
         })
         .then(response => {
           if (response.status === 200 && response.data.code === 0) {
+            
             openURL(response.data.data);
           }
         });
@@ -195,8 +209,11 @@ export default {
           }
         });
     },
-    getImgUrl(filename) {
-      return this.util.makeImgUrl(this, filename);
+    getImgUrl(item) {
+      if (typeof item.converimg === 'undefined') {
+        return "statics/test-conver.jpg";
+      }
+      return this.util.makeImgUrl(this, item.converimg);
     }
   }
 };

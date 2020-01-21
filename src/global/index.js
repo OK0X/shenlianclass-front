@@ -1,6 +1,6 @@
 
 /* eslint-disable */
-const debug = false
+const debug = true
 const api = {
   backurl: debug?'http://localhost/api/v1/':'https://api.shenlianclass.com/api/v1/',
   aliyunosshost:'https://shenlianclass.oss-cn-shanghai.aliyuncs.com',
