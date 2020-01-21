@@ -77,7 +77,7 @@ export default {
   data() {
     return {
       tab: "detail",
-      item: this.$route.query.arg,
+      item: null,
       videos: [],
       video: {
         show: false
@@ -85,7 +85,8 @@ export default {
       loginDialog: {
         show: false,
         title: "快捷登陆"
-      }
+      },
+      isPayed:false//是否已购买
     };
   },
   computed: {
@@ -100,21 +101,22 @@ export default {
   },
   mounted() {
     if (typeof this.$route.query.out_trade_no !== "undefined") {
-
-      this.getCourseDetailByOutTradeNo(this.$route.query.out_trade_no)
+      //支付完成跳转过来
+      this.queryPayResult(this.$route.query.out_trade_no)
     } else {
+      this.item=this.$route.query.arg
       this.getVideos();
     }
   },
   methods: {
-    getCourseDetailByOutTradeNo(out_trade_no){
+    queryPayResult(out_trade_no){
 
       let timestamp = new Date().getTime() + 1000 * 60 * 1;
       let params={
         out_trade_no:out_trade_no
       }
       this.$axios
-        .get(this.global.api.backurl + "course/getCourseDetailByOutTradeNo", {
+        .get(this.global.api.backurl + "alipay/getResult", {
           params: params,
           headers: {
             "access-token": this.util.generateToken(JSON.stringify(params), timestamp),
@@ -125,7 +127,9 @@ export default {
           console.log(response);
           if (response.status === 200 && response.data.code === 0) {
             
-            this.item=response.data.data[0]
+            this.item=response.data.data.course
+            this.videos=response.data.data.videos
+            this.isPayed=true
           }
         })
         .catch(error => {
