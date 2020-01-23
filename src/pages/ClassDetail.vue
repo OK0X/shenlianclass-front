@@ -86,7 +86,9 @@ export default {
         show: false,
         title: "快捷登陆"
       },
-      isPayed: false //是否已购买
+      isPayed: false, //是否已购买
+      out_trade_no: "",
+      payurl: ""
     };
   },
   computed: {
@@ -105,7 +107,6 @@ export default {
       //支付完成跳转过来
       this.queryPayResult(this.$route.query.out_trade_no);
     } else {
-
       this.item = this.$route.query.arg;
       this.getVideos();
     }
@@ -141,22 +142,39 @@ export default {
     },
     buyCourse() {
 
-      // this.$q.dialog({
-      //         message:'请在打开页面完成支付',
-      //         // title:'温馨提示',
-      //         ok:'已完成支付',
-      //         cancel:'支付遇到问题',
-      //         persistent:true
-      //       }).onOk(()=>{
-
-      //       }).onCancel(()=>{
-              
-      //       })
       if (typeof this.user.uuid === "undefined") {
+        this.out_trade_no = "";
+        this.payurl = "";
         toast(this.$t("login2buy"));
         this.loginDialog.show = true;
         return;
       }
+      
+      this.$q
+        .dialog({
+          message: "请在打开页面完成支付",
+          // title:'温馨提示',
+          ok: "已完成支付",
+          cancel: "支付遇到问题",
+          persistent: true
+        })
+        .onOk(() => {
+
+          this.queryPayResult(this.out_trade_no)
+
+        })
+        .onCancel(() => {
+
+          //
+        });
+
+      
+
+      if (this.out_trade_no !== "" && this.payurl !== "") {
+        openURL(this.payurl);
+        return;
+      }
+
       let params = {
         user_id: this.user.uuid,
         subject_title: "分布式应用部署",
@@ -176,8 +194,11 @@ export default {
         })
         .then(response => {
           if (response.status === 200 && response.data.code === 0) {
-            console.log(response.data.data)
-            openURL(response.data.data);
+            console.log(response.data.data);
+            const result = response.data.data;
+            this.out_trade_no = result.out_trade_no;
+            this.payurl = result.payurl;
+            openURL(result.payurl);
           }
         });
     },
@@ -210,7 +231,7 @@ export default {
         });
     },
     getImgUrl(item) {
-      if (typeof item.converimg === 'undefined') {
+      if (typeof item.converimg === "undefined") {
         return "statics/test-conver.jpg";
       }
       return this.util.makeImgUrl(this, item.converimg);
