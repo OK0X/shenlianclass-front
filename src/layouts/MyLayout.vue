@@ -25,6 +25,9 @@
               <q-item clickable v-close-popup v-show="user.role>=2" @click="course2Check">
                 <q-item-section>课程审核</q-item-section>
               </q-item>
+              <q-item clickable v-close-popup v-show="user.role>=3" @click="backendConfig">
+                <q-item-section>系统配置</q-item-section>
+              </q-item>
               <q-separator v-show="typeof user.role !== 'undefined'"/>
               <q-item clickable v-close-popup @click="logout" v-show="typeof user.role !== 'undefined'">
                 <q-item-section>安全退出</q-item-section>
@@ -90,6 +93,8 @@ export default {
           return "(讲师)";
         case 2:
           return "(管理员)";
+          case 3:
+          return "(超级管理员)";
         default:
           
           break;
@@ -116,6 +121,9 @@ export default {
     },
     course2Check() {
       this.$router.push('/CourseCheck');
+    },
+    backendConfig(){
+      this.$router.push('/BackendConfig');
     }
   }
 };

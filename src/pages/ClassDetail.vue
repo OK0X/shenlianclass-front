@@ -159,7 +159,7 @@ export default {
       }
       let params = {
         user_id: this.user.uuid,
-        subject_title: "vue学习指南",
+        subject_title: "分布式应用部署",
         subject_id: this.item.uuid,
         total_amount: this.item.classprice
       };
@@ -176,7 +176,7 @@ export default {
         })
         .then(response => {
           if (response.status === 200 && response.data.code === 0) {
-            
+            console.log(response.data.data)
             openURL(response.data.data);
           }
         });

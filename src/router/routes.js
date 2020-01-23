@@ -55,6 +55,10 @@ const routes = [
       {
         path: '/ClassDetailCheck',
         component: () => import('pages/ClassDetailCheck.vue')
+      },
+      {
+        path: '/BackendConfig',
+        component: () => import('pages/BackendConfig.vue')
       }
     ]
   }
