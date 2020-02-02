@@ -9,15 +9,15 @@
     <div class="white-block" style="margin-bottom:30px;">
       <span>更改配置</span>
       <q-separator />
-      <q-input v-model="apilimitT" :dense="true" style="width:300px;" placeholder="apilimitT" />
-      <q-input v-model="apiLimitNum" :dense="true" style="width:300px;" placeholder="apiLimitNum" />
+      <q-input v-model="apilimitT" :dense="true" style="width:300px;" placeholder="apilimitT(分钟)" />
+      <q-input v-model="apiLimitNum" :dense="true" style="width:300px;" placeholder="apiLimitNum(次)" />
       <q-input
         v-model="alipayExpire"
         :dense="true"
         style="width:300px;"
-        placeholder="alipayExpire"
+        placeholder="alipayExpire(秒)"
       />
-      <q-input v-model="defaultEx" :dense="true" style="width:300px;" placeholder="defaultEx" />
+      <q-input v-model="defaultEx" :dense="true" style="width:300px;" placeholder="defaultEx(秒)" />
       <q-btn label="提交" color="primary" flat class="q-ml-sm" @click="submit" />
       <q-btn label="清空缓存" color="primary" flat class="q-ml-sm" @click="clearAll" />
     </div>

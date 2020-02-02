@@ -170,7 +170,7 @@ export default {
           }
         })
         .then(response => {
-          //console.log(response);
+          // console.log(222,response);
           if (response.status === 200 && response.data.code === 0) {
             if (
               response.data.data.TranscodeTask.TaskStatus === "CompleteAllSucc"
@@ -198,7 +198,7 @@ export default {
         .then(response => {
           //console.log(response);
           if (response.status === 200 && response.data.code === 0) {
-            toast("提交转码成功");
+            toast("提交转码成功,10分钟后可查看转码结果");
           }
         });
     },
@@ -234,7 +234,7 @@ export default {
           }
         })
         .then(response => {
-          //console.log(response);
+          // console.log(111,response);
           if (response.status === 200 && response.data.code === 0) {
             this.videos = response.data.data;
 

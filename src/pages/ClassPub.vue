@@ -594,32 +594,52 @@ export default {
       }
     },
     handleImageAdded: function(file, Editor, cursorLocation, resetUploader) {
-      var formData = new FormData();
-      formData.append("image", file);
-      //console.log(file)
-      // return
+
+      var expireTime = new Date();
+      expireTime.setSeconds(expireTime.getSeconds() + 600);
+
+      var policyText = {
+        expiration: expireTime.toISOString(), //设置该Policy的失效时间，超过这个失效时间之后，就没有办法通过这个policy上传文件了
+        conditions: [
+          ["content-length-range", 0, 1048576000] // 设置上传文件的大小限制
+        ]
+      };
+
+      var policyBase64 = Base64.encode(JSON.stringify(policyText));
+      var encrypted = CryptoJS.HmacSHA1(
+        policyBase64,
+        this.global.api.aliyunossaccesskey
+      );
+      var signature = CryptoJS.enc.Base64.stringify(encrypted);
+
+      let filename = new Date().getTime() + ".jpg";
+      let formData = new FormData();
+      formData.append("key", filename);
+      formData.append("policy", policyBase64);
+      formData.append("OSSAccessKeyId", this.global.api.aliyunossaccessid);
+      formData.append("success_action_status", "200");
+      formData.append("signature", signature);
+      formData.append("file", file, filename);
 
       this.$axios
-        .request({
-          url:
-            "https://api2.bmob.cn/2/files/" +
-            // this.global.wallet.ethAddress +
-            "test.jpg",
-          method: "post",
+        .post(this.global.api.aliyunosshostpubread, formData, {
           headers: {
-            "X-Bmob-Application-Id": "ac7f17d258941e666eb88514048c351a",
-            "X-Bmob-REST-API-Key": "f31e47e1bcf4d276e1bc19226abee442",
-            "Content-Type": "image/jpeg"
-          },
-          data: file
+            "Content-Type":
+              "application/x-www-form-urlencoded;boundary=----WebKitFormBoundarytkUbKWcxgeMi1fIr"
+          }
         })
         .then(response => {
           //console.log(response);
+
           if (response.status === 200) {
-            let url = response.data.url;
-            Editor.insertEmbed(cursorLocation, "image", url);
+            Editor.insertEmbed(
+              cursorLocation,
+              "image",
+              this.global.api.aliyunosshostpubread + "/" + filename
+            );
             resetUploader();
           }
+          // this.$q.loading.hide();
         })
         .catch(error => {
           console.error(error);
