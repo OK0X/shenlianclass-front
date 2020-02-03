@@ -20,6 +20,7 @@
 <script>
 /* eslint-disable */
 import localforage from "localforage";
+import { bus } from "../bus.js";
 export default {
   props: ["dialogData"],
   data() {
@@ -110,7 +111,7 @@ export default {
         .then(function(response) {
           //console.log(response);
           if (response.data.msg === "ok") {
-            _this.submitinfo2bmob();
+            _this.login();
           }
         })
         .catch(error => {
@@ -119,7 +120,7 @@ export default {
           _this.$q.loading.hide();
         });
     },
-    submitinfo2bmob() {
+    login() {
       var _this = this;
       let params = {
         mobile: this.mobile + ""
@@ -157,6 +158,7 @@ export default {
 
             localforage.setItem("user",JSON.stringify(this.user))
             toast('登陆成功')
+            bus.$emit('loginok')
             this.dialogData.show = false;
 
           }

@@ -2,8 +2,7 @@
   <q-page class="mypage">
     <div class="gallery">
       <q-carousel arrows animated v-model="slide" height="400px" :autoplay="5000" :infinite="true">
-        <q-carousel-slide name="first" img-src="statics/test-gallery1.jpg">
-        </q-carousel-slide>
+        <q-carousel-slide name="first" img-src="statics/test-gallery1.jpg"></q-carousel-slide>
         <!-- <q-carousel-slide name="second" img-src="https://cdn.quasar.dev/img/parallax1.jpg">
           <div class="absolute-bottom custom-caption">
             <div class="text-h2">Second stop</div>
@@ -15,25 +14,32 @@
             <div class="text-h2">Third stop</div>
             <div class="text-subtitle1">Famous Bridge</div>
           </div>
-        </q-carousel-slide> -->
+        </q-carousel-slide>-->
       </q-carousel>
     </div>
     <div class="class-list">
       <span style="color:#1f2328;font-size:24px;margin-top:60px;">精品课程</span>
       <q-separator />
       <div class="card-list">
-        <div class="class-card" @click="toDetail(item)" v-for="(item,index) in courses" :key="index" >
+        <div
+          class="class-card"
+          @click="toDetail(item)"
+          v-for="(item,index) in courses"
+          :key="index"
+        >
           <img :src="getImgUrl(item.converimg)" class="card-img" />
-          <span class="card-title">{{item.classname}}</span>
-          <div class="more-text">
-            <span>
-              学习人数：
-              <span style="color: orange;">{{item.studynum}}</span>
-            </span>
-            <span>
-              价格：
-              <span style="color: orange;">￥：{{item.classprice}}</span>
-            </span>
+          <div class="card-info">
+            <span class="card-title">{{item.classname}}</span>
+            <div class="more-text">
+              <span>
+                学习人数：
+                <span style="color: orange;">{{item.studynum}}</span>
+              </span>
+              <span>
+                价格：
+                <span style="color: orange;">￥：{{item.classprice}}</span>
+              </span>
+            </div>
           </div>
         </div>
       </div>
@@ -56,21 +62,21 @@ export default {
     };
   },
   mounted() {
-    this.getCourses()
+    this.getCourses();
   },
   methods: {
     getImgUrl(filename) {
       return this.util.makeImgUrl(this, filename);
     },
-    getCourses(){
+    getCourses() {
       let timestamp = new Date().getTime() + 1000 * 60 * 1;
 
       let params = {
-        status: 1+''//正式发布改成审核通过的课程
+        status: 1 + "" //正式发布改成审核通过的课程
       };
 
       this.$axios
-        .get(this.global.api.backurl + "course/getMyCourses", {
+        .get(this.global.api.backurl + "course/getCourses", {
           params: params,
           headers: {
             "access-token": this.util.generateToken(
@@ -87,14 +93,13 @@ export default {
           }
         });
     },
-    toDetail(item){
-
+    toDetail(item) {
       this.$router.push({
-        path:'/ClassDetail',
-        query:{
-          arg:item
+        path: "/ClassDetail",
+        query: {
+          arg: item
         }
-      })
+      });
     }
   }
 };
@@ -139,6 +144,12 @@ export default {
   width: 100%;
   height: 130px;
 }
+.card-info{
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  flex: 1
+}
 .card-title {
   color: #333333;
   margin: 10px;
@@ -147,7 +158,7 @@ export default {
   color: #333333;
   display: flex;
   justify-content: space-between;
-  margin: 10px;
+  margin: 0 10px 10px 10px;
 }
 .relate-link {
   width: 100%;

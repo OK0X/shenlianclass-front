@@ -1,7 +1,6 @@
 <template>
   <q-page class="mypage">
-    <div class="white-block">
-    </div>
+    <div class="white-block"></div>
     <MyFooter />
     <LoginDialog :dialogData="loginDialog" />
   </q-page>
@@ -12,7 +11,6 @@
 import MyFooter from "../components/MyFooter";
 import LoginDialog from "../components/LoginDialog";
 
-
 export default {
   components: {
     MyFooter,
@@ -22,8 +20,9 @@ export default {
     return {
       loginDialog: {
         show: false,
-        title: '快捷登陆'
-      }
+        title: "快捷登陆"
+      },
+      payedCourses:[]
     };
   },
   computed: {
@@ -37,12 +36,38 @@ export default {
     }
   },
   mounted() {
-    if(typeof this.user.uuid==='undefined'){
-      this.loginDialog.show=true
+    if (typeof this.user.uuid === "undefined") {
+      this.loginDialog.show = true;
     }
+
+    this.getPayedCourse();
   },
   methods: {
-    
+    getPayedCourse() {
+      let timestamp = new Date().getTime() + 1000 * 60 * 1;
+
+      let params = {
+        user_id: this.user.uuid
+      };
+
+      this.$axios
+        .get(this.global.api.backurl + "course/getPayedCourse", {
+          params: params,
+          headers: {
+            "access-token": this.util.generateToken(
+              JSON.stringify(params),
+              timestamp
+            ),
+            timestamp2: timestamp
+          }
+        })
+        .then(response => {
+          console.log(999,response);
+          if (response.status === 200 && response.data.code === 0) {
+            this.payedCourses = response.data.data;
+          }
+        });
+    }
   }
 };
 </script>
@@ -57,5 +82,4 @@ export default {
   justify-content: flex-start;
   padding: 20px;
 }
-
 </style>

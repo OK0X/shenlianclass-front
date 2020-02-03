@@ -277,11 +277,6 @@ export default {
   margin: 0px 20px;
   flex-shrink: 0;
 }
-.summary-tx {
-  margin: 20px 20px 20px 0;
-  display: flex;
-  flex-direction: column;
-}
 .price {
   width: 100%;
   height: 55px;

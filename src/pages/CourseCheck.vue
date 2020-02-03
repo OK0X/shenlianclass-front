@@ -69,7 +69,7 @@ export default {
       };
 
       this.$axios
-        .get(this.global.api.backurl + "course/getMyCourses", {
+        .get(this.global.api.backurl + "course/getCourses", {
           params: params,
           headers: {
             "access-token": this.util.generateToken(
@@ -105,11 +105,6 @@ export default {
   align-self: center;
   margin: 0px 20px;
   flex-shrink: 0;
-}
-.summary-tx {
-  margin: 20px 20px 20px 0;
-  display: flex;
-  flex-direction: column;
 }
 .price {
   width: 100%;

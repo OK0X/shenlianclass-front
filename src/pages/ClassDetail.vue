@@ -15,7 +15,7 @@
           </div>
         </div>
         <span style="margin-top:20px;">学习人数：{{item.studynum}}人</span>
-        <q-btn unelevated label="购买学习" class="study" @click="buyCourse" />
+        <q-btn unelevated label="立即购买" class="study" @click="buyCourse" v-show="!isPayed" />
       </div>
     </div>
     <div class="detail">
@@ -43,11 +43,15 @@
               subtitle
               v-for="(item,index) in videos"
               :key="index"
+              @click="chapterPlay(item)"
+              class="chapter-info"
             >
               <div>{{item.summary}}</div>
+              <span style="color:#027be3" v-if="item.freesee">试看</span>
               <div style="display:flex;margin-top: 10px;">
-                <img src="statics/play.png" style="width:40px;height:40px;" />
-                <q-btn unelevated label="学习该章节" class="study-chapter" @click="chapterPlay(item)" />
+                <!-- <img src="statics/play.png" style="width:40px;height:40px;" /> -->
+                <!-- <q-btn flat color="primary" label="试看" @click="chapterPlay(item)" v-if="item.freesee"/> -->
+                <!-- <q-btn unelevated label="试看" class="study-chapter"  /> -->
                 <!-- <q-btn flat color="primary" label="学习该小节" style="align-self:center;"/> -->
               </div>
             </q-timeline-entry>
@@ -57,7 +61,7 @@
     </div>
     <VideoDialog :video="video" />
     <MyFooter />
-    <LoginDialog :dialogData="loginDialog" />
+    <LoginDialog :dialogData="loginDialog"/>
   </q-page>
 </template>
 
@@ -67,6 +71,7 @@ import MyFooter from "../components/MyFooter";
 import VideoDialog from "../components/VideoDialog";
 import { openURL } from "quasar";
 import LoginDialog from "../components/LoginDialog";
+import { bus } from "../bus.js";
 
 export default {
   components: {
@@ -108,10 +113,55 @@ export default {
       this.queryPayResult(this.$route.query.out_trade_no);
     } else {
       this.item = this.$route.query.arg;
+      this.checkisPayed();
       this.getVideos();
     }
+
+    bus.$on('loginok',()=>{
+
+      this.checkisPayed();
+    })
   },
   methods: {
+    loginok2(){
+      debugger
+      console.log('22222222-')
+    },
+    checkisPayed() {
+      console.log(this.item);
+      if (typeof this.user.uuid === "undefined") {
+        //未登陆
+        return;
+      }
+      let timestamp = new Date().getTime() + 1000 * 60 * 1;
+      let params = {
+        user_id: this.user.uuid,
+        subject_id:this.item.uuid
+      };
+      this.$axios
+        .get(this.global.api.backurl + "course/isPayed", {
+          params: params,
+          headers: {
+            "access-token": this.util.generateToken(
+              JSON.stringify(params),
+              timestamp
+            ),
+            timestamp2: timestamp
+          }
+        })
+        .then(response => {
+          // console.log(888,response);
+          if (response.status === 200 && response.data.code === 0) {
+            if(response.data.data.length>=1){
+              this.isPayed = true;
+            }
+
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
     queryPayResult(out_trade_no) {
       let timestamp = new Date().getTime() + 1000 * 60 * 1;
       let params = {
@@ -134,6 +184,7 @@ export default {
             this.item = response.data.data.course;
             this.videos = response.data.data.videos;
             this.isPayed = true;
+            toast("购买成功!");
           }
         })
         .catch(error => {
@@ -141,7 +192,6 @@ export default {
         });
     },
     buyCourse() {
-
       if (typeof this.user.uuid === "undefined") {
         this.out_trade_no = "";
         this.payurl = "";
@@ -149,7 +199,7 @@ export default {
         this.loginDialog.show = true;
         return;
       }
-      
+
       this.$q
         .dialog({
           message: "请在打开页面完成支付",
@@ -159,16 +209,11 @@ export default {
           persistent: true
         })
         .onOk(() => {
-
-          this.queryPayResult(this.out_trade_no)
-
+          this.queryPayResult(this.out_trade_no);
         })
         .onCancel(() => {
-
           //
         });
-
-      
 
       if (this.out_trade_no !== "" && this.payurl !== "") {
         openURL(this.payurl);
@@ -177,7 +222,7 @@ export default {
 
       let params = {
         user_id: this.user.uuid,
-        subject_title: "分布式应用部署",
+        subject_title: this.item.classname,
         subject_id: this.item.uuid,
         total_amount: this.item.classprice
       };
@@ -203,9 +248,12 @@ export default {
         });
     },
     chapterPlay(item) {
-      //console.log(item)
-      this.video.id = item.video_id;
-      this.video.show = true;
+      if (this.isPayed || item.freesee) {
+        this.video.id = item.video_id;
+        this.video.show = true;
+      } else {
+        this.buyCourse();
+      }
     },
     getVideos() {
       let timestamp = new Date().getTime() + 1000 * 60 * 1;
@@ -264,11 +312,6 @@ export default {
   margin: 0px 20px;
   flex-shrink: 0;
 }
-.summary-tx {
-  margin: 20px 20px 20px 0;
-  display: flex;
-  flex-direction: column;
-}
 .price {
   width: 100%;
   height: 55px;
@@ -291,5 +334,9 @@ export default {
   margin-left: 10px;
   background-image: linear-gradient(to right, #ff7a00, #fe560a);
   color: white;
+}
+.chapter-info:hover {
+  /* background-color:#f3f3f3; */
+  cursor: pointer;
 }
 </style>

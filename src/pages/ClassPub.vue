@@ -65,6 +65,7 @@
             </span>
           </div>
         </div>
+        <q-checkbox v-model="item.freesee" label="将该节设置为试看"/>
         <q-btn
           unelevated
           color="red"
@@ -126,6 +127,7 @@ export default {
           title: "",
           summary: "",
           video: null,
+          freesee:false,
           file: null,
           authProgress: 0,
           uploadDisabled: true,
@@ -246,6 +248,7 @@ export default {
         title: "",
         summary: "",
         video: null,
+        freesee:false,
         file: null,
         authProgress: 0,
         uploadDisabled: true,
