@@ -1,6 +1,32 @@
 <template>
   <q-page class="mypage">
-    <div class="white-block"></div>
+    <div class="page-content">
+      <div
+        style=" height: 355px;display: flex;flex-direction: column;"
+        v-for="(item,index) in payedCourses"
+        :key="index"
+        @click="toCourseDetail(item)"
+      >
+        <div style="display: flex;flex:1;">
+          <img :src="getImgUrl(item.converimg)" class="course-cover" />
+          <div class="course-summary">
+            <span style="font-size:24px;color:#1f2328;">{{item.classname}}</span>
+            <span>{{item.classsummary}}</span>
+            <div class="price-share">
+              <span
+                style="align-self: center;margin-left:10px;font-size:24px;color: orange;"
+              >￥ {{item.classprice}}元</span>
+              <div style="display:flex;align-self: center;margin-right:10px;">
+                <img src="statics/share.png" style="width:20px;height:20px;" />
+                <span style="margin-left:5px;">分享</span>
+              </div>
+            </div>
+            <span style="margin-top:20px;">学习人数：{{item.studynum}}人</span>
+          </div>
+        </div>
+        <q-separator style="flex:0;" v-if="index!==payedCourses.length-1"/>
+      </div>
+    </div>
     <MyFooter />
     <LoginDialog :dialogData="loginDialog" />
   </q-page>
@@ -22,7 +48,7 @@ export default {
         show: false,
         title: "快捷登陆"
       },
-      payedCourses:[]
+      payedCourses: []
     };
   },
   computed: {
@@ -43,6 +69,18 @@ export default {
     this.getPayedCourse();
   },
   methods: {
+    toCourseDetail(item){
+      this.$router.push({
+        path:'/ClassDetail',
+        query:{
+          arg:item,
+          from:'myclass'
+        }
+      })
+    },
+    getImgUrl(filename) {
+      return this.util.makeImgUrl(this, filename);
+    },
     getPayedCourse() {
       let timestamp = new Date().getTime() + 1000 * 60 * 1;
 
@@ -62,7 +100,7 @@ export default {
           }
         })
         .then(response => {
-          console.log(999,response);
+          console.log(999, response);
           if (response.status === 200 && response.data.code === 0) {
             this.payedCourses = response.data.data;
           }
@@ -72,14 +110,4 @@ export default {
 };
 </script>
 <style scoped>
-.white-block {
-  width: 100%;
-  max-width: 1200px;
-  display: flex;
-  flex-direction: column;
-  background-color: white;
-  margin: 50px 0 50px 0;
-  justify-content: flex-start;
-  padding: 20px;
-}
 </style>

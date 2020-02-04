@@ -1,11 +1,11 @@
 <template>
   <q-page class="mypage">
     <div class="buywatch">
-      <img :src="getImgUrl(item)" class="videoimg" />
-      <div class="summary-tx">
+      <img :src="getImgUrl(item)" class="course-cover" />
+      <div class="course-summary">
         <span style="font-size:24px;color:#1f2328;">{{item.classname}}</span>
         <span>{{item.classsummary}}</span>
-        <div class="price">
+        <div class="price-share">
           <span
             style="align-self: center;margin-left:10px;font-size:24px;color: orange;"
           >￥ {{item.classprice}}元</span>
@@ -61,7 +61,7 @@
     </div>
     <VideoDialog :video="video" />
     <MyFooter />
-    <LoginDialog :dialogData="loginDialog"/>
+    <LoginDialog :dialogData="loginDialog" />
   </q-page>
 </template>
 
@@ -107,25 +107,30 @@ export default {
     }
   },
   mounted() {
-    // console.log(111,this.$route.query.out_trade_no)
+
     if (typeof this.$route.query.out_trade_no !== "undefined") {
       //支付完成跳转过来
       this.queryPayResult(this.$route.query.out_trade_no);
     } else {
       this.item = this.$route.query.arg;
-      this.checkisPayed();
+
+      if (this.$route.query.from === "myclass") {
+        this.isPayed = true;
+      } else {
+        this.checkisPayed();
+      }
+
       this.getVideos();
     }
 
-    bus.$on('loginok',()=>{
-
+    bus.$on("loginok", () => {
       this.checkisPayed();
-    })
+    });
   },
   methods: {
-    loginok2(){
-      debugger
-      console.log('22222222-')
+    loginok2() {
+      debugger;
+      console.log("22222222-");
     },
     checkisPayed() {
       console.log(this.item);
@@ -136,7 +141,7 @@ export default {
       let timestamp = new Date().getTime() + 1000 * 60 * 1;
       let params = {
         user_id: this.user.uuid,
-        subject_id:this.item.uuid
+        subject_id: this.item.uuid
       };
       this.$axios
         .get(this.global.api.backurl + "course/isPayed", {
@@ -152,10 +157,9 @@ export default {
         .then(response => {
           // console.log(888,response);
           if (response.status === 200 && response.data.code === 0) {
-            if(response.data.data.length>=1){
+            if (response.data.data.length >= 1) {
               this.isPayed = true;
             }
-
           }
         })
         .catch(error => {
@@ -305,21 +309,7 @@ export default {
   background-color: white;
   margin: 50px 0 30px 0;
 }
-.videoimg {
-  width: 530px;
-  height: 320px;
-  align-self: center;
-  margin: 0px 20px;
-  flex-shrink: 0;
-}
-.price {
-  width: 100%;
-  height: 55px;
-  display: flex;
-  background-color: #f3f3f3;
-  margin-top: 10px;
-  justify-content: space-between;
-}
+
 .study {
   align-self: flex-start;
   margin-top: 20px;

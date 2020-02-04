@@ -1,11 +1,11 @@
 <template>
   <q-page class="mypage">
     <div class="buywatch">
-      <img :src="getImgUrl(item.converimg)" class="videoimg" />
-      <div class="summary-tx">
+      <img :src="getImgUrl(item.converimg)" class="course-cover" />
+      <div class="course-summary">
         <span style="font-size:24px;color:#1f2328;">{{item.classname}}</span>
         <span>{{item.classsummary}}</span>
-        <div class="price">
+        <div class="price-share">
           <span
             style="align-self: center;margin-left:10px;font-size:24px;color: orange;"
           >￥ {{item.classprice}}元</span>
@@ -270,21 +270,8 @@ export default {
   background-color: white;
   margin: 50px 0 30px 0;
 }
-.videoimg {
-  width: 530px;
-  height: 320px;
-  align-self: center;
-  margin: 0px 20px;
-  flex-shrink: 0;
-}
-.price {
-  width: 100%;
-  height: 55px;
-  display: flex;
-  background-color: #f3f3f3;
-  margin-top: 10px;
-  justify-content: space-between;
-}
+
+
 .study {
   align-self: flex-start;
   margin-top: 20px;

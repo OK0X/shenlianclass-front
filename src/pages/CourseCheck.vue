@@ -4,11 +4,11 @@
       <!-- <span style="color:#1f2328;font-size:24px;">我发布的课程</span> -->
       <!-- <q-separator /> -->
       <div style=" height: 355px;display: flex;" v-for="(item,index) in myCourses" :key="index" @click="toCheckDetail(item)">
-        <img :src="getImgUrl(item.converimg)" class="videoimg" />
-        <div class="summary-tx">
+        <img :src="getImgUrl(item.converimg)" class="course-cover" />
+        <div class="course-summary">
           <span style="font-size:24px;color:#1f2328;">{{item.classname}}</span>
           <span>{{item.classsummary}}</span>
-          <div class="price">
+          <div class="price-share">
             <span style="align-self: center;margin-left:10px;font-size:24px;color: orange;">￥ {{item.classprice}}元</span>
             <div style="display:flex;align-self: center;margin-right:10px;">
               <img src="statics/share.png" style="width:20px;height:20px;" />
@@ -90,30 +90,7 @@ export default {
 };
 </script>
 <style scoped>
-.page-content {
-  width: 100%;
-  max-width: 1200px;
-  display: flex;
-  flex-direction: column;
-  background-color: white;
-  margin: 50px 0 50px 0;
-  padding: 16px;
-}
-.videoimg {
-  width: 530px;
-  height: 320px;
-  align-self: center;
-  margin: 0px 20px;
-  flex-shrink: 0;
-}
-.price {
-  width: 100%;
-  height: 55px;
-  display: flex;
-  background-color: #f3f3f3;
-  margin-top: 10px;
-  justify-content: space-between;
-}
+
 .study {
   align-self: flex-start;
   margin-top: 20px;
