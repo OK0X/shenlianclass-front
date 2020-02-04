@@ -93,7 +93,8 @@ export default {
       },
       isPayed: false, //是否已购买
       out_trade_no: "",
-      payurl: ""
+      payurl: "",
+      studyProgress:{}
     };
   },
   computed: {
@@ -155,7 +156,17 @@ export default {
         .then(response => {
           console.log(888,response);
           if (response.status === 200 && response.data.code === 0) {
-            
+            if(response.data.data.length===0)
+            return
+            for(let i=0;i<response.data.data.length;i++){
+
+              this.studyProgress[response.data.data[i].video_id]={
+                progress:response.data.data[i].progress,
+                total:response.data.data[i].total
+              }
+            }
+
+            console.log(555,this.studyProgress)
           }
         })
         .catch(error => {
@@ -286,6 +297,11 @@ export default {
     chapterPlay(item) {
       if (this.isPayed || item.freesee) {
         this.video.id = item.video_id;
+        if(typeof this.studyProgress[item.video_id] !=='undefined'){
+          this.video.progress=this.studyProgress[item.video_id].progress
+        }
+        
+        console.log(666,this.video.progress)
         this.video.course_id=this.item.uuid
         this.video.show = true;
       } else {

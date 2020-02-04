@@ -23,7 +23,7 @@
 
 <script>
 /* eslint-disable */
-// import localforage from "localforage";
+import localforage from "localforage";
 export default {
   props: ["video"],
   data() {
@@ -50,7 +50,6 @@ export default {
   },
   methods: {
     onShow() {
-
       this.player = new Aliplayer(
         {
           id: "ali-h5-player",
@@ -71,8 +70,32 @@ export default {
 
       this.getPlayAuth();
     },
+    getPlayAuth() {
+      let timestamp = new Date().getTime() + 1000 * 60 * 1;
+      let params = {
+        VideoId: this.video.id
+      };
+      this.$axios
+        .get(this.global.api.backurl + "vod/getVideoPlayAuth", {
+          params: params,
+          headers: {
+            "access-token": this.util.generateToken(
+              JSON.stringify(params),
+              timestamp
+            ),
+            timestamp2: timestamp
+          }
+        })
+        .then(response => {
+          // console.log(response);
+          if (response.status === 200 && response.data.code === 0) {
+            this.PlayAuth = response.data.data.PlayAuth;
+            this.getPlayToken();
+          }
+        });
+    },
     getPlayToken() {
-      let timestamp = new Date().getTime()+1000*60*1;
+      let timestamp = new Date().getTime() + 1000 * 60 * 1;
       let params = {
         videoid: this.video.id
       };
@@ -84,7 +107,7 @@ export default {
               JSON.stringify(params),
               timestamp
             ),
-            "timestamp2": timestamp
+            timestamp2: timestamp
           }
         })
         .then(response => {
@@ -97,11 +120,11 @@ export default {
             this.player = new Aliplayer(
               {
                 id: "ali-h5-player",
-                vid:this.video.id,
-                playauth:this.PlayAuth,
-                qualitySort:'asc',
-                format:'m3u8',
-                mediaType:'video',
+                vid: this.video.id,
+                playauth: this.PlayAuth,
+                qualitySort: "asc",
+                format: "m3u8",
+                mediaType: "video",
                 width: "100%",
                 height: "100%",
                 cover:
@@ -110,76 +133,64 @@ export default {
                 autoplay: true,
                 preload: true,
                 isLive: false,
-                rePlay:false,
-                useH5Prism:true,
-                vodRetry:0,
-                playConfig:{
-                  MtsHlsUriToken:this.MtsHlsUriToken
+                rePlay: false,
+                useH5Prism: true,
+                vodRetry: 0,
+                playConfig: {
+                  MtsHlsUriToken: this.MtsHlsUriToken
                 }
               },
-              function(player) {
-                //console.log("The player is created");
+              player => {
+                localforage.getItem(this.video.id).then(value => {
+                  let seek = 0;
+                  if (value !== null) {
+                    seek = value;
+                  } else {
+                    if (typeof this.video.progress !== "undefined")
+                      seek = this.video.progress;
+                  }
+
+                  seek = parseInt(seek) - 5;//这里回放5s,以便用户能更好地连贯起来。
+
+                  player.seek(seek > 0 ? seek : 0);
+                });
               }
             );
           }
         });
     },
-    getPlayAuth() {
-      let timestamp = new Date().getTime()+1000*60*1;
+    close() {
+      this.video.show = false;
+      this.updateProgress(
+        this.player.getCurrentTime(),
+        this.player.getDuration()
+      );
+      localforage.setItem(this.video.id, this.player.getCurrentTime());
+      this.player.dispose();
+    },
+    updateProgress(progress, total) {
       let params = {
-       VideoId: this.video.id
-        };
+        user_id: this.user.uuid,
+        course_id: this.video.course_id,
+        video_id: this.video.id,
+        progress: parseInt(progress) + "",
+        total: parseInt(total) + ""
+      };
+      let timestamp = new Date().getTime() + 1000 * 60 * 1;
       this.$axios
-        .get(this.global.api.backurl + "vod/getVideoPlayAuth", {
-          params: params,
+        .put(this.global.api.backurl + "studyProgress/updateProgress", params, {
           headers: {
             "access-token": this.util.generateToken(
               JSON.stringify(params),
               timestamp
             ),
-            "timestamp2": timestamp
+            timestamp2: timestamp
           }
         })
-        .then(response => {
-          // console.log(response);
-          if (response.status === 200 && response.data.code === 0) {
-            this.PlayAuth = response.data.data.PlayAuth;
-            this.getPlayToken();
-          }
-        });
-    },
-    close(){
-      this.video.show=false
-      this.updateProgress(this.player.getCurrentTime(),this.player.getDuration())
-      this.player.dispose()
-    },
-    updateProgress(progress,total){
-      let params = {
-        user_id: this.user.uuid,
-        course_id:this.video.course_id,
-        video_id:this.video.id,
-        progress:parseInt(progress)+'',
-        total:parseInt(total)+''
-      };
-      let timestamp = new Date().getTime() + 1000 * 60 * 1;
-      this.$axios
-        .put(
-          this.global.api.backurl + "studyProgress/updateProgress",
-          params,
-          {
-            headers: {
-              "access-token": this.util.generateToken(
-                JSON.stringify(params),
-                timestamp
-              ),
-              timestamp2: timestamp
-            }
-          }
-        )
         .then(function(response) {
           //console.log(response);
-          if (response.status === 200 && response.data.code === 0){
-            toast('更新成功')
+          if (response.status === 200 && response.data.code === 0) {
+            // console.log('更新成功')
           }
         });
     }
