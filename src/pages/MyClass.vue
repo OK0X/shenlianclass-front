@@ -100,7 +100,7 @@ export default {
           }
         })
         .then(response => {
-          console.log(999, response);
+          // console.log(999, response);
           if (response.status === 200 && response.data.code === 0) {
             this.payedCourses = response.data.data;
           }

@@ -10,8 +10,8 @@
     <q-card class="bg-black text-white">
       <q-bar>
         <q-space />
-        <q-btn dense flat icon="close" v-close-popup>
-          <q-tooltip content-class="bg-white text-primary">Close</q-tooltip>
+        <q-btn dense flat icon="close" @click="close">
+          <q-tooltip content-class="bg-white text-primary">关闭</q-tooltip>
         </q-btn>
       </q-bar>
       <q-card-section class="q-pt-none">
@@ -23,7 +23,7 @@
 
 <script>
 /* eslint-disable */
-import localforage from "localforage";
+// import localforage from "localforage";
 export default {
   props: ["video"],
   data() {
@@ -141,15 +141,47 @@ export default {
           }
         })
         .then(response => {
-          console.log(response);
+          // console.log(response);
           if (response.status === 200 && response.data.code === 0) {
             this.PlayAuth = response.data.data.PlayAuth;
             this.getPlayToken();
           }
         });
     },
-    onOk() {
-      // debugger
+    close(){
+      this.video.show=false
+      this.updateProgress(this.player.getCurrentTime(),this.player.getDuration())
+      this.player.dispose()
+    },
+    updateProgress(progress,total){
+      let params = {
+        user_id: this.user.uuid,
+        course_id:this.video.course_id,
+        video_id:this.video.id,
+        progress:parseInt(progress)+'',
+        total:parseInt(total)+''
+      };
+      let timestamp = new Date().getTime() + 1000 * 60 * 1;
+      this.$axios
+        .put(
+          this.global.api.backurl + "studyProgress/updateProgress",
+          params,
+          {
+            headers: {
+              "access-token": this.util.generateToken(
+                JSON.stringify(params),
+                timestamp
+              ),
+              timestamp2: timestamp
+            }
+          }
+        )
+        .then(function(response) {
+          //console.log(response);
+          if (response.status === 200 && response.data.code === 0){
+            toast('更新成功')
+          }
+        });
     }
   }
 };

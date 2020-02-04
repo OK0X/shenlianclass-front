@@ -116,6 +116,7 @@ export default {
 
       if (this.$route.query.from === "myclass") {
         this.isPayed = true;
+        this.tab='chapters'
       } else {
         this.checkisPayed();
       }
@@ -128,12 +129,41 @@ export default {
     });
   },
   methods: {
-    loginok2() {
-      debugger;
-      console.log("22222222-");
+    getStudyProgress(){
+      let timestamp = new Date().getTime() + 1000 * 60 * 1;
+      let videoIds=[]
+      for(let i=0;i<this.videos.length;i++){
+        videoIds.push(this.videos[i].video_id)
+      }
+      // console.log(999,this.videos)
+      let params = {
+        user_id: this.user.uuid,
+        course_id: this.item.uuid,
+        video_id:encodeURIComponent(JSON.stringify(videoIds))
+      };
+      this.$axios
+        .get(this.global.api.backurl + "studyProgress/getProgress", {
+          params: params,
+          headers: {
+            "access-token": this.util.generateToken(
+              JSON.stringify(params),
+              timestamp
+            ),
+            timestamp2: timestamp
+          }
+        })
+        .then(response => {
+          console.log(888,response);
+          if (response.status === 200 && response.data.code === 0) {
+            
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
     },
     checkisPayed() {
-      console.log(this.item);
+      // console.log(this.item);
       if (typeof this.user.uuid === "undefined") {
         //未登陆
         return;
@@ -159,6 +189,7 @@ export default {
           if (response.status === 200 && response.data.code === 0) {
             if (response.data.data.length >= 1) {
               this.isPayed = true;
+              this.tab='chapters'
             }
           }
         })
@@ -183,11 +214,12 @@ export default {
           }
         })
         .then(response => {
-          console.log(response);
+          // console.log(response);
           if (response.status === 200 && response.data.code === 0) {
             this.item = response.data.data.course;
             this.videos = response.data.data.videos;
             this.isPayed = true;
+            this.tab='chapters'
             toast("购买成功!");
           }
         })
@@ -243,7 +275,7 @@ export default {
         })
         .then(response => {
           if (response.status === 200 && response.data.code === 0) {
-            console.log(response.data.data);
+            // console.log(response.data.data);
             const result = response.data.data;
             this.out_trade_no = result.out_trade_no;
             this.payurl = result.payurl;
@@ -254,6 +286,7 @@ export default {
     chapterPlay(item) {
       if (this.isPayed || item.freesee) {
         this.video.id = item.video_id;
+        this.video.course_id=this.item.uuid
         this.video.show = true;
       } else {
         this.buyCourse();
@@ -276,9 +309,12 @@ export default {
           }
         })
         .then(response => {
-          //console.log(response);
+          // console.log(111,response);
           if (response.status === 200 && response.data.code === 0) {
             this.videos = response.data.data;
+            if(this.isPayed){
+              this.getStudyProgress()
+            }
           }
         });
     },
