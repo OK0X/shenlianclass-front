@@ -37,25 +37,23 @@
           <div v-html="item.classdetail"></div>
         </q-tab-panel>
         <q-tab-panel name="chapters">
-          <q-timeline color="secondary">
-            <q-timeline-entry
-              :title="item.title"
-              subtitle
-              v-for="(item,index) in videos"
-              :key="index"
-              @click="chapterPlay(item)"
-              class="chapter-info"
-            >
+          <div
+            subtitle
+            v-for="(item,index) in videos"
+            :key="index"
+            @click="chapterPlay(item)"
+            class="chapter-info"
+          >
+            <div class="chapter-progress">
+              <img :src="item.finished?'statics/finished.png':'statics/ing.png'" style="width:25px;height:25px;" />
+              <div class="chapter-progress-line" :style="item.finished?'background:#ff9800':'background:#26A69A'" v-if="index!==videos.length-1"></div>
+            </div>
+            <div class="chapter-summary">
+              <h1 style="margin-top:0px;">{{item.title}}</h1>
               <div>{{item.summary}}</div>
               <span style="color:#027be3" v-if="item.freesee">试看</span>
-              <div style="display:flex;margin-top: 10px;">
-                <!-- <img src="statics/play.png" style="width:40px;height:40px;" /> -->
-                <!-- <q-btn flat color="primary" label="试看" @click="chapterPlay(item)" v-if="item.freesee"/> -->
-                <!-- <q-btn unelevated label="试看" class="study-chapter"  /> -->
-                <!-- <q-btn flat color="primary" label="学习该小节" style="align-self:center;"/> -->
-              </div>
-            </q-timeline-entry>
-          </q-timeline>
+            </div>
+          </div>
         </q-tab-panel>
       </q-tab-panels>
     </div>
@@ -94,7 +92,7 @@ export default {
       isPayed: false, //是否已购买
       out_trade_no: "",
       payurl: "",
-      studyProgress:{}
+      studyProgress: {}
     };
   },
   computed: {
@@ -108,7 +106,6 @@ export default {
     }
   },
   mounted() {
-
     if (typeof this.$route.query.out_trade_no !== "undefined") {
       //支付完成跳转过来
       this.queryPayResult(this.$route.query.out_trade_no);
@@ -117,7 +114,7 @@ export default {
 
       if (this.$route.query.from === "myclass") {
         this.isPayed = true;
-        this.tab='chapters'
+        this.tab = "chapters";
       } else {
         this.checkisPayed();
       }
@@ -130,17 +127,17 @@ export default {
     });
   },
   methods: {
-    getStudyProgress(){
+    getStudyProgress() {
       let timestamp = new Date().getTime() + 1000 * 60 * 1;
-      let videoIds=[]
-      for(let i=0;i<this.videos.length;i++){
-        videoIds.push(this.videos[i].video_id)
+      let videoIds = [];
+      for (let i = 0; i < this.videos.length; i++) {
+        videoIds.push(this.videos[i].video_id);
       }
       // console.log(999,this.videos)
       let params = {
         user_id: this.user.uuid,
         course_id: this.item.uuid,
-        video_id:encodeURIComponent(JSON.stringify(videoIds))
+        video_id: encodeURIComponent(JSON.stringify(videoIds))
       };
       this.$axios
         .get(this.global.api.backurl + "studyProgress/getProgress", {
@@ -156,17 +153,19 @@ export default {
         .then(response => {
           console.log(888,response);
           if (response.status === 200 && response.data.code === 0) {
-            if(response.data.data.length===0)
-            return
-            for(let i=0;i<response.data.data.length;i++){
-
-              this.studyProgress[response.data.data[i].video_id]={
-                progress:response.data.data[i].progress,
-                total:response.data.data[i].total
+            let data=response.data.data
+            if (data.length === 0) return;
+            for (let i = 0; i < data.length; i++) {
+              this.studyProgress[data[i].video_id] = {
+                progress: data[i].progress,
+                total: data[i].total
+              };
+              if(data[i].total-data[i].progress<=5){//剩余未看小于5s就认为已学完
+              this.videos[i].finished=true
               }
             }
 
-            console.log(555,this.studyProgress)
+            console.log(555,this.videos)
           }
         })
         .catch(error => {
@@ -200,7 +199,7 @@ export default {
           if (response.status === 200 && response.data.code === 0) {
             if (response.data.data.length >= 1) {
               this.isPayed = true;
-              this.tab='chapters'
+              this.tab = "chapters";
             }
           }
         })
@@ -228,15 +227,21 @@ export default {
           // console.log(response);
           if (response.status === 200 && response.data.code === 0) {
             this.item = response.data.data.course;
-            this.videos = response.data.data.videos;
+            this.setVideos(response.data.data.videos);
             this.isPayed = true;
-            this.tab='chapters'
+            this.tab = "chapters";
             toast("购买成功!");
           }
         })
         .catch(error => {
           //console.log(error);
         });
+    },
+    setVideos(videos){
+      for(let i=0;i<videos.length;i++){
+        videos[i].finished=false
+      }
+      this.videos=videos
     },
     buyCourse() {
       if (typeof this.user.uuid === "undefined") {
@@ -297,12 +302,12 @@ export default {
     chapterPlay(item) {
       if (this.isPayed || item.freesee) {
         this.video.id = item.video_id;
-        if(typeof this.studyProgress[item.video_id] !=='undefined'){
-          this.video.progress=this.studyProgress[item.video_id].progress
+        if (typeof this.studyProgress[item.video_id] !== "undefined") {
+          this.video.progress = this.studyProgress[item.video_id].progress;
         }
-        
-        console.log(666,this.video.progress)
-        this.video.course_id=this.item.uuid
+
+        // console.log(666,this.video.progress)
+        this.video.course_id = this.item.uuid;
         this.video.show = true;
       } else {
         this.buyCourse();
@@ -325,12 +330,12 @@ export default {
           }
         })
         .then(response => {
-          // console.log(111,response);
+          console.log(111,response);
           if (response.status === 200 && response.data.code === 0) {
-            this.videos = response.data.data;
-            if(this.isPayed){
-              this.getStudyProgress()
-            }
+            this.setVideos(response.data.data);
+            // if (this.isPayed) {
+              this.getStudyProgress();
+            // }
           }
         });
     },
@@ -377,8 +382,29 @@ export default {
   background-image: linear-gradient(to right, #ff7a00, #fe560a);
   color: white;
 }
+.chapter-info {
+  display: flex;
+  margin-top:5px;
+}
 .chapter-info:hover {
   /* background-color:#f3f3f3; */
   cursor: pointer;
+}
+.chapter-progress {
+  display: flex;
+  flex-direction: column;
+}
+.chapter-summary {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  margin-left: 10px;
+}
+.chapter-progress-line {
+  width: 1px;
+  flex: 1;
+  background: #ff9800;
+  align-self: center;
+  margin: 5px 0 5px 0;
 }
 </style>
