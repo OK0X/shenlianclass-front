@@ -49,7 +49,7 @@
               <div class="chapter-progress-line" :style="item.finished?'background:#ff9800':'background:#26A69A'" v-if="index!==videos.length-1"></div>
             </div>
             <div class="chapter-summary">
-              <h1 style="margin-top:0px;">{{item.title}}</h1>
+              <h1 style="margin:0 0 10px 0;">{{item.title}}</h1>
               <div>{{item.summary}}</div>
               <span style="color:#027be3" v-if="item.freesee">试看</span>
             </div>
@@ -151,7 +151,7 @@ export default {
           }
         })
         .then(response => {
-          console.log(888,response);
+          // console.log(888,response);
           if (response.status === 200 && response.data.code === 0) {
             let data=response.data.data
             if (data.length === 0) return;
@@ -165,7 +165,7 @@ export default {
               }
             }
 
-            console.log(555,this.videos)
+            // console.log(555,this.videos)
           }
         })
         .catch(error => {
@@ -330,7 +330,7 @@ export default {
           }
         })
         .then(response => {
-          console.log(111,response);
+          // console.log(111,response);
           if (response.status === 200 && response.data.code === 0) {
             this.setVideos(response.data.data);
             // if (this.isPayed) {

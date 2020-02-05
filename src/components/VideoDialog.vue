@@ -10,7 +10,7 @@
     <q-card class="bg-black text-white">
       <q-bar>
         <q-space />
-        <q-btn dense flat icon="close" @click="close">
+        <q-btn dense flat icon="close" @click="close" style="margin:10px 10px 10px 0;">
           <q-tooltip content-class="bg-white text-primary">关闭</q-tooltip>
         </q-btn>
       </q-bar>
@@ -87,7 +87,7 @@ export default {
           }
         })
         .then(response => {
-          // console.log(response);
+          // console.log(888,response);
           if (response.status === 200 && response.data.code === 0) {
             this.PlayAuth = response.data.data.PlayAuth;
             this.getPlayToken();
@@ -141,6 +141,8 @@ export default {
                 }
               },
               player => {
+                // console.log(999,player.fullscreenService.getIsFullScreen())
+                player.fullscreenService.requestFullScreen()
                 localforage.getItem(this.video.id).then(value => {
                   let seek = 0;
                   if (value !== null) {
@@ -151,8 +153,8 @@ export default {
                   }
 
                   seek = parseInt(seek) - 5;//这里回放5s,以便用户能更好地连贯起来。
-
                   player.seek(seek > 0 ? seek : 0);
+                  
                 });
               }
             );

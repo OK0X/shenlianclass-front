@@ -49,6 +49,7 @@
           counter
           maxlength="300"
         />
+        <span style="color:red; margin-top: 30px;">请上传1920 x 1080分辨率的视频</span>
         <div class="upload">
           <div>
             <input type="file" @change="fileChange($event,index)" />
@@ -471,6 +472,7 @@ export default {
           chpters2.push({
             title: this.chpters[i].title,
             summary: this.chpters[i].summary,
+            freesee:this.chpters[i].freesee,
             video: null,
             file: null,
             authProgress: 0,
@@ -669,9 +671,6 @@ export default {
   margin-top: 10px;
   background-color: rgb(241, 216, 127);
   padding: 10px;
-}
-.upload {
-  margin-top: 30px;
 }
 .upload-type {
   margin-top: 10px;
