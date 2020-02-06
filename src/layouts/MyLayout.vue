@@ -43,7 +43,7 @@
       <div class="menu">
         <q-btn flat label="首页" class="menu-text" to="/" />
         <q-btn flat label="我的课程" class="menu-text" to="/MyClass" />
-        <q-btn flat label="社区" class="menu-text" />
+        <q-btn flat label="知识问答" class="menu-text" />
         <q-btn flat label="课程发布" class="menu-text" to="/ClassPub" />
       </div>
     </q-header>

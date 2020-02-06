@@ -245,4 +245,13 @@ export default {
 };
 </script>
 <style scoped>
+/* .prism-controlbar-bg {
+    background: rgba(75, 75, 75, 0.856);
+    width: 100%;
+    height: 40px;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    z-index: -1
+} */
 </style>
