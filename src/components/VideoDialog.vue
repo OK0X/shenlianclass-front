@@ -74,7 +74,7 @@ export default {
   },
   methods: {
     onShow() {
-      console.log(999, this.videoDialog);
+      // console.log(999, this.videoDialog);
       this.videos = this.videoDialog.videos;
       this.playIndex = this.videoDialog.currentPlay;
       this.currentVideo = this.videos[this.playIndex];
