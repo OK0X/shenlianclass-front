@@ -41,7 +41,7 @@
             subtitle
             v-for="(item,index) in videos"
             :key="index"
-            @click="chapterPlay(item)"
+            @click="chapterPlay(index,item)"
             class="chapter-info"
           >
             <div class="chapter-progress">
@@ -49,7 +49,7 @@
               <div class="chapter-progress-line" :style="item.finished?'background:#ff9800':'background:#26A69A'" v-if="index!==videos.length-1"></div>
             </div>
             <div class="chapter-summary">
-              <h1 style="margin:0 0 10px 0;">{{item.title}}</h1>
+              <h1 style="margin:0 0 10px 0;">{{'第'+(index+1)+'节：'+item.title}}</h1>
               <div>{{item.summary}}</div>
               <span style="color:#027be3" v-if="item.freesee">试看</span>
             </div>
@@ -57,7 +57,7 @@
         </q-tab-panel>
       </q-tab-panels>
     </div>
-    <VideoDialog :video="video" />
+    <VideoDialog :videoDialog="videoDialog" />
     <MyFooter />
     <LoginDialog :dialogData="loginDialog" />
   </q-page>
@@ -82,7 +82,7 @@ export default {
       tab: "detail",
       item: {},
       videos: [],
-      video: {
+      videoDialog: {
         show: false
       },
       loginDialog: {
@@ -152,6 +152,7 @@ export default {
         })
         .then(response => {
           // console.log(888,response);
+          // console.log(8889,this.videos);
           if (response.status === 200 && response.data.code === 0) {
             let data=response.data.data
             if (data.length === 0) return;
@@ -160,10 +161,10 @@ export default {
                 progress: data[i].progress,
                 total: data[i].total
               };
-              if(data[i].total-data[i].progress<=5){//剩余未看小于5s就认为已学完
-              this.videos[i].finished=true
-              }
+              
             }
+
+            this.setProgress()
 
             // console.log(555,this.videos)
           }
@@ -171,6 +172,14 @@ export default {
         .catch(error => {
           console.log(error);
         });
+    },
+    setProgress(){
+      for(let i=0;i<this.videos.length;i++){
+        let studyProgress=this.studyProgress[this.videos[i].video_id]
+        if(studyProgress.total-studyProgress.progress <=5){
+          this.videos[i].finished=true
+        }
+      }
     },
     checkisPayed() {
       // console.log(this.item);
@@ -299,16 +308,15 @@ export default {
           }
         });
     },
-    chapterPlay(item) {
+    chapterPlay(index,item) {
       if (this.isPayed || item.freesee) {
-        this.video.id = item.video_id;
-        if (typeof this.studyProgress[item.video_id] !== "undefined") {
-          this.video.progress = this.studyProgress[item.video_id].progress;
-        }
-
-        // console.log(666,this.video.progress)
-        this.video.course_id = this.item.uuid;
-        this.video.show = true;
+        this.videoDialog.currentPlay=index
+        this.videoDialog.videos = this.videos
+        // if (typeof this.studyProgress[item.video_id] !== "undefined") {
+          this.videoDialog.studyProgress = this.studyProgress
+        // }
+        this.videoDialog.course_id = this.item.uuid;
+        this.videoDialog.show = true;
       } else {
         this.buyCourse();
       }
