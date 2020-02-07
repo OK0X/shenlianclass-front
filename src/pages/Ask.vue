@@ -49,13 +49,16 @@
         <q-tab-panel name="highcoin">
           <div>222</div>
         </q-tab-panel>
-        <q-tab-panel name="creatask">
+        <q-tab-panel name="creatask" class="flex-col">
+          <q-input v-model="classname" :dense="true"  counter maxlength="50" placeholder="一句话完整描述你的问题"/>
           <VueEditor
-            v-model="myask"
+            v-model="askDetail"
             useCustomImageHandler
             @image-added="handleImageAdded"
-            style="height: 300px;width:100%;margin-bottom:50px;"
+            style="height: 300px;width:100%;margin:10px 0 50px 0;"
           />
+          <span style="align-self: flex-end;color: rgba(0, 0, 0, 0.54);">{{detailLength()}} / 500</span>
+          <q-btn outline color="primary" label="提交" style="width:100px;"/>
         </q-tab-panel>
       </q-tab-panels>
     </div>
@@ -81,10 +84,15 @@ export default {
   data() {
     return {
       tab: "all",
-      myask:''
+      askDetail:''
     };
   },
   methods:{
+    detailLength() {
+      let text = this.askDetail.replace(/<\/?[^>]+(>|$)/g, "");
+      let len = text.length;
+      return len;
+    },
     handleImageAdded: function(file, Editor, cursorLocation, resetUploader) {
 
       var expireTime = new Date();
