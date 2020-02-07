@@ -59,6 +59,10 @@ const routes = [
       {
         path: '/BackendConfig',
         component: () => import('pages/BackendConfig.vue')
+      },
+      {
+        path: '/Ask',
+        component: () => import('pages/Ask.vue')
       }
     ]
   }

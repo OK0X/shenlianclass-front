@@ -29,10 +29,11 @@
               </q-card>
               <q-btn
                 outline
-                :color="index===playIndex?'#ff9800':'primary'"
-                :label="index===playIndex?'正在播放':'播放'"
+                color="primary"
+                label="播放"
                 style="margin-left:15px;"
                 @click="switchVideo(index)"
+                v-show="index!==playIndex"
               />
             </q-expansion-item>
           </div>

@@ -22,16 +22,17 @@
       <q-tabs
         v-model="tab"
         dense
-        class="text-grey"
         active-color="primary"
         indicator-color="primary"
+        active-bg-color="white"
         align="left"
         narrow-indicator
+        style="background-color:#ebecec;color:black;"
       >
         <q-tab name="detail" label="课程介绍" />
         <q-tab name="chapters" label="课程目录" />
       </q-tabs>
-      <q-separator />
+      <!-- <q-separator /> -->
       <q-tab-panels v-model="tab" animated>
         <q-tab-panel name="detail">
           <div v-html="item.classdetail"></div>
