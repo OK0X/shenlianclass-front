@@ -1,12 +1,12 @@
 <template>
   <q-layout view="hHh LpR fFf">
     <q-header class="myheader">
-      <div class="title">
+      <div class="header-top">
         <img
           src="statics/test-logo.png"
           style="width:131px;height:51px;align-self: center;margin-left:50px;"
         />
-        <q-input bottom-slots v-model="text" :dense="true" class="search-bar">
+        <q-input bottom-slots v-model="searchText" :dense="true" class="search-bar">
           <template v-slot:append>
             <q-icon name="search" />
           </template>
@@ -28,8 +28,13 @@
               <q-item clickable v-close-popup v-show="user.role>=3" @click="backendConfig">
                 <q-item-section>系统配置</q-item-section>
               </q-item>
-              <q-separator v-show="typeof user.role !== 'undefined'"/>
-              <q-item clickable v-close-popup @click="logout" v-show="typeof user.role !== 'undefined'">
+              <q-separator v-show="typeof user.role !== 'undefined'" />
+              <q-item
+                clickable
+                v-close-popup
+                @click="logout"
+                v-show="typeof user.role !== 'undefined'"
+              >
                 <q-item-section>安全退出</q-item-section>
               </q-item>
             </q-list>
@@ -40,11 +45,11 @@
           <span style="color:#ff7a00;" @click="login">{{role}}</span>
         </span>
       </div>
-      <div class="menu">
-        <q-btn flat label="首页" class="menu-text" to="/" />
-        <q-btn flat label="我的课程" class="menu-text" to="/MyClass" />
-        <q-btn flat label="知识问答" class="menu-text" to="/Ask"/>
-        <q-btn flat label="课程发布" class="menu-text" to="/ClassPub" />
+      <div class="main-tabs">
+        <div class="main-tab" @click="showTab(0)" :style="tabIndex===0?'color: #027be3;':'color: black;'">首页</div>
+        <div class="main-tab" @click="showTab(1)" :style="tabIndex===1?'color: #027be3;':'color: black;'">我的课程</div>
+        <div class="main-tab" @click="showTab(2)" :style="tabIndex===2?'color: #027be3;':'color: black;'">知识问答</div>
+        <div class="main-tab" @click="showTab(3)" :style="tabIndex===3?'color: #027be3;':'color: black;'">课程发布</div>
       </div>
     </q-header>
     <q-page-container style="background-color: #f2f5f9;">
@@ -58,18 +63,18 @@
 import localforage from "localforage";
 import LoginDialog from "../components/LoginDialog";
 
-
 export default {
   components: {
     LoginDialog
   },
   data() {
     return {
-      text: "",
+      searchText: "",
       setMobileDialogData: {
         show: false,
-        title: '快捷登陆'
-      }
+        title: "快捷登陆"
+      },
+      tabIndex:0
     };
   },
   computed: {
@@ -81,49 +86,69 @@ export default {
         this.$store.commit("user/updateUser", val);
       }
     },
-    role:function(){
+    role: function() {
       //console.log(1,this.user.role)
-      if(typeof this.user.role === 'undefined'){
-        return '( 注册/登陆 )'
+      if (typeof this.user.role === "undefined") {
+        return "( 注册/登陆 )";
       }
       switch (this.user.role) {
         case 0:
-          return ''
+          return "";
         case 1:
           return "(讲师)";
         case 2:
           return "(管理员)";
-          case 3:
+        case 3:
           return "(超级管理员)";
         default:
-          
           break;
       }
     }
   },
-  mounted() {
-    
-  },
+  mounted() {},
   methods: {
-    login(){
-      if(typeof this.user.role === 'undefined'){
-        this.setMobileDialogData.show=true
+    login() {
+      if (typeof this.user.role === "undefined") {
+        this.setMobileDialogData.show = true;
       }
     },
-    logout(){
-      localforage.removeItem("user").then(()=>{
-        toast('已退出当前账户')
-        this.user={}
-      })
+    logout() {
+      localforage.removeItem("user").then(() => {
+        toast("已退出当前账户");
+        this.user = {};
+      });
     },
-    toMyPub(){
-       this.$router.push('/MyPub');
+    showTab(index) {
+      if(this.tabIndex===index)
+      return
+
+      this.tabIndex=index
+      switch (index) {
+        case 0:
+          this.$router.push("/");
+          break;
+        case 1:
+          this.$router.push("/MyClass");
+          break;
+        case 2:
+          this.$router.push("/Ask");
+          break;
+        case 3:
+          this.$router.push("/ClassPub");
+          break;
+
+        default:
+          break;
+      }
+    },
+    toMyPub() {
+      this.$router.push("/MyPub");
     },
     course2Check() {
-      this.$router.push('/CourseCheck');
+      this.$router.push("/CourseCheck");
     },
-    backendConfig(){
-      this.$router.push('/BackendConfig');
+    backendConfig() {
+      this.$router.push("/BackendConfig");
     }
   }
 };
@@ -138,19 +163,12 @@ export default {
   display: flex;
   flex-direction: column;
 }
-.title {
+.header-top {
   width: 100%;
   max-width: 1200px;
   height: 136px;
   display: flex;
   align-self: center;
-}
-.menu {
-  width: 100%;
-  max-width: 1200px;
-  display: flex;
-  align-self: center;
-  padding-left: 50px;
 }
 .search-bar {
   /* height: 35px; */
@@ -160,10 +178,20 @@ export default {
   align-self: center;
   flex-shrink: 0;
 }
-.menu-text {
-  font-size: 18px;
-  color: #333333;
-  height: 50px;
-  width: 160px;
+.main-tabs {
+  display: flex;
+  flex: 1;
+  width: 100%;
+  max-width: 1200px;
+  align-self: center;
+  font-size: 19px;
+}
+.main-tab {
+  margin: 0 30px 0 30px;
+  align-self: center;
+}
+.main-tab:hover {
+  color: #027be3;
+  cursor: pointer;
 }
 </style>

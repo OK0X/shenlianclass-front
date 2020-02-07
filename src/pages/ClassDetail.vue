@@ -23,10 +23,9 @@
         v-model="tab"
         dense
         active-color="primary"
-        indicator-color="primary"
+        indicator-color="white"
         active-bg-color="white"
         align="left"
-        narrow-indicator
         style="background-color:#ebecec;color:black;"
       >
         <q-tab name="detail" label="课程介绍" />

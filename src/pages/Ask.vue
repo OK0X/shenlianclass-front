@@ -5,10 +5,9 @@
         v-model="tab"
         dense
         active-color="primary"
-        indicator-color="primary"
+        indicator-color="white"
         active-bg-color="white"
         align="left"
-        narrow-indicator
         style="background-color:#ebecec;color:black;"
       >
         <q-tab name="all" label="全部问答" />
@@ -29,9 +28,9 @@
                 <span style="color:#bbb;margin-left:10px;font-size: 12px;">以太坊 比特币 cosmos</span>
               </div>
               <span style="color: #999;margin-right:20px;line-height: 25px;">大唐荣耀的全部歌曲mp3，哪位给发一个百度云？</span>
-              <span style="color:#bbb;">2020-02-02 12:12:12  |  0 回答</span>
+              <span style="color:#bbb;">2020-02-02 12:12:12 | 0 回答</span>
             </div>
-            <q-separator style="margin:5px 0 5px 0;"/>
+            <q-separator style="margin:5px 0 5px 0;" />
             <div class="flex-col">
               <div style="display:flex;">
                 <img src="statics/coin.png" style="width:13px;height:12px;margin:5px;" />
@@ -43,7 +42,7 @@
                 <span style="color:#bbb;margin-left:10px;font-size: 12px;">以太坊 比特币 cosmos</span>
               </div>
               <span style="color: #999;margin-right:20px;line-height: 25px;">大唐荣耀的全部歌曲mp3，哪位给发一个百度云？</span>
-              <span style="color:#bbb;">2020-02-02 12:12:12  |  0 回答</span>
+              <span style="color:#bbb;">2020-02-02 12:12:12 | 0 回答</span>
             </div>
           </div>
         </q-tab-panel>
@@ -51,7 +50,12 @@
           <div>222</div>
         </q-tab-panel>
         <q-tab-panel name="creatask">
-          <div>222</div>
+          <VueEditor
+            v-model="myask"
+            useCustomImageHandler
+            @image-added="handleImageAdded"
+            style="height: 300px;width:100%;margin-bottom:50px;"
+          />
         </q-tab-panel>
       </q-tab-panels>
     </div>
@@ -62,14 +66,77 @@
 <script>
 /* eslint-disable */
 import MyFooter from "../components/MyFooter";
+import { VueEditor } from "vue2-editor";
+import localforage from "localforage";
+import CryptoJS from "crypto-js";
+import { Base64 } from "js-base64";
+import LoginDialog from "../components/LoginDialog";
+
 export default {
   components: {
-    MyFooter
+    MyFooter,
+    VueEditor,
+    LoginDialog
   },
   data() {
     return {
-      tab: "all"
+      tab: "all",
+      myask:''
     };
+  },
+  methods:{
+    handleImageAdded: function(file, Editor, cursorLocation, resetUploader) {
+
+      var expireTime = new Date();
+      expireTime.setSeconds(expireTime.getSeconds() + 600);
+
+      var policyText = {
+        expiration: expireTime.toISOString(), //设置该Policy的失效时间，超过这个失效时间之后，就没有办法通过这个policy上传文件了
+        conditions: [
+          ["content-length-range", 0, 1048576000] // 设置上传文件的大小限制
+        ]
+      };
+
+      var policyBase64 = Base64.encode(JSON.stringify(policyText));
+      var encrypted = CryptoJS.HmacSHA1(
+        policyBase64,
+        this.global.api.aliyunossaccesskey
+      );
+      var signature = CryptoJS.enc.Base64.stringify(encrypted);
+
+      let filename = new Date().getTime() + ".jpg";
+      let formData = new FormData();
+      formData.append("key", filename);
+      formData.append("policy", policyBase64);
+      formData.append("OSSAccessKeyId", this.global.api.aliyunossaccessid);
+      formData.append("success_action_status", "200");
+      formData.append("signature", signature);
+      formData.append("file", file, filename);
+
+      this.$axios
+        .post(this.global.api.aliyunosshostpubread, formData, {
+          headers: {
+            "Content-Type":
+              "application/x-www-form-urlencoded;boundary=----WebKitFormBoundarytkUbKWcxgeMi1fIr"
+          }
+        })
+        .then(response => {
+          //console.log(response);
+
+          if (response.status === 200) {
+            Editor.insertEmbed(
+              cursorLocation,
+              "image",
+              this.global.api.aliyunosshostpubread + "/" + filename
+            );
+            resetUploader();
+          }
+          // this.$q.loading.hide();
+        })
+        .catch(error => {
+          console.error(error);
+        });
+    }
   }
 };
 </script>
