@@ -50,15 +50,22 @@
           <div>222</div>
         </q-tab-panel>
         <q-tab-panel name="creatask" class="flex-col">
-          <q-input v-model="classname" :dense="true"  counter maxlength="50" placeholder="一句话完整描述你的问题"/>
+          <q-input
+            v-model="classname"
+            :dense="true"
+            counter
+            maxlength="50"
+            placeholder="一句话完整描述你的问题"
+          />
           <VueEditor
+            placeholder="详细说明你的问题，以便获得更好的回答（选填）"
             v-model="askDetail"
             useCustomImageHandler
             @image-added="handleImageAdded"
             style="height: 300px;width:100%;margin:10px 0 50px 0;"
           />
           <span style="align-self: flex-end;color: rgba(0, 0, 0, 0.54);">{{detailLength()}} / 500</span>
-          <q-btn outline color="primary" label="提交" style="width:100px;"/>
+          <q-btn outline color="primary" label="提交" style="width:100px;" />
         </q-tab-panel>
       </q-tab-panels>
     </div>
@@ -84,17 +91,16 @@ export default {
   data() {
     return {
       tab: "all",
-      askDetail:''
+      askDetail: ""
     };
   },
-  methods:{
+  methods: {
     detailLength() {
       let text = this.askDetail.replace(/<\/?[^>]+(>|$)/g, "");
       let len = text.length;
       return len;
     },
     handleImageAdded: function(file, Editor, cursorLocation, resetUploader) {
-
       var expireTime = new Date();
       expireTime.setSeconds(expireTime.getSeconds() + 600);
 

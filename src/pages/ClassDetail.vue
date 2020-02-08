@@ -1,6 +1,9 @@
 <template>
   <q-page class="mypage">
-    <div class="buywatch">
+    <div class="page-top">
+      <img src="statics/back.png" class="back-icon" @click="goBack"/>
+    </div>
+    <div class="summary-part">
       <img :src="getImgUrl(item)" class="course-cover" />
       <div class="course-summary">
         <span style="font-size:24px;color:#1f2328;">{{item.classname}}</span>
@@ -18,7 +21,7 @@
         <q-btn unelevated label="立即购买" class="study" @click="buyCourse" v-show="!isPayed" />
       </div>
     </div>
-    <div class="detail">
+    <div class="detail-part">
       <q-tabs
         v-model="tab"
         dense
@@ -45,8 +48,15 @@
             class="chapter-info"
           >
             <div class="chapter-progress">
-              <img :src="item.finished?'statics/finished.png':'statics/ing.png'" style="width:25px;height:25px;" />
-              <div class="chapter-progress-line" :style="item.finished?'background:#ff9800':'background:#26A69A'" v-if="index!==videos.length-1"></div>
+              <img
+                :src="item.finished?'statics/finished.png':'statics/ing.png'"
+                style="width:25px;height:25px;"
+              />
+              <div
+                class="chapter-progress-line"
+                :style="item.finished?'background:#ff9800':'background:#26A69A'"
+                v-if="index!==videos.length-1"
+              ></div>
             </div>
             <div class="chapter-summary">
               <h1 style="margin:0 0 10px 0;">{{'第'+(index+1)+'节：'+item.title}}</h1>
@@ -127,6 +137,9 @@ export default {
     });
   },
   methods: {
+    goBack(){
+      this.$router.go(-1)
+    },
     getStudyProgress() {
       let timestamp = new Date().getTime() + 1000 * 60 * 1;
       let videoIds = [];
@@ -154,17 +167,16 @@ export default {
           // console.log(888,response);
           // console.log(8889,this.videos);
           if (response.status === 200 && response.data.code === 0) {
-            let data=response.data.data
+            let data = response.data.data;
             if (data.length === 0) return;
             for (let i = 0; i < data.length; i++) {
               this.studyProgress[data[i].video_id] = {
                 progress: data[i].progress,
                 total: data[i].total
               };
-              
             }
 
-            this.setProgress()
+            this.setProgress();
 
             // console.log(555,this.videos)
           }
@@ -173,11 +185,11 @@ export default {
           console.log(error);
         });
     },
-    setProgress(){
-      for(let i=0;i<this.videos.length;i++){
-        let studyProgress=this.studyProgress[this.videos[i].video_id]
-        if(studyProgress.total-studyProgress.progress <=5){
-          this.videos[i].finished=true
+    setProgress() {
+      for (let i = 0; i < this.videos.length; i++) {
+        let studyProgress = this.studyProgress[this.videos[i].video_id];
+        if (studyProgress.total - studyProgress.progress <= 5) {
+          this.videos[i].finished = true;
         }
       }
     },
@@ -246,11 +258,11 @@ export default {
           //console.log(error);
         });
     },
-    setVideos(videos){
-      for(let i=0;i<videos.length;i++){
-        videos[i].finished=false
+    setVideos(videos) {
+      for (let i = 0; i < videos.length; i++) {
+        videos[i].finished = false;
       }
-      this.videos=videos
+      this.videos = videos;
     },
     buyCourse() {
       if (typeof this.user.uuid === "undefined") {
@@ -308,12 +320,12 @@ export default {
           }
         });
     },
-    chapterPlay(index,item) {
+    chapterPlay(index, item) {
       if (this.isPayed || item.freesee) {
-        this.videoDialog.currentPlay=index
-        this.videoDialog.videos = this.videos
+        this.videoDialog.currentPlay = index;
+        this.videoDialog.videos = this.videos;
         // if (typeof this.studyProgress[item.video_id] !== "undefined") {
-          this.videoDialog.studyProgress = this.studyProgress
+        this.videoDialog.studyProgress = this.studyProgress;
         // }
         this.videoDialog.course_id = this.item.uuid;
         this.videoDialog.show = true;
@@ -342,7 +354,7 @@ export default {
           if (response.status === 200 && response.data.code === 0) {
             this.setVideos(response.data.data);
             // if (this.isPayed) {
-              this.getStudyProgress();
+            this.getStudyProgress();
             // }
           }
         });
@@ -357,7 +369,22 @@ export default {
 };
 </script>
 <style scoped>
-.detail {
+.page-top {
+  width: 100%;
+  max-width: 1200px;
+  margin: 20px 0px 0px;
+}
+.back-icon {
+  align-self: flex-start;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+}
+.back-icon:hover {
+  background-color:white;
+  cursor: pointer;
+}
+.detail-part {
   width: 100%;
   max-width: 1200px;
   display: flex;
@@ -366,13 +393,13 @@ export default {
   /* height: 800px; */
   flex-direction: column;
 }
-.buywatch {
+.summary-part {
   width: 100%;
   max-width: 1200px;
   height: 355px;
   display: flex;
   background-color: white;
-  margin: 50px 0 30px 0;
+  margin: 5px 0 30px 0;
 }
 
 .study {
@@ -392,7 +419,7 @@ export default {
 }
 .chapter-info {
   display: flex;
-  margin-top:5px;
+  margin-top: 5px;
 }
 .chapter-info:hover {
   /* background-color:#f3f3f3; */
