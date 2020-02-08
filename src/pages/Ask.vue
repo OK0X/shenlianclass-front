@@ -11,47 +11,62 @@
         style="background-color:#ebecec;color:black;"
       >
         <q-tab name="all" label="全部问答" />
-        <q-tab name="highcoin" label="高悬赏" />
-        <q-tab name="creatask" label="我要提问" />
+        <q-tab name="highcoin" label="悬赏问答" />
+        <q-tab name="myask" label="我的提问" />
+        <q-tab name="creatask" label="新建提问" />
       </q-tabs>
       <q-tab-panels v-model="tab" animated>
         <q-tab-panel name="all">
-          <div class="flex-col">
-            <div class="flex-col">
-              <div style="display:flex;">
-                <img src="statics/coin.png" style="width:13px;height:12px;margin:5px;" />
-                <span style="color: #e7412b;margin-right:20px;line-height: 25px;">200</span>
-                <span class="ask-tx">把你当徒弟的已婚男人和把你当暧昧对象的师傅关系有什么区别？</span>
-              </div>
-              <div style="display:flex;">
-                <img src="statics/label.png" style="width:16px;height:16px;" />
-                <span style="color:#bbb;margin-left:10px;font-size: 12px;">以太坊 比特币 cosmos</span>
-              </div>
-              <span style="color: #999;margin-right:20px;line-height: 25px;">大唐荣耀的全部歌曲mp3，哪位给发一个百度云？</span>
-              <span style="color:#bbb;">2020-02-02 12:12:12 | 0 回答</span>
+          <div class="flex-col" v-for="(item,index) in asks" :key="index">
+            <div style="display:flex;">
+              <img src="statics/coin.png" style="width:13px;height:12px;margin:5px;" v-if="item.reward"/>
+              <span style="color: #e7412b;margin-right:20px;line-height: 25px;" v-if="item.reward">{{item.reward_num}}</span>
+              <span class="ask-tx">{{item.title}}</span>
             </div>
-            <q-separator style="margin:5px 0 5px 0;" />
-            <div class="flex-col">
-              <div style="display:flex;">
-                <img src="statics/coin.png" style="width:13px;height:12px;margin:5px;" />
-                <span style="color: #e7412b;margin-right:20px;line-height: 25px;">200</span>
-                <span class="ask-tx">把你当徒弟的已婚男人和把你当暧昧对象的师傅关系有什么区别？</span>
-              </div>
-              <div style="display:flex;">
-                <img src="statics/label.png" style="width:16px;height:16px;" />
-                <span style="color:#bbb;margin-left:10px;font-size: 12px;">以太坊 比特币 cosmos</span>
-              </div>
-              <span style="color: #999;margin-right:20px;line-height: 25px;">大唐荣耀的全部歌曲mp3，哪位给发一个百度云？</span>
-              <span style="color:#bbb;">2020-02-02 12:12:12 | 0 回答</span>
+            <div style="color: #999;margin-right:20px;line-height: 25px;" v-html="item.detail"></div>
+            <div style="display:flex;color:#bbb;margin-top:5px;">
+              <span>{{util.getShortTime(item.create_at)}}</span>
+              <span style="width:1px;background: rgba(0, 0, 0, 0.12);margin:2px 10px 2px 10px;"></span>
+              <span>{{item.answer_num}} 回答</span>
             </div>
+            <q-separator style="margin:5px 0 5px 0;" v-if="index!==asks.length-1"/>
           </div>
         </q-tab-panel>
         <q-tab-panel name="highcoin">
-          <div>222</div>
+          <div class="flex-col" v-for="(item,index) in awardasks" :key="index">
+            <div style="display:flex;">
+              <img src="statics/coin.png" style="width:13px;height:12px;margin:5px;" v-if="item.reward"/>
+              <span style="color: #e7412b;margin-right:20px;line-height: 25px;" v-if="item.reward">{{item.reward_num}}</span>
+              <span class="ask-tx">{{item.title}}</span>
+            </div>
+            <div style="color: #999;margin-right:20px;line-height: 25px;" v-html="item.detail"></div>
+            <div style="display:flex;color:#bbb;margin-top:5px;">
+              <span>{{util.getShortTime(item.create_at)}}</span>
+              <span style="width:1px;background: rgba(0, 0, 0, 0.12);margin:2px 10px 2px 10px;"></span>
+              <span>{{item.answer_num}} 回答</span>
+            </div>
+            <q-separator style="margin:5px 0 5px 0;" v-if="index!==awardasks.length-1"/>
+          </div>
+        </q-tab-panel>
+        <q-tab-panel name="myask">
+          <div class="flex-col" v-for="(item,index) in myasks" :key="index">
+            <div style="display:flex;">
+              <img src="statics/coin.png" style="width:13px;height:12px;margin:5px;" v-if="item.reward"/>
+              <span style="color: #e7412b;margin-right:20px;line-height: 25px;" v-if="item.reward">{{item.reward_num}}</span>
+              <span class="ask-tx">{{item.title}}</span>
+            </div>
+            <div style="color: #999;margin-right:20px;line-height: 25px;" v-html="item.detail"></div>
+            <div style="display:flex;color:#bbb;margin-top:5px;">
+              <span>{{util.getShortTime(item.create_at)}}</span>
+              <span style="width:1px;background: rgba(0, 0, 0, 0.12);margin:2px 10px 2px 10px;"></span>
+              <span>{{item.answer_num}} 回答</span>
+            </div>
+            <q-separator style="margin:5px 0 5px 0;" v-if="index!==myasks.length-1"/>
+          </div>
         </q-tab-panel>
         <q-tab-panel name="creatask" class="flex-col">
           <q-input
-            v-model="classname"
+            v-model="asktitle"
             :dense="true"
             counter
             maxlength="50"
@@ -64,8 +79,21 @@
             @image-added="handleImageAdded"
             style="height: 300px;width:100%;margin:10px 0 50px 0;"
           />
-          <span style="align-self: flex-end;color: rgba(0, 0, 0, 0.54);">{{detailLength()}} / 500</span>
-          <q-btn outline color="primary" label="提交" style="width:100px;" />
+          <span style="align-self: flex-end;color: rgba(0, 0, 0, 0.54);">{{detailLength()}} / 1000</span>
+          <div style="display:flex;">
+            <q-checkbox v-model="reward" label="悬赏" />
+            <img
+              src="statics/coin.png"
+              style="width:13px;height:12px;margin:5px;align-self:center;"
+            />
+            <q-input
+              v-model.number="rewardNum"
+              type="number"
+              dense
+              style="width: 50px;height:20px;"
+            />
+          </div>
+          <q-btn outline color="primary" label="提交" style="width:100px;" @click="createAsk" />
         </q-tab-panel>
       </q-tab-panels>
     </div>
@@ -91,10 +119,144 @@ export default {
   data() {
     return {
       tab: "all",
-      askDetail: ""
+      asktitle: "",
+      askDetail: "",
+      reward: false,
+      rewardNum: 10,
+      asks: [],
+      awardasks:[],
+      myasks:[]
     };
   },
+  computed: {
+    user: {
+      get() {
+        return this.$store.state.user.user;
+      },
+      set(val) {
+        this.$store.commit("user/updateUser", val);
+      }
+    }
+  },
+  mounted() {
+    this.getAsks();
+    this.getAwardAsks()
+    this.getMyAsks()
+  },
   methods: {
+    getMyAsks(){
+      let timestamp = new Date().getTime() + 1000 * 60 * 1;
+      let params = {
+        user_id:this.user.uuid
+      }
+      this.$axios
+        .get(this.global.api.backurl + "ask/getAsk", {
+          params: params,
+          headers: {
+            "access-token": this.util.generateToken(
+              JSON.stringify(params),
+              timestamp
+            ),
+            timestamp2: timestamp
+          }
+        })
+        .then(response => {
+          console.log(response);
+          if (response.status === 200 && response.data.code === 0) {
+            this.myasks=response.data.data
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    getAwardAsks(){
+      let timestamp = new Date().getTime() + 1000 * 60 * 1;
+      let params = {
+        reward:1+''
+      }
+      this.$axios
+        .get(this.global.api.backurl + "ask/getAsk", {
+          params: params,
+          headers: {
+            "access-token": this.util.generateToken(
+              JSON.stringify(params),
+              timestamp
+            ),
+            timestamp2: timestamp
+          }
+        })
+        .then(response => {
+          console.log(response);
+          if (response.status === 200 && response.data.code === 0) {
+            this.awardasks=response.data.data
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    getAsks() {
+      let timestamp = new Date().getTime() + 1000 * 60 * 1;
+      let params = null
+      this.$axios
+        .get(this.global.api.backurl + "ask/getAsk", {
+          params: params,
+          headers: {
+            "access-token": this.util.generateToken(
+              null,
+              timestamp
+            ),
+            timestamp2: timestamp
+          }
+        })
+        .then(response => {
+          console.log(response);
+          if (response.status === 200 && response.data.code === 0) {
+            this.asks=response.data.data
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    createAsk() {
+      if (this.asktitle === "") {
+        toast("请输入你的问题");
+        return;
+      }
+
+      this.$q.loading.show({
+        message: this.$t("submiting"),
+        spinnerSize: 50
+      });
+
+      let params = {
+        user_id: this.user.uuid,
+        title: this.asktitle,
+        detail: this.askDetail,
+        reward: this.reward,
+        reward_num: this.rewardNum
+      };
+      let timestamp = new Date().getTime() + 1 * 60 * 1000;
+      this.$axios
+        .post(this.global.api.backurl + "ask/createAsk", params, {
+          headers: {
+            "access-token": this.util.generateToken(
+              JSON.stringify(params),
+              timestamp
+            ),
+            timestamp2: timestamp
+          }
+        })
+        .then(response => {
+          this.$q.loading.hide();
+          console.log(response);
+          if (response.status === 200 && response.data.code === 0) {
+            toast("发布成功");
+          }
+        });
+    },
     detailLength() {
       let text = this.askDetail.replace(/<\/?[^>]+(>|$)/g, "");
       let len = text.length;

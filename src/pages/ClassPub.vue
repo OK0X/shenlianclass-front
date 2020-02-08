@@ -436,7 +436,7 @@ export default {
     },
     showDraft() {
       var _this = this;
-      localforage.getItem("draft").then(value => {
+      localforage.getItem("classpubdraft").then(value => {
         //console.log("草稿：" + value);
         if (!_this.util.isEmpty(value)) {
           // debugger
@@ -458,7 +458,7 @@ export default {
               _this.chpters = _this.draft.chpters;
             })
             .onCancel(() => {
-              localforage.removeItem("draft");
+              localforage.removeItem("classpubdraft");
             });
         }
       });
@@ -498,7 +498,7 @@ export default {
           this.classname !== "" ||
           this.classsummary !== ""
         ) {
-          localforage.setItem("draft", JSON.stringify(this.draft));
+          localforage.setItem("classpubdraft", JSON.stringify(this.draft));
           //console.log("saved，" + new Date().toLocaleString(),this.draft);
         }
       }, 1 * 60 * 1000);
