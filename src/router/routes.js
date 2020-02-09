@@ -63,6 +63,10 @@ const routes = [
       {
         path: '/Ask',
         component: () => import('pages/Ask.vue')
+      },
+      {
+        path: '/AskDetail',
+        component: () => import('pages/AskDetail.vue')
       }
     ]
   }

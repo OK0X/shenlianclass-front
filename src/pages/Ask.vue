@@ -18,50 +18,59 @@
       <q-tab-panels v-model="tab" animated>
         <q-tab-panel name="all">
           <div class="flex-col" v-for="(item,index) in asks" :key="index">
-            <div style="display:flex;">
-              <img src="statics/coin.png" style="width:13px;height:12px;margin:5px;" v-if="item.reward"/>
-              <span style="color: #e7412b;margin-right:20px;line-height: 25px;" v-if="item.reward">{{item.reward_num}}</span>
-              <span class="ask-tx">{{item.title}}</span>
+            <div style="display:flex;justify-content: space-between;">
+              <div style="display:flex;">
+                <img src="statics/coin.png" class="reward-icon" v-if="item.reward" />
+                <span class="reward-num" v-if="item.reward">{{item.reward_num}}</span>
+                <span class="ask-tx" @click="toAskDetail(item)">{{item.title}}</span>
+              </div>
+              <!-- <div style="color: #999;margin-right:20px;line-height: 25px;" v-html="item.detail"></div> -->
+              <div style="display:flex;color:#bbb;margin-top:5px;">
+                <span>{{util.getShortTime(item.create_at)}}</span>
+                <span style="width:1px;background: rgba(0, 0, 0, 0.12);margin:2px 10px 2px 10px;"></span>
+                <span>{{item.answer_num}} 回答</span>
+              </div>
             </div>
-            <div style="color: #999;margin-right:20px;line-height: 25px;" v-html="item.detail"></div>
-            <div style="display:flex;color:#bbb;margin-top:5px;">
-              <span>{{util.getShortTime(item.create_at)}}</span>
-              <span style="width:1px;background: rgba(0, 0, 0, 0.12);margin:2px 10px 2px 10px;"></span>
-              <span>{{item.answer_num}} 回答</span>
-            </div>
-            <q-separator style="margin:5px 0 5px 0;" v-if="index!==asks.length-1"/>
+            <q-separator
+              style="margin:5px 0 5px 0;background: rgba(0, 0, 0, 0.06);"
+              v-if="index!==asks.length-1"
+            />
           </div>
         </q-tab-panel>
         <q-tab-panel name="highcoin">
           <div class="flex-col" v-for="(item,index) in awardasks" :key="index">
-            <div style="display:flex;">
-              <img src="statics/coin.png" style="width:13px;height:12px;margin:5px;" v-if="item.reward"/>
-              <span style="color: #e7412b;margin-right:20px;line-height: 25px;" v-if="item.reward">{{item.reward_num}}</span>
-              <span class="ask-tx">{{item.title}}</span>
+            <div style="display:flex;justify-content: space-between;">
+              <div style="display:flex;">
+                <img src="statics/coin.png" class="reward-icon" v-if="item.reward" />
+                <span class="reward-num" v-if="item.reward">{{item.reward_num}}</span>
+                <span class="ask-tx">{{item.title}}</span>
+              </div>
+              <!-- <div style="color: #999;margin-right:20px;line-height: 25px;" v-html="item.detail"></div> -->
+              <div style="display:flex;color:#bbb;margin-top:5px;">
+                <span>{{util.getShortTime(item.create_at)}}</span>
+                <span style="width:1px;background: rgba(0, 0, 0, 0.12);margin:2px 10px 2px 10px;"></span>
+                <span>{{item.answer_num}} 回答</span>
+              </div>
             </div>
-            <div style="color: #999;margin-right:20px;line-height: 25px;" v-html="item.detail"></div>
-            <div style="display:flex;color:#bbb;margin-top:5px;">
-              <span>{{util.getShortTime(item.create_at)}}</span>
-              <span style="width:1px;background: rgba(0, 0, 0, 0.12);margin:2px 10px 2px 10px;"></span>
-              <span>{{item.answer_num}} 回答</span>
-            </div>
-            <q-separator style="margin:5px 0 5px 0;" v-if="index!==awardasks.length-1"/>
+            <q-separator style="margin:5px 0 5px 0;" v-if="index!==awardasks.length-1" />
           </div>
         </q-tab-panel>
         <q-tab-panel name="myask">
           <div class="flex-col" v-for="(item,index) in myasks" :key="index">
-            <div style="display:flex;">
-              <img src="statics/coin.png" style="width:13px;height:12px;margin:5px;" v-if="item.reward"/>
-              <span style="color: #e7412b;margin-right:20px;line-height: 25px;" v-if="item.reward">{{item.reward_num}}</span>
-              <span class="ask-tx">{{item.title}}</span>
+            <div style="display:flex;justify-content: space-between;">
+              <div style="display:flex;">
+                <img src="statics/coin.png" class="reward-icon" v-if="item.reward" />
+                <span class="reward-num" v-if="item.reward">{{item.reward_num}}</span>
+                <span class="ask-tx">{{item.title}}</span>
+              </div>
+              <!-- <div style="color: #999;margin-right:20px;line-height: 25px;" v-html="item.detail"></div> -->
+              <div style="display:flex;color:#bbb;margin-top:5px;">
+                <span>{{util.getShortTime(item.create_at)}}</span>
+                <span style="width:1px;background: rgba(0, 0, 0, 0.12);margin:2px 10px 2px 10px;"></span>
+                <span>{{item.answer_num}} 回答</span>
+              </div>
             </div>
-            <div style="color: #999;margin-right:20px;line-height: 25px;" v-html="item.detail"></div>
-            <div style="display:flex;color:#bbb;margin-top:5px;">
-              <span>{{util.getShortTime(item.create_at)}}</span>
-              <span style="width:1px;background: rgba(0, 0, 0, 0.12);margin:2px 10px 2px 10px;"></span>
-              <span>{{item.answer_num}} 回答</span>
-            </div>
-            <q-separator style="margin:5px 0 5px 0;" v-if="index!==myasks.length-1"/>
+            <q-separator style="margin:5px 0 5px 0;" v-if="index!==myasks.length-1" />
           </div>
         </q-tab-panel>
         <q-tab-panel name="creatask" class="flex-col">
@@ -124,8 +133,8 @@ export default {
       reward: false,
       rewardNum: 10,
       asks: [],
-      awardasks:[],
-      myasks:[]
+      awardasks: [],
+      myasks: []
     };
   },
   computed: {
@@ -140,15 +149,23 @@ export default {
   },
   mounted() {
     this.getAsks();
-    this.getAwardAsks()
-    this.getMyAsks()
+    this.getAwardAsks();
+    this.getMyAsks();
   },
   methods: {
-    getMyAsks(){
+    toAskDetail(item){
+      this.$router.push({
+        path: "/AskDetail",
+        query: {
+          arg: item
+        }
+      })
+    },
+    getMyAsks() {
       let timestamp = new Date().getTime() + 1000 * 60 * 1;
       let params = {
-        user_id:this.user.uuid
-      }
+        user_id: this.user.uuid
+      };
       this.$axios
         .get(this.global.api.backurl + "ask/getAsk", {
           params: params,
@@ -163,18 +180,18 @@ export default {
         .then(response => {
           console.log(response);
           if (response.status === 200 && response.data.code === 0) {
-            this.myasks=response.data.data
+            this.myasks = response.data.data;
           }
         })
         .catch(error => {
           console.log(error);
         });
     },
-    getAwardAsks(){
+    getAwardAsks() {
       let timestamp = new Date().getTime() + 1000 * 60 * 1;
       let params = {
-        reward:1+''
-      }
+        reward: 1 + ""
+      };
       this.$axios
         .get(this.global.api.backurl + "ask/getAsk", {
           params: params,
@@ -189,7 +206,7 @@ export default {
         .then(response => {
           console.log(response);
           if (response.status === 200 && response.data.code === 0) {
-            this.awardasks=response.data.data
+            this.awardasks = response.data.data;
           }
         })
         .catch(error => {
@@ -198,22 +215,19 @@ export default {
     },
     getAsks() {
       let timestamp = new Date().getTime() + 1000 * 60 * 1;
-      let params = null
+      let params = null;
       this.$axios
         .get(this.global.api.backurl + "ask/getAsk", {
           params: params,
           headers: {
-            "access-token": this.util.generateToken(
-              null,
-              timestamp
-            ),
+            "access-token": this.util.generateToken(null, timestamp),
             timestamp2: timestamp
           }
         })
         .then(response => {
           console.log(response);
           if (response.status === 200 && response.data.code === 0) {
-            this.asks=response.data.data
+            this.asks = response.data.data;
           }
         })
         .catch(error => {
@@ -319,11 +333,22 @@ export default {
 <style scoped>
 .ask-tx {
   color: #3066b3;
-  line-height: 25px;
+  line-height: 35px;
 }
 .ask-tx:hover {
   /* background-color:#f3f3f3; */
   cursor: pointer;
   text-decoration: underline;
+}
+.reward-icon {
+  width: 13px;
+  height: 12px;
+  margin: 5px;
+  align-self: center;
+}
+.reward-num {
+  color: #e7412b;
+  margin-right: 20px;
+  line-height: 35px;
 }
 </style>

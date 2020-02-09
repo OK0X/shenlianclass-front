@@ -1,8 +1,6 @@
 <template>
   <q-page class="mypage">
-    <div class="page-top">
-      <img src="statics/back.png" class="back-icon" @click="goBack"/>
-    </div>
+    <GoBack />
     <div class="summary-part">
       <img :src="getImgUrl(item)" class="course-cover" />
       <div class="course-summary">
@@ -79,13 +77,15 @@ import MyFooter from "../components/MyFooter";
 import VideoDialog from "../components/VideoDialog";
 import { openURL } from "quasar";
 import LoginDialog from "../components/LoginDialog";
+import GoBack from "../components/GoBack";
 import { bus } from "../bus.js";
 
 export default {
   components: {
     MyFooter,
     VideoDialog,
-    LoginDialog
+    LoginDialog,
+    GoBack
   },
   data() {
     return {
@@ -137,9 +137,6 @@ export default {
     });
   },
   methods: {
-    goBack(){
-      this.$router.go(-1)
-    },
     getStudyProgress() {
       let timestamp = new Date().getTime() + 1000 * 60 * 1;
       let videoIds = [];
@@ -369,21 +366,6 @@ export default {
 };
 </script>
 <style scoped>
-.page-top {
-  width: 100%;
-  max-width: 1200px;
-  margin: 20px 0px 0px;
-}
-.back-icon {
-  align-self: flex-start;
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-}
-.back-icon:hover {
-  background-color:white;
-  cursor: pointer;
-}
 .detail-part {
   width: 100%;
   max-width: 1200px;
