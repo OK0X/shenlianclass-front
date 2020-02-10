@@ -205,14 +205,68 @@ export default {
             for(let i=0;i<data.length;i++){
               data[i].comments_show=false
               data[i].comment_new=''
+              data[i].nickname=''
               for(let j=0;j<data[i].comments.length;j++){
                 data[i].comments[j].comments_show=false
                 data[i].comments[j].comment_new=''
+                data[i].comments[j].nickname=''
               }
             }
 
             console.log(999666,data);
             this.answers=data
+            this.getNicknames()
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    getNicknames(){
+      let timestamp = new Date().getTime() + 1000 * 60 * 1;
+
+      let userids=[]
+      for(let i=0;i<this.answers.length;i++){
+        userids.push(this.answers[i].user_id)
+      }
+      let params = {
+        uuid: encodeURIComponent(JSON.stringify(userids))
+      };
+      this.$axios
+        .get(this.global.api.backurl + "user/getNames", {
+          params: params,
+          headers: {
+            "access-token": this.util.generateToken(
+              JSON.stringify(params),
+              timestamp
+            ),
+            timestamp2: timestamp
+          }
+        })
+        .then(response => {
+          
+          if (response.status === 200 && response.data.code === 0) {
+            
+            let data = response.data.data;
+            console.log(333,data);
+            let nicks={}
+            for(let i=0;i<data.length;i++){
+
+              nicks[data[i].uuid]=data[i].nick
+
+              
+            }
+
+            for(let i=0;i<this.answers.length;i++){
+
+              this.answers[i].nickname=nicks[this.answers[i].user_id]
+
+              for(let j=0;j<this.answers[i].comments.length;j++){
+                
+                this.answers[i].comments[j].nickname=nicks[this.answers[i].comments[j].user_id]
+              }
+            }
+
           }
         })
         .catch(error => {
