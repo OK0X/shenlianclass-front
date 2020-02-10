@@ -3,7 +3,7 @@
     <GoBack />
     <div class="page-content" style="margin-top:5px;">
       <span class="ask-title">{{ask.title}}</span>
-      <div v-html="ask.detail"></div>
+      <div v-html="ask.detail" v-highlight></div>
       <q-btn outline color="primary" label="我来回答" style="width: 100px;" @click="ianswer" />
       <VueEditor
         v-show="editorShow"
@@ -37,7 +37,7 @@
             <span style="font-size: 12px;color: #9eacb6;">{{util.timeUTC2Local(item.create_at)}}</span>
           </div>
         </div>
-        <div v-html="item.content" style="margin:10px 0 10px 0;"></div>
+        <div v-html="item.content" style="margin:10px 0 10px 0;" v-highlight></div>
         <div style="display:flex;">
           <img src="statics/accept.png" class="zan-cai" v-show="user.uuid===ask.user_id"/>
           <span class="zan-cai-num" v-show="user.uuid===ask.user_id">采纳</span>

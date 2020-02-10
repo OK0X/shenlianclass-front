@@ -13,26 +13,6 @@ const routes = [
         component: () => import('pages/Test.vue')
       },
       {
-        path: '/Registe',
-        component: () => import('pages/Registe.vue')
-      },
-      {
-        path: '/Login',
-        component: () => import('pages/Login.vue')
-      },
-      {
-        path: '/CreatePost',
-        component: () => import('pages/CreatePost.vue')
-      },
-      {
-        path: '/ArticleDetail',
-        component: () => import('pages/ArticleDetail.vue')
-      },
-      {
-        path: '/Test',
-        component: () => import('pages/Test.vue')
-      },
-      {
         path: '/ClassDetail',
         component: () => import('pages/ClassDetail.vue')
       },

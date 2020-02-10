@@ -2,15 +2,15 @@
 /* eslint-disable */
 // highlight.js
 import hljs from "highlight.js/lib/highlight";
-import go from "highlight.js/lib/languages/go";
-import "highlight.js/styles/a11y-light.css";
+import javascript from "highlight.js/lib/languages/javascript";
+import "highlight.js/styles/a11y-dark.css";
 
-hljs.registerLanguage("go", go);
+hljs.registerLanguage("javascript", javascript);
 
 let Highlight = {}
 Highlight.install = function (Vue, options) {
   Vue.directive('highlight', function (el) {
-    let blocks = el.querySelectorAll('pre code');
+    let blocks = el.querySelectorAll('pre');
     blocks.forEach((block) => {
       hljs.highlightBlock(block)
     })
