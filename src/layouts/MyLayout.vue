@@ -13,7 +13,17 @@
         </q-input>
         <img src="statics/wx-gh-qrcode.jpg" style="width:90px;height:90px;align-self: center;" />
         <div style="align-self: center;margin-left:50px;">
-          <img :src="user.avatar" style="width:40px;height:40px;border-radius: 50%;" onerror="src = 'statics/default.png'"/>
+          <div style="display:flex;">
+            <img
+              :src="user.avatar"
+              style="width:40px;height:40px;border-radius: 50%;cursor: pointer;"
+              onerror="src = 'statics/default.png'"
+            />
+            <span style="align-self: center;margin-left:10px;cursor: pointer;">
+              {{user.nick==null?'游客':user.nick}}
+              <span style="color:#ff7a00;" @click="login">{{role}}</span>
+            </span>
+          </div>
           <q-menu>
             <q-list style="min-width: 100px">
               <q-item clickable v-close-popup to="/MyInfo">
@@ -40,16 +50,28 @@
             </q-list>
           </q-menu>
         </div>
-        <span style="align-self: center;margin-left:10px;">
-          {{user.nick==null?'游客':user.nick}}
-          <span style="color:#ff7a00;" @click="login">{{role}}</span>
-        </span>
       </div>
       <div class="main-tabs">
-        <div class="main-tab" @click="showTab(0)" :style="tabIndex===0?'color: #027be3;':'color: black;'">首页</div>
-        <div class="main-tab" @click="showTab(1)" :style="tabIndex===1?'color: #027be3;':'color: black;'">我的课程</div>
-        <div class="main-tab" @click="showTab(2)" :style="tabIndex===2?'color: #027be3;':'color: black;'">知识问答</div>
-        <div class="main-tab" @click="showTab(3)" :style="tabIndex===3?'color: #027be3;':'color: black;'">课程发布</div>
+        <div
+          class="main-tab"
+          @click="showTab(0)"
+          :style="tabIndex===0?'color: #027be3;':'color: black;'"
+        >首页</div>
+        <div
+          class="main-tab"
+          @click="showTab(1)"
+          :style="tabIndex===1?'color: #027be3;':'color: black;'"
+        >我的课程</div>
+        <div
+          class="main-tab"
+          @click="showTab(2)"
+          :style="tabIndex===2?'color: #027be3;':'color: black;'"
+        >知识问答</div>
+        <div
+          class="main-tab"
+          @click="showTab(3)"
+          :style="tabIndex===3?'color: #027be3;':'color: black;'"
+        >课程发布</div>
       </div>
     </q-header>
     <q-page-container style="background-color: #f2f5f9;">
@@ -74,7 +96,7 @@ export default {
         show: false,
         title: "快捷登陆"
       },
-      tabIndex:0
+      tabIndex: 0
     };
   },
   computed: {
@@ -115,9 +137,9 @@ export default {
     logout() {
       localforage.removeItem("user").then(() => {
         toast("已退出当前账户");
-        let data={
-          avatar:''
-        }
+        let data = {
+          avatar: ""
+        };
         this.user = data;
       });
     },
@@ -125,7 +147,7 @@ export default {
       // if(this.tabIndex===index)
       // return
 
-      this.tabIndex=index
+      this.tabIndex = index;
       switch (index) {
         case 0:
           this.$router.push("/");

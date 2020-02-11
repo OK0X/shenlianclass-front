@@ -29,7 +29,8 @@
       <div class="flex-col" v-for="(item,index) in answers" :key="index">
         <div style="display:flex;">
           <img
-            src="statics/default.png"
+            :src="getAvatar(item.user_id)"
+            onerror="src = 'statics/default.png'"
             style="width:40px;height:40px;border-radius: 50%;margin-right:10px;"
           />
           <div class="flex-col">
@@ -39,11 +40,11 @@
         </div>
         <div v-html="item.content" style="margin:10px 0 10px 0;" v-highlight></div>
         <div style="display:flex;">
-          <img src="statics/accept.png" class="zan-cai" v-show="user.uuid===ask.user_id"/>
+          <img src="statics/accept.png" class="zan-cai" v-show="user.uuid===ask.user_id" />
           <span class="zan-cai-num" v-show="user.uuid===ask.user_id">采纳</span>
-          <img src="statics/zan.png" class="zan-cai" v-show="user.uuid!==ask.user_id"/>
+          <img src="statics/zan.png" class="zan-cai" v-show="user.uuid!==ask.user_id" />
           <span class="zan-cai-num" v-show="user.uuid!==ask.user_id">{{item.agree}}</span>
-          <img src="statics/cai.png" class="zan-cai" v-show="user.uuid!==ask.user_id"/>
+          <img src="statics/cai.png" class="zan-cai" v-show="user.uuid!==ask.user_id" />
           <span class="zan-cai-num" v-show="user.uuid!==ask.user_id">{{item.disagree}}</span>
           <img
             src="statics/comment-focus.png"
@@ -57,7 +58,14 @@
         </div>
         <div class="comment-list" v-show="item.comments_show">
           <div style="display:flex;">
-            <q-input dense outlined v-model="item.comment_new" style="flex:1" counter maxlength="200"/>
+            <q-input
+              dense
+              outlined
+              v-model="item.comment_new"
+              style="flex:1"
+              counter
+              maxlength="200"
+            />
             <q-btn
               outline
               color="primary"
@@ -70,18 +78,21 @@
           <div class="flex-col" v-for="(subitem,index) in item.comments" :key="index">
             <div style="display:flex;">
               <img
-                src="statics/default.png"
+                :src="getAvatar(subitem.user_id)"
+                onerror="src = 'statics/default.png'"
                 style="width:40px;height:40px;border-radius: 50%;margin-right:10px;"
               />
               <div class="flex-col">
                 <span style="font-size: 14px;color: #333;font-weight: 700;">{{subitem.nickname}}</span>
-                <span style="font-size: 12px;color: #9eacb6;">{{util.timeUTC2Local(subitem.create_at)}}</span>
+                <span
+                  style="font-size: 12px;color: #9eacb6;"
+                >{{util.timeUTC2Local(subitem.create_at)}}</span>
               </div>
             </div>
             <div style="margin:10px 0 10px 0;">
               <span style="color:#027BE3">{{subitem.atwho===''?subitem.atwho:'@'+subitem.atwho}}</span>
               {{subitem.content}}
-              </div>
+            </div>
             <div style="display:flex;font-size:12px;">
               <img src="statics/zan-black.png" class="reply-icon" />
               <span>赞</span>
@@ -90,19 +101,32 @@
                 @click="subitem.comments_show=!subitem.comments_show"
                 class="reply-icon"
               />
-              <span @click="subitem.comments_show=!subitem.comments_show" style="cursor: pointer;">回复</span>
+              <span
+                @click="subitem.comments_show=!subitem.comments_show"
+                style="cursor: pointer;"
+              >回复</span>
             </div>
             <div style="display:flex;margin-top:10px;" v-show="subitem.comments_show">
-              <q-input dense outlined v-model="subitem.comment_new" style="flex:1" counter maxlength="200"/>
+              <q-input
+                dense
+                outlined
+                v-model="subitem.comment_new"
+                style="flex:1"
+                counter
+                maxlength="200"
+              />
               <q-btn
                 outline
                 color="primary"
                 label="发表"
                 style="margin-left:10px;height:40px;"
-                @click="submitComment('testnick',item,subitem.comment_new)"
+                @click="submitComment(subitem.nickname,item,subitem.comment_new)"
               />
             </div>
-            <q-separator style="margin:20px 0 20px 0;background: rgba(0, 0, 0, 0.06);" v-if="index!==item.comments.length-1"/>
+            <q-separator
+              style="margin:20px 0 20px 0;background: rgba(0, 0, 0, 0.06);"
+              v-if="index!==item.comments.length-1"
+            />
           </div>
         </div>
         <q-separator
@@ -147,10 +171,13 @@ export default {
   mounted() {
     this.ask = this.$route.query.arg;
     console.log(this.ask);
-    this.getAnswer()
+    this.getAnswer();
   },
   methods: {
-    getAnswer(){
+    getAvatar(user_id) {
+      return this.global.api.aliyunosshostpubread + "/" + user_id + ".jpg";
+    },
+    getAnswer() {
       let timestamp = new Date().getTime() + 1000 * 60 * 1;
       let params = {
         ask_id: this.ask.uuid
@@ -167,36 +194,34 @@ export default {
           }
         })
         .then(response => {
-          
           if (response.status === 200 && response.data.code === 0) {
-            
             let data = response.data.data;
-            for(let i=0;i<data.length;i++){
-              data[i].comments_show=false
-              data[i].comment_new=''
-              data[i].nickname=''
-              for(let j=0;j<data[i].comments.length;j++){
-                data[i].comments[j].comments_show=false
-                data[i].comments[j].comment_new=''
-                data[i].comments[j].nickname=''
+            for (let i = 0; i < data.length; i++) {
+              data[i].comments_show = false;
+              data[i].comment_new = "";
+              data[i].nickname = "";
+              for (let j = 0; j < data[i].comments.length; j++) {
+                data[i].comments[j].comments_show = false;
+                data[i].comments[j].comment_new = "";
+                data[i].comments[j].nickname = "";
               }
             }
 
-            console.log(999666,data);
-            this.answers=data
-            this.getNicknames()
+            console.log(999666, data);
+            this.answers = data;
+            this.getNicknames();
           }
         })
         .catch(error => {
           console.log(error);
         });
     },
-    getNicknames(){
+    getNicknames() {
       let timestamp = new Date().getTime() + 1000 * 60 * 1;
 
-      let userids=[]
-      for(let i=0;i<this.answers.length;i++){
-        userids.push(this.answers[i].user_id)
+      let userids = [];
+      for (let i = 0; i < this.answers.length; i++) {
+        userids.push(this.answers[i].user_id);
       }
       let params = {
         uuid: encodeURIComponent(JSON.stringify(userids))
@@ -213,36 +238,29 @@ export default {
           }
         })
         .then(response => {
-          
           if (response.status === 200 && response.data.code === 0) {
-            
             let data = response.data.data;
-            console.log(333,data);
-            let nicks={}
-            for(let i=0;i<data.length;i++){
-
-              nicks[data[i].uuid]=data[i].nick
-
-              
+            console.log(333, data);
+            let nicks = {};
+            for (let i = 0; i < data.length; i++) {
+              nicks[data[i].uuid] = data[i].nick;
             }
 
-            for(let i=0;i<this.answers.length;i++){
+            for (let i = 0; i < this.answers.length; i++) {
+              this.answers[i].nickname = nicks[this.answers[i].user_id];
 
-              this.answers[i].nickname=nicks[this.answers[i].user_id]
-
-              for(let j=0;j<this.answers[i].comments.length;j++){
-                
-                this.answers[i].comments[j].nickname=nicks[this.answers[i].comments[j].user_id]
+              for (let j = 0; j < this.answers[i].comments.length; j++) {
+                this.answers[i].comments[j].nickname =
+                  nicks[this.answers[i].comments[j].user_id];
               }
             }
-
           }
         })
         .catch(error => {
           console.log(error);
         });
     },
-    submitComment(atwho,whichAnswer,content) {
+    submitComment(atwho, whichAnswer, content) {
       if (content === "") {
         toast("请输入评论内容");
         return;
@@ -254,10 +272,10 @@ export default {
       });
 
       let params = {
-        atwho:atwho,
+        atwho: atwho,
         user_id: this.user.uuid,
         ask_id: this.ask.uuid,
-        answer_id:whichAnswer.uuid,
+        answer_id: whichAnswer.uuid,
         content: content
       };
       let timestamp = new Date().getTime() + 1 * 60 * 1000;
