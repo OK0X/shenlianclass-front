@@ -43,6 +43,10 @@ const routes = [
       {
         path: '/AskDetail',
         component: () => import('pages/AskDetail.vue')
+      },
+      {
+        path: '/MyInfo',
+        component: () => import('pages/MyInfo.vue')
       }
     ]
   }

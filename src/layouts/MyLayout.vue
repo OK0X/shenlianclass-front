@@ -16,16 +16,16 @@
           <img src="statics/default.png" style="width:40px;height:40px;border-radius: 50%;" />
           <q-menu>
             <q-list style="min-width: 100px">
-              <q-item clickable v-close-popup>
+              <q-item clickable v-close-popup to="/MyInfo">
                 <q-item-section>个人中心</q-item-section>
               </q-item>
-              <q-item clickable v-close-popup @click="toMyPub">
+              <q-item clickable v-close-popup to="/MyPub">
                 <q-item-section>我发布的课程</q-item-section>
               </q-item>
-              <q-item clickable v-close-popup v-show="user.role>=2" @click="course2Check">
+              <q-item clickable v-close-popup v-show="user.role>=2" to="/CourseCheck">
                 <q-item-section>课程审核</q-item-section>
               </q-item>
-              <q-item clickable v-close-popup v-show="user.role>=3" @click="backendConfig">
+              <q-item clickable v-close-popup v-show="user.role>=3" to="/BackendConfig">
                 <q-item-section>系统配置</q-item-section>
               </q-item>
               <q-separator v-show="typeof user.role !== 'undefined'" />
@@ -140,15 +140,6 @@ export default {
         default:
           break;
       }
-    },
-    toMyPub() {
-      this.$router.push("/MyPub");
-    },
-    course2Check() {
-      this.$router.push("/CourseCheck");
-    },
-    backendConfig() {
-      this.$router.push("/BackendConfig");
     }
   }
 };
