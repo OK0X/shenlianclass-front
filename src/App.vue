@@ -28,11 +28,16 @@ export default {
         if (value !== null) {
           this.user = JSON.parse(value);
 
-          this.updateUserInfo();
-        } 
+          this.getUserInfo();
+        } else{
+          let data={
+            avatar:''
+          }
+          this.user = data;
+        }
       });
     },
-    updateUserInfo() {
+    getUserInfo() {
       let timestamp = new Date().getTime() + 1000 * 60 * 1;
       let params={
         uuid:this.user.uuid
@@ -46,10 +51,11 @@ export default {
           }
         })
         .then(response => {
-          //console.log(response);
+          console.log(333,response);
           if (response.status === 200 && response.data.code === 0) {
-            
-            this.user = response.data.data;
+            let data = response.data.data;
+            data.avatar=this.global.api.aliyunosshostpubread+'/'+data.uuid+'.jpg'
+            this.user=data
             localforage.setItem("user",JSON.stringify(this.user))
           }
         })

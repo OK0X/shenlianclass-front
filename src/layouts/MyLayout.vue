@@ -13,7 +13,7 @@
         </q-input>
         <img src="statics/wx-gh-qrcode.jpg" style="width:90px;height:90px;align-self: center;" />
         <div style="align-self: center;margin-left:50px;">
-          <img src="statics/default.png" style="width:40px;height:40px;border-radius: 50%;" />
+          <img :src="user.avatar" style="width:40px;height:40px;border-radius: 50%;" onerror="src = 'statics/default.png'"/>
           <q-menu>
             <q-list style="min-width: 100px">
               <q-item clickable v-close-popup to="/MyInfo">
@@ -115,7 +115,10 @@ export default {
     logout() {
       localforage.removeItem("user").then(() => {
         toast("已退出当前账户");
-        this.user = {};
+        let data={
+          avatar:''
+        }
+        this.user = data;
       });
     },
     showTab(index) {

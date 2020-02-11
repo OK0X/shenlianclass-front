@@ -153,7 +153,8 @@ export default {
 
             }
 
-            this.user = data;
+            data.avatar=this.global.api.aliyunosshostpubread+'/'+data.uuid+'.jpg'
+            this.user=data
             //console.log(this.user);
 
             localforage.setItem("user",JSON.stringify(this.user))

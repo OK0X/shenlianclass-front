@@ -131,38 +131,7 @@ export default {
       ask: "",
       editorShow: false,
       myanswer: "",
-      answers: [
-        // {
-        //   nickname: "昵称",
-        //   create_at: "2020-02-09 12:12:12",
-        //   content:
-        //     "dfaf反对反对反对反对反对反对反对反对反对反<br>对反对反对反对反对反对反对反对反对反对反对",
-        //   accept:false,
-        //   agree: 128,
-        //   disagree: 0,
-        //   comment_num: 22,
-        //   comments_show: false,
-        //   comment_new: "",
-        //   comments: [
-        //     {
-        //       nickname: "昵称",
-        //       create_at: "2020-02-09 12:12:12",
-        //       atwho:'@小宝',
-        //       content: "评论内容",
-        //       comments_show: false,
-        //       comment_new: ""
-        //     },
-        //     {
-        //       nickname: "昵称",
-        //       create_at: "2020-02-09 12:12:12",
-        //       atwho:'',
-        //       content: "评论内容",
-        //       comments_show: false,
-        //       comment_new: ""
-        //     }
-        //   ]
-        // }
-      ]
+      answers: []
     };
   },
   computed: {
