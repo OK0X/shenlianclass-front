@@ -111,10 +111,10 @@ export default {
           this.updateUser(params)
         })
         .onCancel(() => {
-          // console.log('>>>> Cancel')
+          //console.log('>>>> Cancel')
         })
         .onDismiss(() => {
-          // console.log('I am triggered on both OK and Cancel')
+          //console.log('I am triggered on both OK and Cancel')
         });
     },
     updateUser(params) {
@@ -157,7 +157,7 @@ export default {
           }
         })
         .then(response => {
-          // console.log(333,response);
+          //console.log(333,response);
           if (response.status === 200 && response.data.code === 0) {
             let data = response.data.data;
             data.avatar=this.global.api.aliyunosshostpubread+'/'+data.uuid+'.jpg'
@@ -167,7 +167,7 @@ export default {
         })
         .catch(error => {
 
-          console.log(error);
+          //console.log(error);
         });
     },
     uploadImgOK() {
@@ -180,7 +180,7 @@ export default {
         Math.random();
       this.user = data;
 
-      // console.log(9991, this.user);
+      //console.log(9991, this.user);
     },
     onFileChange(e) {
       // debugger
@@ -195,7 +195,7 @@ export default {
         // _this.imgsrc = e.target.result; //图片内容的base64编码
         // _this.imgShow = true;
         // debugger
-        // console.log(555)
+        //console.log(555)
         this.cropperDialog.img = e.target.result;
         this.cropperDialog.show = true;
         this.$refs.imgpicker.value = null; //重置后可以再次选择同一张图片

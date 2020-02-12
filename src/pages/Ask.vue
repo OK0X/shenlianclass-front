@@ -43,7 +43,7 @@
               <div style="display:flex;">
                 <img src="statics/coin.png" class="reward-icon" v-if="item.reward" />
                 <span class="reward-num" v-if="item.reward">{{item.reward_num}}</span>
-                <span class="ask-tx">{{item.title}}</span>
+                <span class="ask-tx" @click="toAskDetail(item)">{{item.title}}</span>
               </div>
               <!-- <div style="color: #999;margin-right:20px;line-height: 25px;" v-html="item.detail"></div> -->
               <div style="display:flex;color:#bbb;margin-top:5px;">
@@ -61,7 +61,7 @@
               <div style="display:flex;">
                 <img src="statics/coin.png" class="reward-icon" v-if="item.reward" />
                 <span class="reward-num" v-if="item.reward">{{item.reward_num}}</span>
-                <span class="ask-tx">{{item.title}}</span>
+                <span class="ask-tx" @click="toAskDetail(item)">{{item.title}}</span>
               </div>
               <!-- <div style="color: #999;margin-right:20px;line-height: 25px;" v-html="item.detail"></div> -->
               <div style="display:flex;color:#bbb;margin-top:5px;">
@@ -183,13 +183,13 @@ export default {
           }
         })
         .then(response => {
-          console.log(response);
+          //console.log(response);
           if (response.status === 200 && response.data.code === 0) {
             this.myasks = response.data.data;
           }
         })
         .catch(error => {
-          console.log(error);
+          //console.log(error);
         });
     },
     getAwardAsks() {
@@ -209,13 +209,13 @@ export default {
           }
         })
         .then(response => {
-          console.log(response);
+          //console.log(response);
           if (response.status === 200 && response.data.code === 0) {
             this.awardasks = response.data.data;
           }
         })
         .catch(error => {
-          console.log(error);
+          //console.log(error);
         });
     },
     getAsks() {
@@ -230,13 +230,13 @@ export default {
           }
         })
         .then(response => {
-          // console.log(response);
+          //console.log(response);
           if (response.status === 200 && response.data.code === 0) {
             this.asks = response.data.data;
           }
         })
         .catch(error => {
-          console.log(error);
+          //console.log(error);
         });
     },
     createAsk() {
@@ -275,7 +275,7 @@ export default {
         })
         .then(response => {
           this.$q.loading.hide();
-          console.log(response);
+          //console.log(response);
           if (response.status === 200 && response.data.code === 0) {
             toast("发布成功");
             this.asks.unshift({

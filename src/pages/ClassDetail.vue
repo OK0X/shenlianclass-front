@@ -143,7 +143,7 @@ export default {
       for (let i = 0; i < this.videos.length; i++) {
         videoIds.push(this.videos[i].video_id);
       }
-      // console.log(999,this.videos)
+      //console.log(999,this.videos)
       let params = {
         user_id: this.user.uuid,
         course_id: this.item.uuid,
@@ -161,8 +161,8 @@ export default {
           }
         })
         .then(response => {
-          // console.log(888,response);
-          // console.log(8889,this.videos);
+          //console.log(888,response);
+          //console.log(8889,this.videos);
           if (response.status === 200 && response.data.code === 0) {
             let data = response.data.data;
             if (data.length === 0) return;
@@ -175,11 +175,11 @@ export default {
 
             this.setProgress();
 
-            // console.log(555,this.videos)
+            //console.log(555,this.videos)
           }
         })
         .catch(error => {
-          console.log(error);
+          //console.log(error);
         });
     },
     setProgress() {
@@ -191,7 +191,7 @@ export default {
       }
     },
     checkisPayed() {
-      // console.log(this.item);
+      //console.log(this.item);
       if (typeof this.user.uuid === "undefined") {
         //未登陆
         return;
@@ -213,7 +213,7 @@ export default {
           }
         })
         .then(response => {
-          // console.log(888,response);
+          //console.log(888,response);
           if (response.status === 200 && response.data.code === 0) {
             if (response.data.data.length >= 1) {
               this.isPayed = true;
@@ -222,7 +222,7 @@ export default {
           }
         })
         .catch(error => {
-          console.log(error);
+          //console.log(error);
         });
     },
     queryPayResult(out_trade_no) {
@@ -242,7 +242,7 @@ export default {
           }
         })
         .then(response => {
-          // console.log(response);
+          //console.log(response);
           if (response.status === 200 && response.data.code === 0) {
             this.item = response.data.data.course;
             this.setVideos(response.data.data.videos);
@@ -309,7 +309,7 @@ export default {
         })
         .then(response => {
           if (response.status === 200 && response.data.code === 0) {
-            // console.log(response.data.data);
+            //console.log(response.data.data);
             const result = response.data.data;
             this.out_trade_no = result.out_trade_no;
             this.payurl = result.payurl;
@@ -347,7 +347,7 @@ export default {
           }
         })
         .then(response => {
-          // console.log(111,response);
+          //console.log(111,response);
           if (response.status === 200 && response.data.code === 0) {
             this.setVideos(response.data.data);
             // if (this.isPayed) {

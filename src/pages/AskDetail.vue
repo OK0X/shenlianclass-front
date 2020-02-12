@@ -185,7 +185,7 @@ export default {
   },
   mounted() {
     this.ask = this.$route.query.arg;
-    console.log(this.ask);
+    //console.log(this.ask);
     this.getAnswer();
   },
   methods: {
@@ -222,13 +222,13 @@ export default {
               }
             }
             //123
-            console.log(999666, data);
+            //console.log(999666, data);
             this.answers = data;
             this.getNicknames();
           }
         })
         .catch(error => {
-          console.log(error);
+          //console.log(error);
         });
     },
     getNicknames() {
@@ -255,7 +255,7 @@ export default {
         .then(response => {
           if (response.status === 200 && response.data.code === 0) {
             let data = response.data.data;
-            // console.log(333, data);
+            //console.log(333, data);
             let nicks = {};
             for (let i = 0; i < data.length; i++) {
               nicks[data[i].uuid] = data[i].nick;
@@ -272,7 +272,7 @@ export default {
           }
         })
         .catch(error => {
-          console.log(error);
+          //console.log(error);
         });
     },
     submitComment(atwho, whichAnswer, whichItem) {
@@ -312,7 +312,7 @@ export default {
         })
         .then(response => {
           this.$q.loading.hide();
-          console.log(response);
+          //console.log(response);
           if (response.status === 200 && response.data.code === 0) {
             toast("评论成功");
             //123
@@ -329,7 +329,9 @@ export default {
               user_id: this.user.uuid,
               uuid: response.data.data
             });
+            whichAnswer.comment_num++
             whichItem.comment_new=''
+            // whichItem.comments_show=false
           }
         });
     },
@@ -368,7 +370,7 @@ export default {
         })
         .then(response => {
           this.$q.loading.hide();
-          console.log(response);
+          //console.log(response);
           if (response.status === 200 && response.data.code === 0) {
             toast("回答成功");
             //123

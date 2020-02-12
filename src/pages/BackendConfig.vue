@@ -64,7 +64,7 @@ export default {
           }
         })
         .then(response => {
-          console.log(response);
+          //console.log(response);
           if (response.status === 200 && response.data.code === 0) {
             this.redisRuntime = response.data.data;
           }
@@ -91,10 +91,10 @@ export default {
           this.clearAll2(data)
         })
         .onCancel(() => {
-          // console.log('>>>> Cancel')
+          //console.log('>>>> Cancel')
         })
         .onDismiss(() => {
-          // console.log('I am triggered on both OK and Cancel')
+          //console.log('I am triggered on both OK and Cancel')
         });
     },
     clearAll2(data) {
@@ -136,10 +136,10 @@ export default {
           this.updateConfig();
         })
         .onCancel(() => {
-          // console.log('>>>> Cancel')
+          //console.log('>>>> Cancel')
         })
         .onDismiss(() => {
-          // console.log('I am triggered on both OK and Cancel')
+          //console.log('I am triggered on both OK and Cancel')
         });
     },
     updateConfig() {
@@ -178,7 +178,7 @@ export default {
           }
         })
         .then(response => {
-          console.log(response);
+          //console.log(response);
           if (response.status === 200 && response.data.code === 0) {
             this.config = response.data.data;
           }

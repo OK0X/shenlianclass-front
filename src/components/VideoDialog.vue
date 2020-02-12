@@ -75,7 +75,7 @@ export default {
   },
   methods: {
     onShow() {
-      // console.log(999, this.videoDialog);
+      //console.log(999, this.videoDialog);
       this.videos = this.videoDialog.videos;
       this.playIndex = this.videoDialog.currentPlay;
       this.currentVideo = this.videos[this.playIndex];
@@ -117,7 +117,7 @@ export default {
           }
         })
         .then(response => {
-          // console.log(888,response);
+          //console.log(888,response);
           if (response.status === 200 && response.data.code === 0) {
             this.PlayAuth = response.data.data.PlayAuth;
             this.getPlayToken();
@@ -238,7 +238,7 @@ export default {
         .then(function(response) {
           //console.log(response);
           if (response.status === 200 && response.data.code === 0) {
-            // console.log('更新成功')
+            //console.log('更新成功')
           }
         });
     }

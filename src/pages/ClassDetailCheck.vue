@@ -162,7 +162,7 @@ export default {
           }
         })
         .then(response => {
-          // console.log(222,response);
+          //console.log(222,response);
           if (response.status === 200 && response.data.code === 0) {
             if (
               response.data.data.TranscodeTask.TaskStatus === "CompleteAllSucc"
@@ -223,7 +223,7 @@ export default {
           }
         })
         .then(response => {
-          // console.log(111,response);
+          //console.log(111,response);
           if (response.status === 200 && response.data.code === 0) {
             this.videos = response.data.data;
 
