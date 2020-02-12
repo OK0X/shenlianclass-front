@@ -27,7 +27,7 @@
           v-for="(item,index) in courses"
           :key="index"
         >
-          <img :src="global.api.aliyunosshostpubread + '/' + item.converimg" class="card-img" onerror="src = 'statics/test-conver.jpg'"/>
+          <img :src="global.api.aliyunosshostpubread + '/' + item.converimg" class="card-img" onerror="src = 'statics/default-conver.jpg'"/>
           <div class="card-info">
             <span class="card-title">{{item.classname}}</span>
             <div class="more-text">

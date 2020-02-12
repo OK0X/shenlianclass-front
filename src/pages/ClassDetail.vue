@@ -2,7 +2,7 @@
   <q-page class="mypage">
     <GoBack />
     <div class="summary-part">
-      <img :src="global.api.aliyunosshostpubread + '/' + item.converimg" class="course-cover" onerror="src = 'statics/test-conver.jpg'"/>
+      <img :src="global.api.aliyunosshostpubread + '/' + item.converimg" class="course-cover" onerror="src = 'statics/default-conver.jpg'"/>
       <div class="course-summary">
         <span style="font-size:24px;color:#1f2328;">{{item.classname}}</span>
         <span>{{item.classsummary}}</span>

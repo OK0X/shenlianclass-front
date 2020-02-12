@@ -4,7 +4,9 @@
     <div class="page-content" style="margin-top:5px;">
       <span class="ask-title">{{ask.title}}</span>
       <div v-html="ask.detail" v-highlight></div>
-      <q-btn outline color="primary" label="我来回答" style="width: 100px;" @click="ianswer" />
+      <div style="display:flex;">
+      <q-btn unelevated color="primary" label="我来回答" style="width: 90px;" @click="ianswer" />
+      </div>
       <VueEditor
         v-show="editorShow"
         v-model="myanswer"
@@ -13,7 +15,7 @@
         style="height: 300px;width:100%;margin:10px 0 50px 0;"
       />
       <q-btn
-        outline
+        unelevated
         color="primary"
         label="提交回答"
         style="width: 100px;align-self: flex-end;margin-top:10px;"
@@ -34,11 +36,11 @@
             style="width:40px;height:40px;border-radius: 50%;margin-right:10px;"
           />
           <div class="flex-col">
-            <span style="font-size: 14px;color: #333;font-weight: 700;">{{item.nickname}}</span>
+            <span style="font-size: 14px;color: #333;">{{item.nickname}}</span>
             <span style="font-size: 12px;color: #9eacb6;">{{util.timeUTC2Local(item.create_at)}}</span>
           </div>
         </div>
-        <div v-html="item.content" style="margin:10px 0 10px 0;" v-highlight></div>
+        <div v-html="item.content" style="margin:10px 0 10px 0;font-size: 16px;" v-highlight></div>
         <div style="display:flex;">
           <img src="statics/accept.png" class="zan-cai" v-show="user.uuid===ask.user_id" />
           <span class="zan-cai-num" v-show="user.uuid===ask.user_id">采纳</span>
@@ -83,19 +85,19 @@
                 style="width:40px;height:40px;border-radius: 50%;margin-right:10px;"
               />
               <div class="flex-col">
-                <span style="font-size: 14px;color: #333;font-weight: 700;">{{subitem.nickname}}</span>
+                <span style="font-size: 14px;color: #333;">{{subitem.nickname}}</span>
                 <span
                   style="font-size: 12px;color: #9eacb6;"
                 >{{util.timeUTC2Local(subitem.create_at)}}</span>
               </div>
             </div>
-            <div style="margin:10px 0 10px 0;">
+            <div style="margin:10px 0 10px 0;font-size:16px;">
               <span style="color:#027BE3">{{subitem.atwho===''?subitem.atwho:'@'+subitem.atwho}}</span>
               {{subitem.content}}
             </div>
             <div style="display:flex;font-size:12px;">
               <img src="statics/zan-black.png" class="reply-icon" />
-              <span>赞</span>
+              <span style="cursor: pointer;color:#7A8F9A">赞</span>
               <img
                 src="statics/reply.png"
                 @click="subitem.comments_show=!subitem.comments_show"
@@ -103,7 +105,7 @@
               />
               <span
                 @click="subitem.comments_show=!subitem.comments_show"
-                style="cursor: pointer;"
+                style="cursor: pointer;color:#7A8F9A"
               >回复</span>
             </div>
             <div style="display:flex;margin-top:10px;" v-show="subitem.comments_show">
@@ -136,6 +138,7 @@
       </div>
     </div>
     <MyFooter />
+    <LoginDialog :dialogData="loginDialog" />
   </q-page>
 </template>
 
@@ -144,18 +147,24 @@
 import MyFooter from "../components/MyFooter";
 import GoBack from "../components/GoBack";
 import { VueEditor } from "vue2-editor";
+import LoginDialog from "../components/LoginDialog";
 export default {
   components: {
     GoBack,
     VueEditor,
-    MyFooter
+    MyFooter,
+    LoginDialog
   },
   data() {
     return {
       ask: "",
       editorShow: false,
       myanswer: "",
-      answers: []
+      answers: [],
+      loginDialog: {
+        show: false,
+        title: "快捷登陆"
+      }
     };
   },
   computed: {
@@ -261,6 +270,13 @@ export default {
         });
     },
     submitComment(atwho, whichAnswer, content) {
+
+      if (typeof this.user.uuid === "undefined") {
+        toast("请先登陆后再评论");
+        this.loginDialog.show = true;
+        return;
+      }
+
       if (content === "") {
         toast("请输入评论内容");
         return;
@@ -409,7 +425,7 @@ export default {
 .zan-cai-num {
   margin-left: 5px;
   color: #027be3;
-  font-weight: bold;
+  /* font-weight: bold; */
 }
 .comment-icon {
   width: 20px;
@@ -418,15 +434,15 @@ export default {
   cursor: pointer;
 }
 .reply-icon {
-  width: 18px;
-  height: 18px;
+  width: 16px;
+  height: 16px;
   margin: 0 5px 0 10px;
   cursor: pointer;
 }
 .comment-tx {
   color: #027be3;
   cursor: pointer;
-  font-weight: bold;
+  /* font-weight: bold; */
   margin-left: 5px;
 }
 .comment-list {

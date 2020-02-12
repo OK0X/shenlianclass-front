@@ -4,7 +4,7 @@
       <!-- <span style="color:#1f2328;font-size:24px;">我发布的课程</span> -->
       <!-- <q-separator /> -->
       <div style=" height: 355px;display: flex;" v-for="(item,index) in myCourses" :key="index"  @click="toCheckDetail(item)">
-        <img :src="global.api.aliyunosshostpubread + '/' + item.converimg" class="course-cover" onerror="src = 'statics/test-conver.jpg'"/>
+        <img :src="global.api.aliyunosshostpubread + '/' + item.converimg" class="course-cover" onerror="src = 'statics/default-conver.jpg'"/>
         <div class="course-summary">
           <span style="font-size:24px;color:#1f2328;">{{item.classname}}</span>
           <span>{{item.classsummary}}</span>
