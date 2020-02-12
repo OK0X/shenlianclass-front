@@ -2,7 +2,7 @@
   <q-page class="mypage">
     <GoBack />
     <div class="summary-part">
-      <img :src="getImgUrl(item)" class="course-cover" />
+      <img :src="global.api.aliyunosshostpubread + '/' + item.converimg" class="course-cover" onerror="src = 'statics/test-conver.jpg'"/>
       <div class="course-summary">
         <span style="font-size:24px;color:#1f2328;">{{item.classname}}</span>
         <span>{{item.classsummary}}</span>
@@ -355,12 +355,6 @@ export default {
             // }
           }
         });
-    },
-    getImgUrl(item) {
-      if (typeof item.converimg === "undefined") {
-        return "statics/test-conver.jpg";
-      }
-      return this.util.makeImgUrl(this, item.converimg);
     }
   }
 };

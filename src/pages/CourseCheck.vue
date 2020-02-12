@@ -4,7 +4,7 @@
       <!-- <span style="color:#1f2328;font-size:24px;">我发布的课程</span> -->
       <!-- <q-separator /> -->
       <div style=" height: 355px;display: flex;" v-for="(item,index) in myCourses" :key="index" @click="toCheckDetail(item)">
-        <img :src="getImgUrl(item.converimg)" class="course-cover" />
+        <img :src="global.api.aliyunosshostpubread + '/' + item.converimg" class="course-cover" onerror="src = 'statics/test-conver.jpg'"/>
         <div class="course-summary">
           <span style="font-size:24px;color:#1f2328;">{{item.classname}}</span>
           <span>{{item.classsummary}}</span>
@@ -57,9 +57,6 @@ export default {
           arg:item
         }
       })
-    },
-    getImgUrl(filename) {
-      return this.util.makeImgUrl(this, filename);
     },
     getCheckingCourses() {
       let timestamp = new Date().getTime() + 1000 * 60 * 1;

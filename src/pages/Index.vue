@@ -27,7 +27,7 @@
           v-for="(item,index) in courses"
           :key="index"
         >
-          <img :src="getImgUrl(item.converimg)" class="card-img" />
+          <img :src="global.api.aliyunosshostpubread + '/' + item.converimg" class="card-img" onerror="src = 'statics/test-conver.jpg'"/>
           <div class="card-info">
             <span class="card-title">{{item.classname}}</span>
             <div class="more-text">
@@ -65,9 +65,6 @@ export default {
     this.getCourses();
   },
   methods: {
-    getImgUrl(filename) {
-      return this.util.makeImgUrl(this, filename);
-    },
     getCourses() {
       let timestamp = new Date().getTime() + 1000 * 60 * 1;
 

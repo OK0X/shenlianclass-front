@@ -8,7 +8,7 @@
         @click="toCourseDetail(item)"
       >
         <div style="display: flex;flex:1;">
-          <img :src="getImgUrl(item.converimg)" class="course-cover" />
+          <img :src="global.api.aliyunosshostpubread + '/' + item.converimg" class="course-cover" onerror="src = 'statics/test-conver.jpg'"/>
           <div class="course-summary">
             <span style="font-size:24px;color:#1f2328;">{{item.classname}}</span>
             <span>{{item.classsummary}}</span>
@@ -77,9 +77,6 @@ export default {
           from:'myclass'
         }
       })
-    },
-    getImgUrl(filename) {
-      return this.util.makeImgUrl(this, filename);
     },
     getPayedCourse() {
       let timestamp = new Date().getTime() + 1000 * 60 * 1;

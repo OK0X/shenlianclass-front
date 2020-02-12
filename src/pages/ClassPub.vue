@@ -213,7 +213,7 @@ export default {
       formData.append("file", this.imgfile, filename);
 
       this.$axios
-        .post(this.global.api.aliyunosshost, formData, {
+        .post(this.global.api.aliyunosshostpubread, formData, {
           headers: {
             "Content-Type":
               "application/x-www-form-urlencoded;boundary=----WebKitFormBoundarytkUbKWcxgeMi1fIr"

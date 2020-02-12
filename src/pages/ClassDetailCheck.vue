@@ -1,7 +1,7 @@
 <template>
   <q-page class="mypage">
     <div class="buywatch">
-      <img :src="getImgUrl(item.converimg)" class="course-cover" />
+      <img :src="global.api.aliyunosshostpubread + '/' + item.converimg" class="course-cover" onerror="src = 'statics/test-conver.jpg'"/>
       <div class="course-summary">
         <span style="font-size:24px;color:#1f2328;">{{item.classname}}</span>
         <span>{{item.classsummary}}</span>
@@ -205,9 +205,6 @@ export default {
         default:
           break;
       }
-    },
-    getImgUrl(filename) {
-      return this.util.makeImgUrl(this, filename);
     },
     getVideos() {
       let timestamp = new Date().getTime() + 1000 * 60 * 1;
