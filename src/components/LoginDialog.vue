@@ -3,7 +3,7 @@
     <div class="mydialog">
       <div class="text-h6" style="margin-left:10px;margin-top:10px;">{{dialogData.title}}</div>
       <div style="margin-left:10px;margin-right:10px;">
-        <q-input :dense="true" v-model="mobile" placeholder="请输入手机号" />
+        <q-input :dense="true" v-model="mobile" :placeholder="placeholder()" />
         <div style="display: flex;margin-top:15px;justify-content: space-between;">
           <q-input :dense="true" v-model="smscode" placeholder="请输入验证码" style="width: 50%;" />
           <q-btn unelevated rounded :label="'发送验证码'+smsbtnTx" color="primary" @click="sendsmscode" />
@@ -42,6 +42,13 @@ export default {
     }
   },
   methods: {
+    placeholder(){
+
+      if(typeof this.dialogData.placeholder === 'undefined'){
+        return '请输入手机号'
+      } 
+      return this.dialogData.placeholder
+    },
     smsBtnCountdown() {
       var smstask = setInterval(() => {
         this.smsbtnTx = "(" + this.mcount + "S)";
@@ -148,8 +155,6 @@ export default {
             } else {
               data.mobile=this.mobile + ""
               data.role=0
-              data.nick='设置昵称'
-
 
             }
 

@@ -51,7 +51,7 @@ export default {
           }
         })
         .then(response => {
-          console.log(333,response);
+          // console.log(333,response);
           if (response.status === 200 && response.data.code === 0) {
             let data = response.data.data;
             data.avatar=this.global.api.aliyunosshostpubread+'/'+data.uuid+'.jpg'
@@ -61,7 +61,7 @@ export default {
         })
         .catch(error => {
 
-          //console.log(error);
+          console.log(error);
         });
     }
   }

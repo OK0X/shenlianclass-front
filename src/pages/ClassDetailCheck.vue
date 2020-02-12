@@ -110,7 +110,7 @@ export default {
       let timestamp = new Date().getTime() + 1000 * 60 * 1;
       this.$axios
         .put(
-          this.global.api.backurl + "course/updateRowByOptions?uuid=" + this.item.uuid,
+          this.global.api.backurl + "course/updateStatus?uuid=" + this.item.uuid,
           params,
           {
             headers: {

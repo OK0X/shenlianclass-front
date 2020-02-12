@@ -21,7 +21,6 @@
             />
             <span style="align-self: center;margin-left:10px;cursor: pointer;">
               {{user.nick==null?'游客':user.nick}}
-              <span style="color:#ff7a00;" @click="login">{{role}}</span>
             </span>
           </div>
           <q-menu>
@@ -50,6 +49,7 @@
             </q-list>
           </q-menu>
         </div>
+        <span style="color:#ff7a00;align-self:center;cursor: pointer;" @click="login">{{role}}</span>
       </div>
       <div class="main-tabs">
         <div
@@ -77,7 +77,7 @@
     <q-page-container style="background-color: #f2f5f9;">
       <router-view />
     </q-page-container>
-    <LoginDialog :dialogData="setMobileDialogData" />
+    <LoginDialog :dialogData="loginDialog" />
   </q-layout>
 </template>
 <script>
@@ -92,7 +92,7 @@ export default {
   data() {
     return {
       searchText: "",
-      setMobileDialogData: {
+      loginDialog: {
         show: false,
         title: "快捷登陆"
       },
@@ -131,7 +131,7 @@ export default {
   methods: {
     login() {
       if (typeof this.user.role === "undefined") {
-        this.setMobileDialogData.show = true;
+        this.loginDialog.show = true;
       }
     },
     logout() {

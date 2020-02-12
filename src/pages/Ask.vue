@@ -107,6 +107,7 @@
       </q-tab-panels>
     </div>
     <MyFooter />
+    <LoginDialog :dialogData="loginDialog" />
   </q-page>
 </template>
 
@@ -134,7 +135,11 @@ export default {
       rewardNum: 10,
       asks: [],
       awardasks: [],
-      myasks: []
+      myasks: [],
+      loginDialog: {
+        show: false,
+        title: "快捷登陆"
+      }
     };
   },
   computed: {
@@ -153,13 +158,13 @@ export default {
     this.getMyAsks();
   },
   methods: {
-    toAskDetail(item){
+    toAskDetail(item) {
       this.$router.push({
         path: "/AskDetail",
         query: {
           arg: item
         }
-      })
+      });
     },
     getMyAsks() {
       let timestamp = new Date().getTime() + 1000 * 60 * 1;
@@ -235,6 +240,11 @@ export default {
         });
     },
     createAsk() {
+      if (typeof this.user.uuid === "undefined") {
+        toast("请先登陆后再提问");
+        this.loginDialog.show = true;
+        return;
+      }
       if (this.asktitle === "") {
         toast("请输入你的问题");
         return;
