@@ -63,7 +63,9 @@ export default {
   },
   mounted() {
     if (typeof this.user.uuid === "undefined") {
+      toast('请登陆后查看')
       this.loginDialog.show = true;
+      return
     }
 
     this.getPayedCourse();

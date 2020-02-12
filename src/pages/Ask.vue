@@ -102,7 +102,7 @@
               style="width: 50px;height:20px;"
             />
           </div>
-          <q-btn outline color="primary" label="提交" style="width:100px;" @click="createAsk" />
+          <q-btn unelevated color="primary" label="提交" style="width:100px;" @click="createAsk" />
         </q-tab-panel>
       </q-tab-panels>
     </div>
@@ -230,7 +230,7 @@ export default {
           }
         })
         .then(response => {
-          console.log(response);
+          // console.log(response);
           if (response.status === 200 && response.data.code === 0) {
             this.asks = response.data.data;
           }
@@ -278,6 +278,42 @@ export default {
           console.log(response);
           if (response.status === 200 && response.data.code === 0) {
             toast("发布成功");
+            this.asks.unshift({
+              answer_num: 0,
+              create_at: new Date().getTime(),
+              detail: this.askDetail,
+              reward: this.reward,
+              reward_num: this.rewardNum,
+              user_id: this.user.uuid,
+              title: this.asktitle,
+              uuid: response.data.data
+            });
+            this.myasks.unshift({
+              answer_num: 0,
+              create_at: new Date().getTime(),
+              detail: this.askDetail,
+              reward: this.reward,
+              reward_num: this.rewardNum,
+              user_id: this.user.uuid,
+              title: this.asktitle,
+              uuid: response.data.data
+            });
+
+            if (this.reward) {
+              this.awardasks.unshift({
+                answer_num: 0,
+                create_at: new Date().getTime(),
+                detail: this.askDetail,
+                reward: this.reward,
+                reward_num: this.rewardNum,
+                user_id: this.user.uuid,
+                title: this.asktitle,
+                uuid: response.data.data
+              });
+            }
+
+            this.asktitle=''
+            this.askDetail=''
           }
         });
     },

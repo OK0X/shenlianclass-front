@@ -5,7 +5,13 @@
       <span class="ask-title">{{ask.title}}</span>
       <div v-html="ask.detail" v-highlight></div>
       <div style="display:flex;">
-      <q-btn unelevated color="primary" label="我来回答" style="width: 90px;" @click="ianswer" />
+        <q-btn
+          unelevated
+          color="primary"
+          label="我来回答"
+          style="width: 90px;margin-top:15px;"
+          @click="ianswer"
+        />
       </div>
       <VueEditor
         v-show="editorShow"
@@ -37,7 +43,7 @@
           />
           <div class="flex-col">
             <span style="font-size: 14px;color: #333;">{{item.nickname}}</span>
-            <span style="font-size: 12px;color: #9eacb6;">{{util.timeUTC2Local(item.create_at)}}</span>
+            <span style="font-size: 12px;color: #9eacb6;">{{util.getShortTime(item.create_at)}}</span>
           </div>
         </div>
         <div v-html="item.content" style="margin:10px 0 10px 0;font-size: 16px;" v-highlight></div>
@@ -73,7 +79,7 @@
               color="primary"
               label="发表"
               style="margin-left:10px;height:40px;"
-              @click="submitComment('',item,item.comment_new)"
+              @click="submitComment('',item,item)"
             />
           </div>
           <q-separator style="margin:20px 0 20px 0;background: rgba(0, 0, 0, 0.06);" />
@@ -122,7 +128,7 @@
                 color="primary"
                 label="发表"
                 style="margin-left:10px;height:40px;"
-                @click="submitComment(subitem.nickname,item,subitem.comment_new)"
+                @click="submitComment(subitem.nickname,item,subitem)"
               />
             </div>
             <q-separator
@@ -215,7 +221,7 @@ export default {
                 data[i].comments[j].nickname = "";
               }
             }
-
+            //123
             console.log(999666, data);
             this.answers = data;
             this.getNicknames();
@@ -249,7 +255,7 @@ export default {
         .then(response => {
           if (response.status === 200 && response.data.code === 0) {
             let data = response.data.data;
-            console.log(333, data);
+            // console.log(333, data);
             let nicks = {};
             for (let i = 0; i < data.length; i++) {
               nicks[data[i].uuid] = data[i].nick;
@@ -269,15 +275,14 @@ export default {
           console.log(error);
         });
     },
-    submitComment(atwho, whichAnswer, content) {
-
+    submitComment(atwho, whichAnswer, whichItem) {
       if (typeof this.user.uuid === "undefined") {
         toast("请先登陆后再评论");
         this.loginDialog.show = true;
         return;
       }
 
-      if (content === "") {
+      if (whichItem.comment_new === "") {
         toast("请输入评论内容");
         return;
       }
@@ -292,7 +297,7 @@ export default {
         user_id: this.user.uuid,
         ask_id: this.ask.uuid,
         answer_id: whichAnswer.uuid,
-        content: content
+        content: whichItem.comment_new
       };
       let timestamp = new Date().getTime() + 1 * 60 * 1000;
       this.$axios
@@ -310,10 +315,31 @@ export default {
           console.log(response);
           if (response.status === 200 && response.data.code === 0) {
             toast("评论成功");
+            //123
+            whichAnswer.comments.push({
+              atwho: atwho,
+              user_id: this.user.uuid,
+              ask_id: this.ask.uuid,
+              answer_id: whichAnswer.uuid,
+              content: whichItem.comment_new,
+              comment_new:'',
+              comments_show:false,
+              create_at:new Date().getTime(),
+              nickname: this.user.nick,
+              user_id: this.user.uuid,
+              uuid: response.data.data
+            });
+            whichItem.comment_new=''
           }
         });
     },
     submitAnswer() {
+      if (typeof this.user.uuid === "undefined") {
+        toast("请先登陆后再回答");
+        this.loginDialog.show = true;
+        return;
+      }
+
       if (this.myanswer === "") {
         toast("请输入你的回答");
         return;
@@ -345,6 +371,25 @@ export default {
           console.log(response);
           if (response.status === 200 && response.data.code === 0) {
             toast("回答成功");
+            //123
+            this.answers.unshift({
+              accept: 0,
+              agree: 0,
+              ask_id: this.ask.uuid,
+              comment_new: "",
+              comment_num: 0,
+              comments: [],
+              comments_show: false,
+              content: this.myanswer,
+              create_at: new Date().getTime(),
+              disagree: 0,
+              nickname: this.user.nick,
+              user_id: this.user.uuid,
+              uuid: response.data.data
+            });
+
+            this.myanswer = "";
+            this.editorShow = false;
           }
         });
     },
