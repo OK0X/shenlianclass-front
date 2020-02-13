@@ -11,11 +11,12 @@
           label="我来回答"
           style="width: 90px;margin-top:15px;"
           @click="ianswer"
+          v-if="ask.user_id!==user.uuid&&myanswer===''"
         />
       </div>
       <VueEditor
         v-show="editorShow"
-        v-model="myanswer"
+        v-model="myanswerInput"
         useCustomImageHandler
         @image-added="handleImageAdded"
         style="height: 300px;width:100%;margin:10px 0 50px 0;"
@@ -29,13 +30,233 @@
         v-show="editorShow"
       />
       <div style="display:flex;margin:20px 0 20px 0;">
-        <span style="font-size:18px;color: #7a8f9a;font-weight: 700;">{{this.answers.length}}个回答</span>
+        <span style="font-size:18px;color: #7a8f9a;font-weight: 700;">{{totalAnswerNum}}个回答</span>
         <div
           style="flex:1;height:1px;background: rgba(0, 0, 0, 0.06);align-self: center;margin-left:10px;"
         ></div>
       </div>
-      <div class="flex-col" v-for="(item,index) in answers" :key="index">
+      <div class="flex-col" v-if="myanswer!==''">
         <div style="display:flex;">
+          <img src="statics/mark.png" style="width:16px;height:16px;align-self: center;" />
+          <span class="myanswer-tx">我的回答</span>
+        </div>
+        <div style="display:flex;margin-top:10px;">
+          <img
+            :src="getAvatar(user.uuid)"
+            onerror="src = 'statics/default.png'"
+            style="width:40px;height:40px;border-radius: 50%;margin-right:10px;"
+          />
+          <div class="flex-col">
+            <span style="font-size: 14px;color: #333;">{{user.nick}}</span>
+            <span style="font-size: 12px;color: #9eacb6;">{{util.getShortTime(myanswer.create_at)}}</span>
+          </div>
+        </div>
+        <div v-html="myanswer.content" style="margin:10px 0 10px 0;font-size: 16px;" v-highlight></div>
+        <div style="display:flex;">
+          <img src="statics/zan.png" class="zan-cai" />
+          <span class="zan-cai-num">{{myanswer.agree}}</span>
+          <img src="statics/cai.png" class="zan-cai" />
+          <span class="zan-cai-num">{{myanswer.disagree}}</span>
+          <img
+            src="statics/comment-focus.png"
+            class="comment-icon"
+            @click="myanswer.comments_show=!myanswer.comments_show"
+          />
+          <span
+            class="comment-tx"
+            @click="myanswer.comments_show=!myanswer.comments_show"
+          >评论({{myanswer.comment_num}})</span>
+        </div>
+        <div class="comment-list" v-show="myanswer.comments_show">
+          <div style="display:flex;">
+            <q-input
+              dense
+              outlined
+              v-model="myanswer.comment_new"
+              style="flex:1"
+              counter
+              maxlength="200"
+            />
+            <q-btn
+              outline
+              color="primary"
+              label="发表"
+              style="margin-left:10px;height:40px;"
+              @click="submitComment('',myanswer,myanswer)"
+            />
+          </div>
+          <q-separator style="margin:20px 0 20px 0;background: rgba(0, 0, 0, 0.06);" />
+          <div class="flex-col" v-for="(subitem,index) in myanswer.comments" :key="index">
+            <div style="display:flex;">
+              <img
+                :src="getAvatar(subitem.user_id)"
+                onerror="src = 'statics/default.png'"
+                style="width:40px;height:40px;border-radius: 50%;margin-right:10px;"
+              />
+              <div class="flex-col">
+                <span style="font-size: 14px;color: #333;">{{subitem.nickname}}</span>
+                <span
+                  style="font-size: 12px;color: #9eacb6;"
+                >{{util.timeUTC2Local(subitem.create_at)}}</span>
+              </div>
+            </div>
+            <div style="margin:10px 0 10px 0;font-size:16px;">
+              <span style="color:#027BE3">{{subitem.atwho===''?subitem.atwho:'@'+subitem.atwho}}</span>
+              {{subitem.content}}
+            </div>
+            <div style="display:flex;font-size:12px;">
+              <img src="statics/zan-black.png" class="reply-icon" />
+              <span style="cursor: pointer;color:#7A8F9A">赞</span>
+              <img
+                src="statics/reply.png"
+                @click="subitem.comments_show=!subitem.comments_show"
+                class="reply-icon"
+              />
+              <span
+                @click="subitem.comments_show=!subitem.comments_show"
+                style="cursor: pointer;color:#7A8F9A"
+              >回复</span>
+            </div>
+            <div style="display:flex;margin-top:10px;" v-show="subitem.comments_show">
+              <q-input
+                dense
+                outlined
+                v-model="subitem.comment_new"
+                style="flex:1"
+                counter
+                maxlength="200"
+              />
+              <q-btn
+                outline
+                color="primary"
+                label="发表"
+                style="margin-left:10px;height:40px;"
+                @click="submitComment(subitem.nickname,myanswer,subitem)"
+              />
+            </div>
+            <q-separator
+              style="margin:20px 0 20px 0;background: rgba(0, 0, 0, 0.06);"
+              v-if="index!==myanswer.comments.length-1"
+            />
+          </div>
+        </div>
+        <q-separator style="margin:20px 0 20px 0;background: rgba(0, 0, 0, 0.06);" />
+      </div>
+      <div class="flex-col" v-if="acceptanswer!==''&&acceptanswer.user_id!==user.uuid">
+        <div style="display:flex;">
+          <img src="statics/mark.png" style="width:16px;height:16px;align-self: center;" />
+          <span class="myanswer-tx">已采纳</span>
+        </div>
+        <div style="display:flex;margin-top:10px;">
+          <img
+            :src="getAvatar(acceptanswer.user_id)"
+            onerror="src = 'statics/default.png'"
+            style="width:40px;height:40px;border-radius: 50%;margin-right:10px;"
+          />
+          <div class="flex-col">
+            <span style="font-size: 14px;color: #333;">{{acceptanswer.nickname}}</span>
+            <span
+              style="font-size: 12px;color: #9eacb6;"
+            >{{util.getShortTime(acceptanswer.create_at)}}</span>
+          </div>
+        </div>
+        <div
+          v-html="acceptanswer.content"
+          style="margin:10px 0 10px 0;font-size: 16px;"
+          v-highlight
+        ></div>
+        <div style="display:flex;">
+          <img src="statics/zan.png" class="zan-cai" />
+          <span class="zan-cai-num">{{acceptanswer.agree}}</span>
+          <img src="statics/cai.png" class="zan-cai" />
+          <span class="zan-cai-num">{{acceptanswer.disagree}}</span>
+          <img
+            src="statics/comment-focus.png"
+            class="comment-icon"
+            @click="acceptanswer.comments_show=!acceptanswer.comments_show"
+          />
+          <span
+            class="comment-tx"
+            @click="acceptanswer.comments_show=!acceptanswer.comments_show"
+          >评论({{acceptanswer.comment_num}})</span>
+        </div>
+        <div class="comment-list" v-show="acceptanswer.comments_show">
+          <div style="display:flex;">
+            <q-input
+              dense
+              outlined
+              v-model="acceptanswer.comment_new"
+              style="flex:1"
+              counter
+              maxlength="200"
+            />
+            <q-btn
+              outline
+              color="primary"
+              label="发表"
+              style="margin-left:10px;height:40px;"
+              @click="submitComment('',acceptanswer,acceptanswer)"
+            />
+          </div>
+          <q-separator style="margin:20px 0 20px 0;background: rgba(0, 0, 0, 0.06);" />
+          <div class="flex-col" v-for="(subitem,index) in acceptanswer.comments" :key="index">
+            <div style="display:flex;">
+              <img
+                :src="getAvatar(subitem.user_id)"
+                onerror="src = 'statics/default.png'"
+                style="width:40px;height:40px;border-radius: 50%;margin-right:10px;"
+              />
+              <div class="flex-col">
+                <span style="font-size: 14px;color: #333;">{{subitem.nickname}}</span>
+                <span
+                  style="font-size: 12px;color: #9eacb6;"
+                >{{util.timeUTC2Local(subitem.create_at)}}</span>
+              </div>
+            </div>
+            <div style="margin:10px 0 10px 0;font-size:16px;">
+              <span style="color:#027BE3">{{subitem.atwho===''?subitem.atwho:'@'+subitem.atwho}}</span>
+              {{subitem.content}}
+            </div>
+            <div style="display:flex;font-size:12px;">
+              <img src="statics/zan-black.png" class="reply-icon" />
+              <span style="cursor: pointer;color:#7A8F9A">赞</span>
+              <img
+                src="statics/reply.png"
+                @click="subitem.comments_show=!subitem.comments_show"
+                class="reply-icon"
+              />
+              <span
+                @click="subitem.comments_show=!subitem.comments_show"
+                style="cursor: pointer;color:#7A8F9A"
+              >回复</span>
+            </div>
+            <div style="display:flex;margin-top:10px;" v-show="subitem.comments_show">
+              <q-input
+                dense
+                outlined
+                v-model="subitem.comment_new"
+                style="flex:1"
+                counter
+                maxlength="200"
+              />
+              <q-btn
+                outline
+                color="primary"
+                label="发表"
+                style="margin-left:10px;height:40px;"
+                @click="submitComment(subitem.nickname,acceptanswer,subitem)"
+              />
+            </div>
+            <q-separator
+              style="margin:20px 0 20px 0;background: rgba(0, 0, 0, 0.06);"
+              v-if="index!==acceptanswer.comments.length-1"
+            />
+          </div>
+        </div>
+        <q-separator style="margin:20px 0 20px 0;background: rgba(0, 0, 0, 0.06);" />
+      </div>
+      <div class="flex-col" v-for="(item,index) in answers" :key="index">
+        <div style="display:flex;margin-top:10px;">
           <img
             :src="getAvatar(item.user_id)"
             onerror="src = 'statics/default.png'"
@@ -48,8 +269,14 @@
         </div>
         <div v-html="item.content" style="margin:10px 0 10px 0;font-size: 16px;" v-highlight></div>
         <div style="display:flex;">
-          <img src="statics/accept.png" class="zan-cai" v-show="user.uuid===ask.user_id" />
-          <span class="zan-cai-num" v-show="user.uuid===ask.user_id">采纳</span>
+          <div style="display:flex;" @click="acceptAnswer(item)" v-if="user.uuid===ask.user_id">
+            <img :src="item.accept?'statics/accept-click.png':'statics/accept.png'" class="zan-cai" />
+            <span class="zan-cai-num">{{item.accept?'已采纳':'采纳'}}</span>
+            <q-tooltip
+              content-class="bg-white text-black shadow-4"
+              v-show="answers.length>1&&!item.accept"
+            >每个问题只能采纳一个答案哦！</q-tooltip>
+          </div>
           <img src="statics/zan.png" class="zan-cai" v-show="user.uuid!==ask.user_id" />
           <span class="zan-cai-num" v-show="user.uuid!==ask.user_id">{{item.agree}}</span>
           <img src="statics/cai.png" class="zan-cai" v-show="user.uuid!==ask.user_id" />
@@ -165,8 +392,11 @@ export default {
     return {
       ask: "",
       editorShow: false,
-      myanswer: "",
+      myanswerInput: "",
       answers: [],
+      myanswer: "",
+      acceptanswer: "",
+      totalAnswerNum:0,
       loginDialog: {
         show: false,
         title: "快捷登陆"
@@ -189,6 +419,40 @@ export default {
     this.getAnswer();
   },
   methods: {
+    acceptAnswer(item) {
+      if (item.accept) return;
+
+      
+      this.util.loadingShow(this);
+
+      let params = {
+        askid: item.ask_id,
+        answerid:item.uuid
+      };
+      let timestamp = new Date().getTime() + 1000 * 60 * 1;
+      this.$axios
+        .put(
+          this.global.api.backurl + "ask/acceptAnswer",
+          params,
+          {
+            headers: {
+              "access-token": this.util.generateToken(
+                JSON.stringify(params),
+                timestamp
+              ),
+              timestamp2: timestamp
+            }
+          }
+        )
+        .then(response => {
+          this.util.loadingHide(this);
+          //console.log(response);
+          if (response.status === 200 && response.data.code === 0) {
+            toast("采纳成功");
+            item.accept = true;
+          }
+        });
+    },
     getAvatar(user_id) {
       return this.global.api.aliyunosshostpubread + "/" + user_id + ".jpg";
     },
@@ -197,6 +461,12 @@ export default {
       let params = {
         ask_id: this.ask.uuid
       };
+      if (typeof this.user.uuid !== "undefined") {
+        params = {
+          user_id: this.user.uuid,
+          ask_id: this.ask.uuid
+        };
+      }
       this.$axios
         .get(this.global.api.backurl + "ask/getAnswer", {
           params: params,
@@ -209,8 +479,9 @@ export default {
           }
         })
         .then(response => {
+          console.log(111, response.data.data);
           if (response.status === 200 && response.data.code === 0) {
-            let data = response.data.data;
+            let data = response.data.data.answers;
             for (let i = 0; i < data.length; i++) {
               data[i].comments_show = false;
               data[i].comment_new = "";
@@ -221,9 +492,40 @@ export default {
                 data[i].comments[j].nickname = "";
               }
             }
-            //123
-            //console.log(999666, data);
             this.answers = data;
+            this.totalAnswerNum=this.answers.length
+
+            //我的回答
+            let dataMyans = response.data.data.myanswer;
+            if (dataMyans !== "") {
+              dataMyans.comments_show = false;
+              dataMyans.comment_new = "";
+              dataMyans.nickname = "";
+              for (let j = 0; j < dataMyans.comments.length; j++) {
+                dataMyans.comments[j].comments_show = false;
+                dataMyans.comments[j].comment_new = "";
+                dataMyans.comments[j].nickname = "";
+              }
+              this.myanswer = dataMyans;
+              this.totalAnswerNum++
+            }
+
+            //采纳的回答
+            let dataAccept = response.data.data.acceptanswer;
+            if (dataAccept !== "") {
+              dataAccept.comments_show = false;
+              dataAccept.comment_new = "";
+              dataAccept.nickname = "";
+              for (let j = 0; j < dataAccept.comments.length; j++) {
+                dataAccept.comments[j].comments_show = false;
+                dataAccept.comments[j].comment_new = "";
+                dataAccept.comments[j].nickname = "";
+              }
+              this.acceptanswer = dataAccept;
+              this.totalAnswerNum++
+            }
+
+            // debugger
             this.getNicknames();
           }
         })
@@ -237,7 +539,28 @@ export default {
       let userids = [];
       for (let i = 0; i < this.answers.length; i++) {
         userids.push(this.answers[i].user_id);
+        for (let j = 0; j < this.answers[i].comments.length; j++) {
+          userids.push(this.answers[i].comments[j].user_id);
+        }
       }
+
+      if (this.myanswer !== "") {
+        userids.push(this.myanswer.user_id);
+        for (let j = 0; j < this.myanswer.comments.length; j++) {
+          userids.push(this.myanswer.comments[j].user_id);
+        }
+      }
+
+      if (this.acceptanswer !== "") {
+        userids.push(this.acceptanswer.user_id);
+        for (let j = 0; j < this.acceptanswer.comments.length; j++) {
+          userids.push(this.acceptanswer.comments[j].user_id);
+        }
+      }
+
+      if(userids.length===0)
+      return
+
       let params = {
         uuid: encodeURIComponent(JSON.stringify(userids))
       };
@@ -255,7 +578,7 @@ export default {
         .then(response => {
           if (response.status === 200 && response.data.code === 0) {
             let data = response.data.data;
-            //console.log(333, data);
+            console.log(333, data);
             let nicks = {};
             for (let i = 0; i < data.length; i++) {
               nicks[data[i].uuid] = data[i].nick;
@@ -268,6 +591,19 @@ export default {
                 this.answers[i].comments[j].nickname =
                   nicks[this.answers[i].comments[j].user_id];
               }
+            }
+
+            //我的回答-评论-昵称-赋值
+
+            for (let j = 0; j < this.myanswer.comments.length; j++) {
+              this.myanswer.comments[j].nickname =
+                nicks[this.myanswer.comments[j].user_id];
+            }
+            //采纳的回答-评论-昵称-赋值
+            this.acceptanswer.nickname = nicks[this.acceptanswer.user_id];
+            for (let j = 0; j < this.acceptanswer.comments.length; j++) {
+              this.acceptanswer.comments[j].nickname =
+                nicks[this.acceptanswer.comments[j].user_id];
             }
           }
         })
@@ -287,10 +623,7 @@ export default {
         return;
       }
 
-      this.$q.loading.show({
-        message: this.$t("submiting"),
-        spinnerSize: 50
-      });
+      this.util.loadingShow(this);
 
       let params = {
         atwho: atwho,
@@ -311,7 +644,7 @@ export default {
           }
         })
         .then(response => {
-          this.$q.loading.hide();
+          this.util.loadingHide(this);
           //console.log(response);
           if (response.status === 200 && response.data.code === 0) {
             toast("评论成功");
@@ -322,15 +655,15 @@ export default {
               ask_id: this.ask.uuid,
               answer_id: whichAnswer.uuid,
               content: whichItem.comment_new,
-              comment_new:'',
-              comments_show:false,
-              create_at:new Date().getTime(),
+              comment_new: "",
+              comments_show: false,
+              create_at: new Date().getTime(),
               nickname: this.user.nick,
               user_id: this.user.uuid,
               uuid: response.data.data
             });
-            whichAnswer.comment_num++
-            whichItem.comment_new=''
+            whichAnswer.comment_num++;
+            whichItem.comment_new = "";
             // whichItem.comments_show=false
           }
         });
@@ -342,20 +675,17 @@ export default {
         return;
       }
 
-      if (this.myanswer === "") {
+      if (this.myanswerInput === "") {
         toast("请输入你的回答");
         return;
       }
 
-      this.$q.loading.show({
-        message: this.$t("submiting"),
-        spinnerSize: 50
-      });
+      this.util.loadingShow(this);
 
       let params = {
         user_id: this.user.uuid,
         ask_id: this.ask.uuid,
-        content: this.myanswer
+        content: this.myanswerInput
       };
       let timestamp = new Date().getTime() + 1 * 60 * 1000;
       this.$axios
@@ -369,12 +699,12 @@ export default {
           }
         })
         .then(response => {
-          this.$q.loading.hide();
+          this.util.loadingHide(this);
           //console.log(response);
           if (response.status === 200 && response.data.code === 0) {
             toast("回答成功");
             //123
-            this.answers.unshift({
+            this.myanswer = {
               accept: 0,
               agree: 0,
               ask_id: this.ask.uuid,
@@ -382,16 +712,17 @@ export default {
               comment_num: 0,
               comments: [],
               comments_show: false,
-              content: this.myanswer,
+              content: this.myanswerInput,
               create_at: new Date().getTime(),
               disagree: 0,
               nickname: this.user.nick,
               user_id: this.user.uuid,
               uuid: response.data.data
-            });
+            };
 
-            this.myanswer = "";
+            this.myanswerInput = "";
             this.editorShow = false;
+            this.totalAnswerNum++
           }
         });
     },
@@ -447,7 +778,7 @@ export default {
             );
             resetUploader();
           }
-          // this.$q.loading.hide();
+          // this.util.loadingHide(this)
         })
         .catch(error => {
           console.error(error);
@@ -456,7 +787,7 @@ export default {
   }
 };
 </script>
-<style scoped>
+<style lang="scss" scoped>
 .ask-title {
   font-size: 24px;
   line-height: 34px;
@@ -467,18 +798,20 @@ export default {
   height: 16px;
   margin-left: 20px;
   cursor: pointer;
-  align-self: flex-end;
+  align-self: center;
 }
 .zan-cai-num {
   margin-left: 5px;
-  color: #027be3;
+  color: $primary;
   /* font-weight: bold; */
+  cursor: pointer;
 }
 .comment-icon {
   width: 20px;
   height: 20px;
   margin-left: 20px;
   cursor: pointer;
+  align-self: center;
 }
 .reply-icon {
   width: 16px;
@@ -487,7 +820,7 @@ export default {
   cursor: pointer;
 }
 .comment-tx {
-  color: #027be3;
+  color: $primary;
   cursor: pointer;
   /* font-weight: bold; */
   margin-left: 5px;
@@ -498,5 +831,9 @@ export default {
   background: #fafafa;
   margin-top: 10px;
   padding: 20px 50px 20px 50px;
+}
+.myanswer-tx {
+  // margin-left: 5px;
+  color: $primary;
 }
 </style>

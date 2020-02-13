@@ -250,10 +250,7 @@ export default {
         return;
       }
 
-      this.$q.loading.show({
-        message: this.$t("submiting"),
-        spinnerSize: 50
-      });
+      this.util.loadingShow(this)
 
       let params = {
         user_id: this.user.uuid,
@@ -274,7 +271,7 @@ export default {
           }
         })
         .then(response => {
-          this.$q.loading.hide();
+          this.util.loadingHide(this)
           //console.log(response);
           if (response.status === 200 && response.data.code === 0) {
             toast("发布成功");
@@ -367,7 +364,7 @@ export default {
             );
             resetUploader();
           }
-          // this.$q.loading.hide();
+          // this.util.loadingHide(this)
         })
         .catch(error => {
           console.error(error);

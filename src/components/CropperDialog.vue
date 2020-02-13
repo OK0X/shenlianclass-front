@@ -59,10 +59,7 @@ export default {
       })
     },
     uploadImg(imgfile){
-      this.$q.loading.show({
-        message: this.$t("submiting"),
-        spinnerSize: 50
-      });
+      this.util.loadingShow(this)
 
       var expireTime = new Date();
       expireTime.setSeconds(expireTime.getSeconds() + 600);
@@ -110,12 +107,12 @@ export default {
             // bus.$emit('uploadImgOK')
             
           }
-          this.$q.loading.hide();
+          this.util.loadingHide(this)
         })
         .catch(error => {
           console.error(error);
           // toast(_this.$t("smscodeerror"));
-          this.$q.loading.hide();
+          this.util.loadingHide(this)
         });
     }
   }

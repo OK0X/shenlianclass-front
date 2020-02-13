@@ -96,10 +96,7 @@ export default {
         toast(this.$t("smsnull"));
         return;
       }
-      this.$q.loading.show({
-        message: this.$t("submiting"),
-        spinnerSize: 50
-      });
+      this.util.loadingShow(this)
       this.smscodecheck();
       
     },
@@ -124,7 +121,7 @@ export default {
         .catch(error => {
           console.error(error);
           toast(_this.$t("smscodeerror"));
-          _this.$q.loading.hide();
+          _this.util.loadingHide(this)
         });
     },
     login() {
@@ -145,7 +142,7 @@ export default {
         })
         .then((response)=> {
           //console.log(response);
-          _this.$q.loading.hide();
+          _this.util.loadingHide(this)
           if (response.status === 200 && response.data.code === 0) {
 
             let data=response.data.data

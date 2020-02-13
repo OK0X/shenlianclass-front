@@ -181,10 +181,7 @@ export default {
     },
     uploadConverImg() {
       //aliyun oss
-      this.$q.loading.show({
-        message: this.$t("submiting"),
-        spinnerSize: 50
-      });
+      this.util.loadingShow(this)
 
       var expireTime = new Date();
       expireTime.setSeconds(expireTime.getSeconds() + 600);
@@ -228,12 +225,12 @@ export default {
             // this.submit2bmob();
             // this.getFile();
           }
-          this.$q.loading.hide();
+          this.util.loadingHide(this)
         })
         .catch(error => {
           console.error(error);
           // toast(_this.$t("smscodeerror"));
-          this.$q.loading.hide();
+          this.util.loadingHide(this)
         });
     },
     detailLength() {
@@ -644,7 +641,7 @@ export default {
             );
             resetUploader();
           }
-          // this.$q.loading.hide();
+          // this.util.loadingHide(this)
         })
         .catch(error => {
           console.error(error);

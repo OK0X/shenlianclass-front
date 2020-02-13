@@ -157,6 +157,17 @@ function getShortTime(date){
   }
 }
 
+function loadingShow(_this){
+  _this.$q.loading.show({
+    message: _this.$t("submiting"),
+    spinnerSize: 50
+  });
+}
+
+function loadingHide(_this){
+  _this.$q.loading.hide()
+}
+
 export default {
   showInfoDialog,
   timeUTC2Local,
@@ -166,5 +177,7 @@ export default {
   awaitWrap,
   makeImgUrl,
   hash,
-  getShortTime
+  getShortTime,
+  loadingShow,
+  loadingHide
 };
