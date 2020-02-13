@@ -269,18 +269,24 @@
         </div>
         <div v-html="item.content" style="margin:10px 0 10px 0;font-size: 16px;" v-highlight></div>
         <div style="display:flex;">
-          <div style="display:flex;" @click="acceptAnswer(item)" v-if="user.uuid===ask.user_id">
-            <img :src="item.accept?'statics/accept-click.png':'statics/accept.png'" class="zan-cai" />
-            <span class="zan-cai-num">{{item.accept?'已采纳':'采纳'}}</span>
+          <div
+            style="display:flex;"
+            @click="acceptAnswer(item)"
+            v-show="user.uuid===ask.user_id&&!ask.hasaccept"
+          >
+            <img src="statics/accept.png" class="zan-cai" />
+            <span class="zan-cai-num">采纳</span>
             <q-tooltip
               content-class="bg-white text-black shadow-4"
-              v-show="answers.length>1&&!item.accept"
+              v-show="answers.length>1"
             >每个问题只能采纳一个答案哦！</q-tooltip>
           </div>
-          <img src="statics/zan.png" class="zan-cai" v-show="user.uuid!==ask.user_id" />
-          <span class="zan-cai-num" v-show="user.uuid!==ask.user_id">{{item.agree}}</span>
-          <img src="statics/cai.png" class="zan-cai" v-show="user.uuid!==ask.user_id" />
-          <span class="zan-cai-num" v-show="user.uuid!==ask.user_id">{{item.disagree}}</span>
+          <div style="display:flex;" v-show="ask.hasaccept">
+            <img src="statics/zan.png" class="zan-cai" />
+            <span class="zan-cai-num">{{item.agree}}</span>
+            <img src="statics/cai.png" class="zan-cai" />
+            <span class="zan-cai-num">{{item.disagree}}</span>
+          </div>
           <img
             src="statics/comment-focus.png"
             class="comment-icon"
@@ -396,7 +402,7 @@ export default {
       answers: [],
       myanswer: "",
       acceptanswer: "",
-      totalAnswerNum:0,
+      totalAnswerNum: 0,
       loginDialog: {
         show: false,
         title: "快捷登陆"
@@ -422,28 +428,23 @@ export default {
     acceptAnswer(item) {
       if (item.accept) return;
 
-      
       this.util.loadingShow(this);
 
       let params = {
         askid: item.ask_id,
-        answerid:item.uuid
+        answerid: item.uuid
       };
       let timestamp = new Date().getTime() + 1000 * 60 * 1;
       this.$axios
-        .put(
-          this.global.api.backurl + "ask/acceptAnswer",
-          params,
-          {
-            headers: {
-              "access-token": this.util.generateToken(
-                JSON.stringify(params),
-                timestamp
-              ),
-              timestamp2: timestamp
-            }
+        .put(this.global.api.backurl + "ask/acceptAnswer", params, {
+          headers: {
+            "access-token": this.util.generateToken(
+              JSON.stringify(params),
+              timestamp
+            ),
+            timestamp2: timestamp
           }
-        )
+        })
         .then(response => {
           this.util.loadingHide(this);
           //console.log(response);
@@ -493,7 +494,7 @@ export default {
               }
             }
             this.answers = data;
-            this.totalAnswerNum=this.answers.length
+            this.totalAnswerNum = this.answers.length;
 
             //我的回答
             let dataMyans = response.data.data.myanswer;
@@ -507,7 +508,7 @@ export default {
                 dataMyans.comments[j].nickname = "";
               }
               this.myanswer = dataMyans;
-              this.totalAnswerNum++
+              this.totalAnswerNum++;
             }
 
             //采纳的回答
@@ -522,7 +523,7 @@ export default {
                 dataAccept.comments[j].nickname = "";
               }
               this.acceptanswer = dataAccept;
-              this.totalAnswerNum++
+              this.totalAnswerNum++;
             }
 
             // debugger
@@ -558,8 +559,7 @@ export default {
         }
       }
 
-      if(userids.length===0)
-      return
+      if (userids.length === 0) return;
 
       let params = {
         uuid: encodeURIComponent(JSON.stringify(userids))
@@ -578,12 +578,15 @@ export default {
         .then(response => {
           if (response.status === 200 && response.data.code === 0) {
             let data = response.data.data;
-            console.log(333, data);
+            // debugger
+            console.log(3334, data);
+            // debugger
             let nicks = {};
             for (let i = 0; i < data.length; i++) {
               nicks[data[i].uuid] = data[i].nick;
             }
 
+            //对回答+评论-昵称赋值
             for (let i = 0; i < this.answers.length; i++) {
               this.answers[i].nickname = nicks[this.answers[i].user_id];
 
@@ -593,17 +596,21 @@ export default {
               }
             }
 
-            //我的回答-评论-昵称-赋值
-
-            for (let j = 0; j < this.myanswer.comments.length; j++) {
-              this.myanswer.comments[j].nickname =
-                nicks[this.myanswer.comments[j].user_id];
+            //我的回答+评论-昵称-赋值
+            if (this.myanswer !== "") {
+              for (let j = 0; j < this.myanswer.comments.length; j++) {
+                this.myanswer.comments[j].nickname =
+                  nicks[this.myanswer.comments[j].user_id];
+              }
             }
-            //采纳的回答-评论-昵称-赋值
-            this.acceptanswer.nickname = nicks[this.acceptanswer.user_id];
-            for (let j = 0; j < this.acceptanswer.comments.length; j++) {
-              this.acceptanswer.comments[j].nickname =
-                nicks[this.acceptanswer.comments[j].user_id];
+
+            //采纳的回答+评论-昵称-赋值
+            if (this.acceptanswer !== "") {
+              this.acceptanswer.nickname = nicks[this.acceptanswer.user_id];
+              for (let j = 0; j < this.acceptanswer.comments.length; j++) {
+                this.acceptanswer.comments[j].nickname =
+                  nicks[this.acceptanswer.comments[j].user_id];
+              }
             }
           }
         })
@@ -722,7 +729,7 @@ export default {
 
             this.myanswerInput = "";
             this.editorShow = false;
-            this.totalAnswerNum++
+            this.totalAnswerNum++;
           }
         });
     },
