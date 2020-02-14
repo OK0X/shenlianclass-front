@@ -5,28 +5,28 @@
       <span class="ask-title">{{ask.title}}</span>
       <div v-html="ask.detail" v-highlight></div>
       <div class="flex-col" v-if="ask.user_id!==user.uuid&&myanswer===''">
-      <q-btn
+        <q-btn
           unelevated
           color="primary"
           label="我来回答"
           style="width: 90px;margin-top:15px;"
           @click="ianswer"
         />
-      <VueEditor
-        v-show="editorShow"
-        v-model="myanswerInput"
-        useCustomImageHandler
-        @image-added="handleImageAdded"
-        style="height: 300px;width:100%;margin:10px 0 50px 0;"
-      />
-      <q-btn
-        unelevated
-        color="primary"
-        label="提交回答"
-        style="width: 100px;align-self: flex-end;margin-top:10px;"
-        @click="submitAnswer"
-        v-show="editorShow"
-      />
+        <VueEditor
+          v-show="editorShow"
+          v-model="myanswerInput"
+          useCustomImageHandler
+          @image-added="handleImageAdded"
+          style="height: 300px;width:100%;margin:10px 0 50px 0;"
+        />
+        <q-btn
+          unelevated
+          color="primary"
+          label="提交回答"
+          style="width: 100px;align-self: flex-end;margin-top:10px;"
+          @click="submitAnswer"
+          v-show="editorShow"
+        />
       </div>
       <div style="display:flex;margin:20px 0 20px 0;">
         <span style="font-size:18px;color: #7a8f9a;font-weight: 700;">{{totalAnswerNum}}个回答</span>
@@ -51,6 +51,10 @@
           </div>
         </div>
         <div v-html="myanswer.content" style="margin:10px 0 10px 0;font-size: 16px;" v-highlight></div>
+        <div style="display:flex;margin-bottom:10px;" v-if="myanswer.accept">
+          <img src="statics/choosed.png" style="width:20px;height:20px;" />
+          <span class="mytx-tip">本回答已被提问者采纳</span>
+        </div>
         <div style="display:flex;">
           <img src="statics/zan.png" class="zan-cai" />
           <span class="zan-cai-num">{{myanswer.agree}}</span>
@@ -421,13 +425,13 @@ export default {
   },
   mounted() {
     this.ask = this.$route.query.arg;
-    bus.$on('logout',()=>{
-      toast('logout')
+    bus.$on("logout", () => {
+      toast("logout");
       this.getAnswer();
-    })
-    bus.$on('loginok',()=>{
+    });
+    bus.$on("loginok", () => {
       this.getAnswer();
-    })
+    });
     this.getAnswer();
   },
   methods: {
@@ -456,8 +460,8 @@ export default {
           //console.log(response);
           if (response.status === 200 && response.data.code === 0) {
             toast("采纳成功");
-            this.getAnswer()
-            this.ask.hasaccept=true
+            this.getAnswer();
+            this.ask.hasaccept = true;
           }
         });
     },
@@ -516,8 +520,8 @@ export default {
               }
               this.myanswer = dataMyans;
               this.totalAnswerNum++;
-            }else{
-              this.myanswer = ''//以便退出后不显示我的回答
+            } else {
+              this.myanswer = ""; //以便退出后不显示我的回答
             }
 
             //采纳的回答
@@ -587,7 +591,7 @@ export default {
           if (response.status === 200 && response.data.code === 0) {
             let data = response.data.data;
             // debugger
-            console.log(3334, data);
+            // console.log(3334, data);
             // debugger
             let nicks = {};
             for (let i = 0; i < data.length; i++) {
