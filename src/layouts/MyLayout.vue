@@ -84,6 +84,7 @@
 /* eslint-disable */
 import localforage from "localforage";
 import LoginDialog from "../components/LoginDialog";
+import { bus } from "../bus.js";
 
 export default {
   components: {
@@ -141,6 +142,7 @@ export default {
           avatar: ""
         };
         this.user = data;
+        bus.$emit('logout')
       });
     },
     showTab(index) {

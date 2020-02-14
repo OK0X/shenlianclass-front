@@ -4,16 +4,14 @@
     <div class="page-content" style="margin-top:5px;">
       <span class="ask-title">{{ask.title}}</span>
       <div v-html="ask.detail" v-highlight></div>
-      <div style="display:flex;">
-        <q-btn
+      <div class="flex-col" v-if="ask.user_id!==user.uuid&&myanswer===''">
+      <q-btn
           unelevated
           color="primary"
           label="我来回答"
           style="width: 90px;margin-top:15px;"
           @click="ianswer"
-          v-if="ask.user_id!==user.uuid&&myanswer===''"
         />
-      </div>
       <VueEditor
         v-show="editorShow"
         v-model="myanswerInput"
@@ -29,6 +27,7 @@
         @click="submitAnswer"
         v-show="editorShow"
       />
+      </div>
       <div style="display:flex;margin:20px 0 20px 0;">
         <span style="font-size:18px;color: #7a8f9a;font-weight: 700;">{{totalAnswerNum}}个回答</span>
         <div
@@ -281,7 +280,7 @@
               v-show="answers.length>1"
             >每个问题只能采纳一个答案哦！</q-tooltip>
           </div>
-          <div style="display:flex;" v-show="ask.hasaccept">
+          <div style="display:flex;" v-show="ask.hasaccept||user.uuid!==ask.user_id">
             <img src="statics/zan.png" class="zan-cai" />
             <span class="zan-cai-num">{{item.agree}}</span>
             <img src="statics/cai.png" class="zan-cai" />
@@ -387,6 +386,7 @@ import MyFooter from "../components/MyFooter";
 import GoBack from "../components/GoBack";
 import { VueEditor } from "vue2-editor";
 import LoginDialog from "../components/LoginDialog";
+import { bus } from "../bus.js";
 export default {
   components: {
     GoBack,
@@ -421,7 +421,13 @@ export default {
   },
   mounted() {
     this.ask = this.$route.query.arg;
-    //console.log(this.ask);
+    bus.$on('logout',()=>{
+      toast('logout')
+      this.getAnswer();
+    })
+    bus.$on('loginok',()=>{
+      this.getAnswer();
+    })
     this.getAnswer();
   },
   methods: {
@@ -509,6 +515,8 @@ export default {
               }
               this.myanswer = dataMyans;
               this.totalAnswerNum++;
+            }else{
+              this.myanswer = ''//以便退出后不显示我的回答
             }
 
             //采纳的回答
@@ -526,7 +534,6 @@ export default {
               this.totalAnswerNum++;
             }
 
-            // debugger
             this.getNicknames();
           }
         })
