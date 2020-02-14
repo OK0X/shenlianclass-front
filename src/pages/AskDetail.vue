@@ -456,7 +456,8 @@ export default {
           //console.log(response);
           if (response.status === 200 && response.data.code === 0) {
             toast("采纳成功");
-            item.accept = true;
+            this.getAnswer()
+            this.ask.hasaccept=true
           }
         });
     },
