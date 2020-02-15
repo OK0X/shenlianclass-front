@@ -56,9 +56,9 @@
           <span class="mytx-tip">本回答已被提问者采纳</span>
         </div>
         <div style="display:flex;">
-          <img :src="myanswer.zan===1?'statics/zan-click.png':'statics/zan.png'" class="zan-cai" @click="zanAnswer(myanswer)" />
+          <img :src="myanswer.zan?'statics/zan-click.png':'statics/zan.png'" class="zan-cai" @click="zancaiAnswer(myanswer,'zan')" />
           <span class="zan-cai-num">{{myanswer.agree}}</span>
-          <img src="statics/cai.png" class="zan-cai" />
+          <img :src="myanswer.cai?'statics/cai-click.png':'statics/cai.png'" class="zan-cai" @click="zancaiAnswer(myanswer,'cai')"/>
           <span class="zan-cai-num">{{myanswer.disagree}}</span>
           <img
             src="statics/comment-focus.png"
@@ -108,8 +108,8 @@
               {{subitem.content}}
             </div>
             <div style="display:flex;font-size:12px;">
-              <img src="statics/zan-black.png" class="reply-icon" />
-              <span style="cursor: pointer;color:#7A8F9A">赞</span>
+              <img :src="subitem.zan?'statics/zan-click.png':'statics/zan-black.png'" class="reply-icon" @click="zanComments(subitem)" />
+              <span style="cursor: pointer;color:#7A8F9A">{{subitem.zan?'已赞':'赞'}}</span>
               <img
                 src="statics/reply.png"
                 @click="subitem.comments_show=!subitem.comments_show"
@@ -169,9 +169,9 @@
           v-highlight
         ></div>
         <div style="display:flex;">
-          <img src="statics/zan.png" class="zan-cai" />
+          <img :src="acceptanswer.zan?'statics/zan-click.png':'statics/zan.png'" class="zan-cai" @click="zancaiAnswer(acceptanswer,'zan')" />
           <span class="zan-cai-num">{{acceptanswer.agree}}</span>
-          <img src="statics/cai.png" class="zan-cai" />
+          <img :src="acceptanswer.cai?'statics/cai-click.png':'statics/cai.png'" class="zan-cai" @click="zancaiAnswer(acceptanswer,'cai')"/>
           <span class="zan-cai-num">{{acceptanswer.disagree}}</span>
           <img
             src="statics/comment-focus.png"
@@ -221,8 +221,8 @@
               {{subitem.content}}
             </div>
             <div style="display:flex;font-size:12px;">
-              <img src="statics/zan-black.png" class="reply-icon" />
-              <span style="cursor: pointer;color:#7A8F9A">赞</span>
+              <img :src="subitem.zan?'statics/zan-click.png':'statics/zan-black.png'" class="reply-icon" @click="zanComments(subitem)" />
+              <span style="cursor: pointer;color:#7A8F9A">{{subitem.zan?'已赞':'赞'}}</span>
               <img
                 src="statics/reply.png"
                 @click="subitem.comments_show=!subitem.comments_show"
@@ -285,9 +285,9 @@
             >每个问题只能采纳一个答案哦！</q-tooltip>
           </div>
           <div style="display:flex;" v-show="ask.hasaccept||user.uuid!==ask.user_id">
-            <img src="statics/zan.png" class="zan-cai" />
+            <img :src="item.zan?'statics/zan-click.png':'statics/zan.png'" class="zan-cai" @click="zancaiAnswer(item,'zan')" />
             <span class="zan-cai-num">{{item.agree}}</span>
-            <img src="statics/cai.png" class="zan-cai" />
+            <img :src="item.cai?'statics/cai-click.png':'statics/cai.png'" class="zan-cai" @click="zancaiAnswer(item,'cai')"/>
             <span class="zan-cai-num">{{item.disagree}}</span>
           </div>
           <img
@@ -338,8 +338,8 @@
               {{subitem.content}}
             </div>
             <div style="display:flex;font-size:12px;">
-              <img src="statics/zan-black.png" class="reply-icon" />
-              <span style="cursor: pointer;color:#7A8F9A">赞</span>
+              <img :src="subitem.zan?'statics/zan-click.png':'statics/zan-black.png'" class="reply-icon" @click="zanComments(subitem)" />
+              <span style="cursor: pointer;color:#7A8F9A">{{subitem.zan?'已赞':'赞'}}</span>
               <img
                 src="statics/reply.png"
                 @click="subitem.comments_show=!subitem.comments_show"
@@ -410,7 +410,8 @@ export default {
       loginDialog: {
         show: false,
         title: "快捷登陆"
-      }
+      },
+      zcClickNum:{}
     };
   },
   computed: {
@@ -436,17 +437,82 @@ export default {
 
   },
   methods: {
-    zanAnswer(answer) {
+    zanComments(comment){
+      if(this.zcClickNum[comment.uuid] > 3){
+        toast('您变心太快，暂不能进行操纵了哦')
+        return
+      }
+
+      let params = {
+        ask_id: this.ask.uuid,
+        ans_com_id: comment.uuid,
+        user_id: this.user.uuid,
+        agree:comment.zan?'0':'1'
+      };
+
       this.util.loadingShow(this);
-      console.log(333, answer);
+      let timestamp = new Date().getTime() + 1000 * 60 * 1;
+      this.$axios
+        .put(this.global.api.backurl + "ask/zanComments", params, {
+          headers: {
+            "access-token": this.util.generateToken(
+              JSON.stringify(params),
+              timestamp
+            ),
+            timestamp2: timestamp
+          }
+        })
+        .then(response => {
+          this.util.loadingHide(this);
+          //console.log(response);
+          if (response.status === 200 && response.data.code === 0) {
+            // toast("点赞成功");
+            if(typeof this.zcClickNum[comment.uuid] === 'undefined'){
+              this.zcClickNum[comment.uuid]=0
+            }else{
+              this.zcClickNum[comment.uuid]++
+            }
+
+            comment.zan=!comment.zan
+            toast(comment.zan?'点赞成功':'已取消')
+
+            
+          }
+        });
+
+    },
+    zancaiAnswer(answer,zc) {
+      
+      // console.log(333, answer);
+      // console.log(3333, this.zcClickNum);
+      if(this.zcClickNum[answer.uuid] > 3){
+        toast('您变心太快，暂不能进行操纵了哦')
+        return
+      }
 
       let params = {
         answer_id: answer.uuid,
         ask_id: this.ask.uuid,
         ans_com_id: answer.uuid,
-        user_id: this.user.uuid,
-        agree: 1 + ""
+        user_id: this.user.uuid
       };
+
+      if(zc==='zan'){
+        if(answer.cai){
+          toast('您已经踩过了')
+          return
+        }
+        params.agree=(answer.zan?'-1':'1')
+        
+      }else{
+        if(answer.zan){
+          toast('您已经赞过了')
+          return
+        }
+        params.disagree=(answer.cai?'-1':'1')
+      }
+
+      this.util.loadingShow(this);
       let timestamp = new Date().getTime() + 1000 * 60 * 1;
       this.$axios
         .put(this.global.api.backurl + "ask/answerZanCai", params, {
@@ -462,8 +528,23 @@ export default {
           this.util.loadingHide(this);
           //console.log(response);
           if (response.status === 200 && response.data.code === 0) {
-            toast("点赞成功");
-            //todo
+            // toast("点赞成功");
+            if(typeof this.zcClickNum[answer.uuid] === 'undefined'){
+              this.zcClickNum[answer.uuid]=0
+            }else{
+              this.zcClickNum[answer.uuid]++
+            }
+
+            if(zc==='zan'){
+              answer.zan=!answer.zan
+              toast(answer.zan?'点赞成功':'已取消')
+              answer.agree+=(answer.zan?1:-1)
+            }else{
+              answer.cai=!answer.cai
+              toast(answer.cai?'评价成功':'已取消')
+              answer.disagree+=(answer.cai?1:-1)
+            }
+            
           }
         });
     },
@@ -523,19 +604,21 @@ export default {
           }
         })
         .then(response => {
-          console.log(111, response.data.data);
+          // console.log(111, response.data.data);
           if (response.status === 200 && response.data.code === 0) {
             let data = response.data.data.answers;
+            //其它回答
             for (let i = 0; i < data.length; i++) {
               data[i].comments_show = false;
               data[i].comment_new = "";
               data[i].nickname = "";
-              data[i].zan=0
-              data[i].cai=0
+              data[i].zan=false
+              data[i].cai=false
               for (let j = 0; j < data[i].comments.length; j++) {
                 data[i].comments[j].comments_show = false;
                 data[i].comments[j].comment_new = "";
                 data[i].comments[j].nickname = "";
+                data[i].comments[j].zan=false
               }
             }
             this.answers = data;
@@ -547,12 +630,13 @@ export default {
               dataMyans.comments_show = false;
               dataMyans.comment_new = "";
               dataMyans.nickname = "";
-              dataMyans.zan=0
-              dataMyans.cai=0
+              dataMyans.zan=false
+              dataMyans.cai=false
               for (let j = 0; j < dataMyans.comments.length; j++) {
                 dataMyans.comments[j].comments_show = false;
                 dataMyans.comments[j].comment_new = "";
                 dataMyans.comments[j].nickname = "";
+                dataMyans.comments[j].zan=false
               }
             
               this.myanswer = dataMyans;
@@ -567,12 +651,13 @@ export default {
               dataAccept.comments_show = false;
               dataAccept.comment_new = "";
               dataAccept.nickname = "";
-              dataAccept.zan=0
-              dataAccept.cai=0
+              dataAccept.zan=false
+              dataAccept.cai=false
               for (let j = 0; j < dataAccept.comments.length; j++) {
                 dataAccept.comments[j].comments_show = false;
                 dataAccept.comments[j].comment_new = "";
                 dataAccept.comments[j].nickname = "";
+                dataAccept.comments[j].zan=false
               }
               
               this.acceptanswer = dataAccept;
@@ -588,9 +673,9 @@ export default {
         });
     },
     getZanCai() {
-      console.log(666, this.myanswer);
-      console.log(6666, this.acceptanswer);
-      console.log(66666, this.answers);
+      // console.log(666, this.myanswer);
+      // console.log(6666, this.acceptanswer);
+      // console.log(66666, this.answers);
 
       let ans_com_ids = [];
 
@@ -651,11 +736,11 @@ export default {
                 this.myanswer.zan = cutZanCais[this.myanswer.uuid].zan;
                 this.myanswer.cai = cutZanCais[this.myanswer.uuid].cai;
               } else {
-                this.myanswer.zan = 0;
-                this.myanswer.cai = 0;
+                this.myanswer.zan = false;
+                this.myanswer.cai = false;
               }
 
-              console.log(334,this.myanswer)
+              // console.log(334,this.myanswer)
 
               for (let j = 0; j < this.myanswer.comments.length; j++) {
                 if (
@@ -664,11 +749,11 @@ export default {
                 ) {
                   this.myanswer.comments[j].zan =
                     cutZanCais[this.myanswer.comments[j].uuid].zan;
-                  this.myanswer.comments[j].cai =
-                    cutZanCais[this.myanswer.comments[j].uuid].cai;
+                  // this.myanswer.comments[j].cai =
+                    // cutZanCais[this.myanswer.comments[j].uuid].cai;
                 } else {
-                  this.myanswer.comments[j].zan = 0;
-                  this.myanswer.comments[j].cai = 0;
+                  this.myanswer.comments[j].zan = false;
+                  // this.myanswer.comments[j].cai = false;
                 }
               }
             }
@@ -679,8 +764,8 @@ export default {
                 this.acceptanswer.zan = cutZanCais[this.acceptanswer.uuid].zan;
                 this.acceptanswer.cai = cutZanCais[this.acceptanswer.uuid].cai;
               } else {
-                this.acceptanswer.zan = 0;
-                this.acceptanswer.cai = 0;
+                this.acceptanswer.zan = false;
+                this.acceptanswer.cai = false;
               }
 
               for (let j = 0; j < this.acceptanswer.comments.length; j++) {
@@ -690,11 +775,11 @@ export default {
                 ) {
                   this.acceptanswer.comments[j].zan =
                     cutZanCais[this.acceptanswer.comments[j].uuid].zan;
-                  this.acceptanswer.comments[j].cai =
-                    cutZanCais[this.acceptanswer.comments[j].uuid].cai;
+                  // this.acceptanswer.comments[j].cai =
+                    // cutZanCais[this.acceptanswer.comments[j].uuid].cai;
                 } else {
-                  this.acceptanswer.comments[j].zan = 0;
-                  this.acceptanswer.comments[j].cai = 0;
+                  this.acceptanswer.comments[j].zan = false;
+                  // this.acceptanswer.comments[j].cai = false;
                 }
               }
             }
@@ -705,18 +790,18 @@ export default {
                 this.answers[i].zan = cutZanCais[this.answers[i].uuid].zan;
                 this.answers[i].cai = cutZanCais[this.answers[i].uuid].cai;
               } else {
-                this.answers[i].zan = 0;
-                this.answers[i].cai = 0;
+                this.answers[i].zan = false;
+                this.answers[i].cai = false;
               }
 
               for (let j = 0; j < this.answers[i].comments.length; j++) {
 
                 if (typeof cutZanCais[this.answers[i].comments[j].uuid] !== "undefined") {
                   this.answers[i].comments[j].zan = cutZanCais[this.answers[i].comments[j].uuid].zan;
-                  this.answers[i].comments[j].cai = cutZanCais[this.answers[i].comments[j].uuid].cai;
+                  // this.answers[i].comments[j].cai = cutZanCais[this.answers[i].comments[j].uuid].cai;
                 } else {
-                  this.answers[i].comments[j].zan = 0;
-                  this.answers[i].comments[j].cai = 0;
+                  this.answers[i].comments[j].zan = false;
+                  // this.answers[i].comments[j].cai = false;
                 }
               }
             }
