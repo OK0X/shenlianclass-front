@@ -34,7 +34,7 @@
           style="flex:1;height:1px;background: rgba(0, 0, 0, 0.06);align-self: center;margin-left:10px;"
         ></div>
       </div>
-      <div class="flex-col" v-if="myanswer!==''">
+      <div class="flex-col" v-show="myanswer!==''">
         <div style="display:flex;">
           <img src="statics/mark.png" style="width:16px;height:16px;align-self: center;" />
           <span class="myanswer-tx">我的回答</span>
@@ -56,7 +56,7 @@
           <span class="mytx-tip">本回答已被提问者采纳</span>
         </div>
         <div style="display:flex;">
-          <img src="statics/zan.png" class="zan-cai" />
+          <img :src="myanswer.zan===1?'statics/zan-click.png':'statics/zan.png'" class="zan-cai" @click="zanAnswer(myanswer)" />
           <span class="zan-cai-num">{{myanswer.agree}}</span>
           <img src="statics/cai.png" class="zan-cai" />
           <span class="zan-cai-num">{{myanswer.disagree}}</span>
@@ -433,8 +433,40 @@ export default {
       this.getAnswer();
     });
     this.getAnswer();
+
   },
   methods: {
+    zanAnswer(answer) {
+      this.util.loadingShow(this);
+      console.log(333, answer);
+
+      let params = {
+        answer_id: answer.uuid,
+        ask_id: this.ask.uuid,
+        ans_com_id: answer.uuid,
+        user_id: this.user.uuid,
+        agree: 1 + ""
+      };
+      let timestamp = new Date().getTime() + 1000 * 60 * 1;
+      this.$axios
+        .put(this.global.api.backurl + "ask/answerZanCai", params, {
+          headers: {
+            "access-token": this.util.generateToken(
+              JSON.stringify(params),
+              timestamp
+            ),
+            timestamp2: timestamp
+          }
+        })
+        .then(response => {
+          this.util.loadingHide(this);
+          //console.log(response);
+          if (response.status === 200 && response.data.code === 0) {
+            toast("点赞成功");
+            //todo
+          }
+        });
+    },
     acceptAnswer(item) {
       if (item.accept) return;
 
@@ -498,6 +530,8 @@ export default {
               data[i].comments_show = false;
               data[i].comment_new = "";
               data[i].nickname = "";
+              data[i].zan=0
+              data[i].cai=0
               for (let j = 0; j < data[i].comments.length; j++) {
                 data[i].comments[j].comments_show = false;
                 data[i].comments[j].comment_new = "";
@@ -513,11 +547,14 @@ export default {
               dataMyans.comments_show = false;
               dataMyans.comment_new = "";
               dataMyans.nickname = "";
+              dataMyans.zan=0
+              dataMyans.cai=0
               for (let j = 0; j < dataMyans.comments.length; j++) {
                 dataMyans.comments[j].comments_show = false;
                 dataMyans.comments[j].comment_new = "";
                 dataMyans.comments[j].nickname = "";
               }
+            
               this.myanswer = dataMyans;
               this.totalAnswerNum++;
             } else {
@@ -530,20 +567,162 @@ export default {
               dataAccept.comments_show = false;
               dataAccept.comment_new = "";
               dataAccept.nickname = "";
+              dataAccept.zan=0
+              dataAccept.cai=0
               for (let j = 0; j < dataAccept.comments.length; j++) {
                 dataAccept.comments[j].comments_show = false;
                 dataAccept.comments[j].comment_new = "";
                 dataAccept.comments[j].nickname = "";
               }
+              
               this.acceptanswer = dataAccept;
               this.totalAnswerNum++;
             }
 
             this.getNicknames();
+            this.getZanCai();
           }
         })
         .catch(error => {
-          //console.log(error);
+          console.log(error);
+        });
+    },
+    getZanCai() {
+      console.log(666, this.myanswer);
+      console.log(6666, this.acceptanswer);
+      console.log(66666, this.answers);
+
+      let ans_com_ids = [];
+
+      for (let i = 0; i < this.answers.length; i++) {
+        ans_com_ids.push(this.answers[i].uuid);
+        for (let j = 0; j < this.answers[i].comments.length; j++) {
+          ans_com_ids.push(this.answers[i].comments[j].uuid);
+        }
+      }
+
+      if (this.myanswer !== "") {
+        ans_com_ids.push(this.myanswer.uuid);
+        for (let j = 0; j < this.myanswer.comments.length; j++) {
+          ans_com_ids.push(this.myanswer.comments[j].uuid);
+        }
+      }
+
+      if (this.acceptanswer !== "") {
+        ans_com_ids.push(this.acceptanswer.uuid);
+        for (let j = 0; j < this.acceptanswer.comments.length; j++) {
+          ans_com_ids.push(this.acceptanswer.comments[j].uuid);
+        }
+      }
+
+      let timestamp = new Date().getTime() + 1000 * 60 * 1;
+      let params = {
+        user_id: this.user.uuid,
+        ask_id: this.ask.uuid,
+        ans_com_id: encodeURIComponent(JSON.stringify(ans_com_ids))
+      };
+      this.$axios
+        .get(this.global.api.backurl + "ask/getZanCai", {
+          params: params,
+          headers: {
+            "access-token": this.util.generateToken(
+              JSON.stringify(params),
+              timestamp
+            ),
+            timestamp2: timestamp
+          }
+        })
+        .then(response => {
+          if (response.status === 200 && response.data.code === 0) {
+            let data = response.data.data;
+
+            let cutZanCais = {};
+            for (let i = 0; i < data.length; i++) {
+              cutZanCais[data[i].ans_com_id] = {
+                zan: data[i].zan,
+                cai: data[i].cai
+              };
+            }
+
+            //我的回答-赞踩-赋值
+            if (this.myanswer !== "") {
+              if (typeof cutZanCais[this.myanswer.uuid] !== "undefined") {
+                
+                this.myanswer.zan = cutZanCais[this.myanswer.uuid].zan;
+                this.myanswer.cai = cutZanCais[this.myanswer.uuid].cai;
+              } else {
+                this.myanswer.zan = 0;
+                this.myanswer.cai = 0;
+              }
+
+              console.log(334,this.myanswer)
+
+              for (let j = 0; j < this.myanswer.comments.length; j++) {
+                if (
+                  typeof cutZanCais[this.myanswer.comments[j].uuid] !==
+                  "undefined"
+                ) {
+                  this.myanswer.comments[j].zan =
+                    cutZanCais[this.myanswer.comments[j].uuid].zan;
+                  this.myanswer.comments[j].cai =
+                    cutZanCais[this.myanswer.comments[j].uuid].cai;
+                } else {
+                  this.myanswer.comments[j].zan = 0;
+                  this.myanswer.comments[j].cai = 0;
+                }
+              }
+            }
+
+            //已采纳-赞踩-赋值
+            if (this.acceptanswer !== "") {
+              if (typeof cutZanCais[this.acceptanswer.uuid] !== "undefined") {
+                this.acceptanswer.zan = cutZanCais[this.acceptanswer.uuid].zan;
+                this.acceptanswer.cai = cutZanCais[this.acceptanswer.uuid].cai;
+              } else {
+                this.acceptanswer.zan = 0;
+                this.acceptanswer.cai = 0;
+              }
+
+              for (let j = 0; j < this.acceptanswer.comments.length; j++) {
+                if (
+                  typeof cutZanCais[this.acceptanswer.comments[j].uuid] !==
+                  "undefined"
+                ) {
+                  this.acceptanswer.comments[j].zan =
+                    cutZanCais[this.acceptanswer.comments[j].uuid].zan;
+                  this.acceptanswer.comments[j].cai =
+                    cutZanCais[this.acceptanswer.comments[j].uuid].cai;
+                } else {
+                  this.acceptanswer.comments[j].zan = 0;
+                  this.acceptanswer.comments[j].cai = 0;
+                }
+              }
+            }
+
+            //其它回答--赞踩-赋值
+            for (let i = 0; i < this.answers.length; i++) {
+              if (typeof cutZanCais[this.answers[i].uuid] !== "undefined") {
+                this.answers[i].zan = cutZanCais[this.answers[i].uuid].zan;
+                this.answers[i].cai = cutZanCais[this.answers[i].uuid].cai;
+              } else {
+                this.answers[i].zan = 0;
+                this.answers[i].cai = 0;
+              }
+
+              for (let j = 0; j < this.answers[i].comments.length; j++) {
+
+                if (typeof cutZanCais[this.answers[i].comments[j].uuid] !== "undefined") {
+                  this.answers[i].comments[j].zan = cutZanCais[this.answers[i].comments[j].uuid].zan;
+                  this.answers[i].comments[j].cai = cutZanCais[this.answers[i].comments[j].uuid].cai;
+                } else {
+                  this.answers[i].comments[j].zan = 0;
+                  this.answers[i].comments[j].cai = 0;
+                }
+              }
+            }
+          }
+        }).catch(error => {
+          console.log(error);
         });
     },
     getNicknames() {
@@ -598,7 +777,7 @@ export default {
               nicks[data[i].uuid] = data[i].nick;
             }
 
-            //对回答+评论-昵称赋值
+            //其它回答+评论-昵称赋值
             for (let i = 0; i < this.answers.length; i++) {
               this.answers[i].nickname = nicks[this.answers[i].user_id];
 
@@ -627,7 +806,7 @@ export default {
           }
         })
         .catch(error => {
-          //console.log(error);
+          console.log(error);
         });
     },
     submitComment(atwho, whichAnswer, whichItem) {
@@ -823,7 +1002,7 @@ export default {
   margin-left: 5px;
   color: $primary;
   /* font-weight: bold; */
-  cursor: pointer;
+  // cursor: pointer;
 }
 .comment-icon {
   width: 20px;
@@ -840,7 +1019,7 @@ export default {
 }
 .comment-tx {
   color: $primary;
-  cursor: pointer;
+  // cursor: pointer;
   /* font-weight: bold; */
   margin-left: 5px;
 }

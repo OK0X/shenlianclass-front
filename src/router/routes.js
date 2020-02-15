@@ -47,6 +47,10 @@ const routes = [
       {
         path: '/MyInfo',
         component: () => import('pages/MyInfo.vue')
+      },
+      {
+        path: '/PageTemplate',
+        component: () => import('pages/PageTemplate.vue')
       }
     ]
   }
