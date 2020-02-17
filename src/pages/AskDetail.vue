@@ -2,7 +2,11 @@
   <q-page class="mypage">
     <GoBack />
     <div class="page-content" style="margin-top:5px;">
-      <span class="ask-title">{{ask.title}}</span>
+      <div style="display:flex;">
+        <span class="ask-title">{{ask.title}}</span>
+        <img src="statics/coin.png" class="reward-icon" v-if="ask.reward" />
+        <span v-if="ask.reward" class="reward-tx">{{ask.reward_num}}</span>
+      </div>
       <div v-html="ask.detail" v-highlight></div>
       <div class="flex-col" v-if="ask.user_id!==user.uuid&&myanswer===''">
         <q-btn
@@ -414,7 +418,14 @@
           v-if="index!==answers.length-1"
         />
       </div>
-      <q-pagination v-if="pageMax > 1" v-model="currentPage" :max="pageMax" :direction-links="true" style="margin-top:30px;align-self:center;" @input="paginationClick"></q-pagination>
+      <q-pagination
+        v-if="pageMax > 1"
+        v-model="currentPage"
+        :max="pageMax"
+        :direction-links="true"
+        style="margin-top:30px;align-self:center;"
+        @input="paginationClick"
+      ></q-pagination>
     </div>
     <MyFooter />
     <LoginDialog :dialogData="loginDialog" />
@@ -450,10 +461,10 @@ export default {
       },
       zcClickNum: {},
       currentPage: 1,
-      lastPage:1,
-      offset:0,
-      limit:20,
-      pageMax:1
+      lastPage: 1,
+      offset: 0,
+      limit: 20,
+      pageMax: 1
     };
   },
   computed: {
@@ -478,16 +489,13 @@ export default {
     this.getAnswer();
   },
   methods: {
-    paginationClick(pageIndex){
-      console.log(this.lastPage,pageIndex)
-      if(this.lastPage===pageIndex)
-      return
-      
+    paginationClick(pageIndex) {
+      console.log(this.lastPage, pageIndex);
+      if (this.lastPage === pageIndex) return;
 
-      this.offset+=this.limit*(pageIndex-this.lastPage)
-      this.lastPage=pageIndex
-      this.getAnswer()
-
+      this.offset += this.limit * (pageIndex - this.lastPage);
+      this.lastPage = pageIndex;
+      this.getAnswer();
     },
     zanComments(comment) {
       if (this.zcClickNum[comment.uuid] > 3) {
@@ -600,8 +608,8 @@ export default {
       this.util.loadingShow(this);
 
       let params = {
-        askid: item.ask_id,
-        answerid: item.uuid
+        ask: encodeURIComponent(JSON.stringify(this.ask)),
+        answer: encodeURIComponent(JSON.stringify(item))
       };
       let timestamp = new Date().getTime() + 1000 * 60 * 1;
       this.$axios
@@ -631,11 +639,11 @@ export default {
       let timestamp = new Date().getTime() + 1000 * 60 * 1;
       let params = {
         ask_id: this.ask.uuid,
-        limit:this.limit+'',
-        offset:this.offset+''
+        limit: this.limit + "",
+        offset: this.offset + ""
       };
       if (typeof this.user.uuid !== "undefined") {
-        params.user_id = this.user.uuid
+        params.user_id = this.user.uuid;
       }
       this.$axios
         .get(this.global.api.backurl + "ask/getAnswer", {
@@ -649,10 +657,10 @@ export default {
           }
         })
         .then(response => {
-          console.log(111, response.data.data);
+          // console.log(111, response.data.data);
           if (response.status === 200 && response.data.code === 0) {
-            const total=response.data.data.total[0].total
-            this.pageMax=Math.ceil(total/this.limit)
+            const total = response.data.data.total[0].total;
+            this.pageMax = Math.ceil(total / this.limit);
             let data = response.data.data.answers;
             //其它回答
             for (let i = 0; i < data.length; i++) {
@@ -687,7 +695,6 @@ export default {
               }
 
               this.myanswer = dataMyans;
-
             } else {
               this.myanswer = ""; //以便退出后不显示我的回答
             }
@@ -708,7 +715,6 @@ export default {
               }
 
               this.acceptanswer = dataAccept;
-
             }
 
             this.getNicknames();
@@ -745,6 +751,11 @@ export default {
         for (let j = 0; j < this.acceptanswer.comments.length; j++) {
           ans_com_ids.push(this.acceptanswer.comments[j].uuid);
         }
+      }
+
+      // console.log(999,ans_com_ids)
+      if (ans_com_ids.length === 0) {
+        return;
       }
 
       let timestamp = new Date().getTime() + 1000 * 60 * 1;
@@ -1035,7 +1046,7 @@ export default {
           this.util.loadingHide(this);
           //console.log(response);
           if (response.status === 200 && response.data.code === 0) {
-            toast("回答成功");
+            toast("回答成功,已到账奖励："+this.global.backendConfig.answerReward+'SC');
             //123
             this.myanswer = {
               accept: 0,
@@ -1056,6 +1067,12 @@ export default {
             this.myanswerInput = "";
             this.editorShow = false;
             this.totalAnswerNum++;
+
+            //更新用户SC数量
+            let userData = JSON.parse(JSON.stringify(this.user));
+            userData.coin += parseInt(this.global.backendConfig.answerReward);
+            this.user = userData;
+            localforage.setItem("user", JSON.stringify(this.user));
           }
         });
     },
@@ -1168,5 +1185,17 @@ export default {
 .myanswer-tx {
   // margin-left: 5px;
   color: $primary;
+}
+.reward-icon {
+  width: 13px;
+  height: 12px;
+  margin-left: 10px;
+  align-self: center;
+}
+.reward-tx {
+  align-self: center;
+  font-size: 18px;
+  color: red;
+  margin-left: 5px;
 }
 </style>

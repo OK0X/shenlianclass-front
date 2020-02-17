@@ -15,8 +15,12 @@ const api = {
   }
 }
 
+let backendConfig={
+  answerReward:1
+}
 
 export default {
-  api
+  api,
+  backendConfig
 };
 

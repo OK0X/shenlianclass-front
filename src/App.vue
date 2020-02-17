@@ -21,6 +21,7 @@ export default {
   },
   mounted() {
     this.checkLogin();
+    this.getConfig()
   },
   methods: {
     checkLogin() {
@@ -61,6 +62,26 @@ export default {
         })
         .catch(error => {
 
+          //console.log(error);
+        });
+    },
+    getConfig() {
+      let timestamp = new Date().getTime() + 1000 * 60 * 1;
+      this.$axios
+        .get(this.global.api.backurl + "config/get", {
+          params: null,
+          headers: {
+            "access-token": this.util.generateToken(null, timestamp),
+            timestamp2: timestamp
+          }
+        })
+        .then(response => {
+          //console.log(response);
+          if (response.status === 200 && response.data.code === 0) {
+            this.global.backendConfig = response.data.data;
+          }
+        })
+        .catch(error => {
           //console.log(error);
         });
     }

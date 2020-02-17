@@ -18,6 +18,7 @@
         placeholder="alipayExpire(秒)"
       />
       <q-input v-model="defaultEx" :dense="true" style="width:300px;" placeholder="defaultEx(秒)" />
+      <q-input v-model="answerReward" :dense="true" style="width:300px;" placeholder="answerReward(回答默认奖励SC数量)" />
       <q-btn label="提交" color="primary" flat class="q-ml-sm" @click="submit" />
       <q-btn label="清空缓存" color="primary" flat class="q-ml-sm" @click="clearAll" />
     </div>
@@ -45,12 +46,14 @@ export default {
       apiLimitNum: "",
       alipayExpire: "",
       defaultEx: "",
-      redisRuntime: ""
+      redisRuntime: "",
+      answerReward:''
     };
   },
   mounted() {
-    this.getConfig();
+    // this.getConfig();
     // this.getRedisRuntimeInfo();
+    this.config = this.global.backendConfig
   },
   methods: {
     getRedisRuntimeInfo() {
@@ -148,7 +151,8 @@ export default {
         apilimitT: this.apilimitT,
         apiLimitNum: this.apiLimitNum,
         alipayExpire: this.alipayExpire,
-        defaultEx: this.defaultEx
+        defaultEx: this.defaultEx,
+        answerReward:this.answerReward
       };
       let timestamp = new Date().getTime() + 1 * 60 * 1000;
       this.$axios
@@ -180,7 +184,7 @@ export default {
         .then(response => {
           //console.log(response);
           if (response.status === 200 && response.data.code === 0) {
-            this.config = response.data.data;
+            this.config = this.global.backendConfig = response.data.data;
           }
         })
         .catch(error => {

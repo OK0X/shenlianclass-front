@@ -250,7 +250,12 @@ export default {
         return;
       }
 
-      this.util.loadingShow(this)
+      if (this.reward && this.user.coin - this.rewardNum < 0) {
+        toast("您的SC余额不足");
+        return;
+      }
+
+      this.util.loadingShow(this);
 
       let params = {
         user_id: this.user.uuid,
@@ -259,6 +264,8 @@ export default {
         reward: this.reward,
         reward_num: this.rewardNum
       };
+      // console.log(111,this.user)
+      // console.log(1111,this.rewardNum)
       let timestamp = new Date().getTime() + 1 * 60 * 1000;
       this.$axios
         .post(this.global.api.backurl + "ask/createAsk", params, {
@@ -271,7 +278,7 @@ export default {
           }
         })
         .then(response => {
-          this.util.loadingHide(this)
+          this.util.loadingHide(this);
           //console.log(response);
           if (response.status === 200 && response.data.code === 0) {
             toast("发布成功");
@@ -309,8 +316,16 @@ export default {
               });
             }
 
-            this.asktitle=''
-            this.askDetail=''
+            this.asktitle = "";
+            this.askDetail = "";
+
+            //如果是悬赏问答更新coin值
+            if (params.reward) {
+              let userData = JSON.parse(JSON.stringify(this.user));
+              userData.coin -= params.reward_num;
+              this.user=userData
+              localforage.setItem("user", JSON.stringify(this.user)); 
+            }
           }
         });
     },
@@ -391,7 +406,7 @@ export default {
 }
 .reward-num {
   color: #e7412b;
-  margin-right: 20px;
+  margin-right: 10px;
   line-height: 35px;
 }
 </style>
