@@ -16,7 +16,7 @@
         <q-tab name="creatask" label="新建提问" />
       </q-tabs>
       <q-tab-panels v-model="tab" animated>
-        <q-tab-panel name="all">
+        <q-tab-panel name="all" class="flex-col">
           <div class="flex-col" v-for="(item,index) in asks" :key="index">
             <div style="display:flex;justify-content: space-between;">
               <div style="display:flex;">
@@ -27,8 +27,8 @@
               <!-- <div style="color: #999;margin-right:20px;line-height: 25px;" v-html="item.detail"></div> -->
               <div style="display:flex;color:#bbb;margin-top:5px;">
                 <span>{{util.getShortTime(item.create_at)}}</span>
-                <span style="width:1px;background: rgba(0, 0, 0, 0.12);margin:2px 10px 2px 10px;"></span>
-                <span>{{item.answer_num}} 回答</span>
+                <!-- <span style="width:1px;background: rgba(0, 0, 0, 0.12);margin:2px 10px 2px 10px;"></span> -->
+                <!-- <span>{{item.answer_num}} 回答</span> -->
               </div>
             </div>
             <q-separator
@@ -36,8 +36,16 @@
               v-if="index!==asks.length-1"
             />
           </div>
+          <q-pagination
+            v-if="pageMaxAll > 1"
+            v-model="currentPageAll"
+            :max="pageMaxAll"
+            :direction-links="true"
+            style="margin-top:30px;align-self:center;"
+            @input="paginAllClick"
+          ></q-pagination>
         </q-tab-panel>
-        <q-tab-panel name="highcoin">
+        <q-tab-panel name="highcoin" class="flex-col">
           <div class="flex-col" v-for="(item,index) in awardasks" :key="index">
             <div style="display:flex;justify-content: space-between;">
               <div style="display:flex;">
@@ -48,14 +56,22 @@
               <!-- <div style="color: #999;margin-right:20px;line-height: 25px;" v-html="item.detail"></div> -->
               <div style="display:flex;color:#bbb;margin-top:5px;">
                 <span>{{util.getShortTime(item.create_at)}}</span>
-                <span style="width:1px;background: rgba(0, 0, 0, 0.12);margin:2px 10px 2px 10px;"></span>
-                <span>{{item.answer_num}} 回答</span>
+                <!-- <span style="width:1px;background: rgba(0, 0, 0, 0.12);margin:2px 10px 2px 10px;"></span> -->
+                <!-- <span>{{item.answer_num}} 回答</span> -->
               </div>
             </div>
             <q-separator style="margin:5px 0 5px 0;" v-if="index!==awardasks.length-1" />
           </div>
+          <q-pagination
+            v-if="pageMaxHcoin > 1"
+            v-model="currentPageHcoin"
+            :max="pageMaxHcoin"
+            :direction-links="true"
+            style="margin-top:30px;align-self:center;"
+            @input="paginHcoinClick"
+          ></q-pagination>
         </q-tab-panel>
-        <q-tab-panel name="myask">
+        <q-tab-panel name="myask" class="flex-col">
           <div class="flex-col" v-for="(item,index) in myasks" :key="index">
             <div style="display:flex;justify-content: space-between;">
               <div style="display:flex;">
@@ -66,12 +82,20 @@
               <!-- <div style="color: #999;margin-right:20px;line-height: 25px;" v-html="item.detail"></div> -->
               <div style="display:flex;color:#bbb;margin-top:5px;">
                 <span>{{util.getShortTime(item.create_at)}}</span>
-                <span style="width:1px;background: rgba(0, 0, 0, 0.12);margin:2px 10px 2px 10px;"></span>
-                <span>{{item.answer_num}} 回答</span>
+                <!-- <span style="width:1px;background: rgba(0, 0, 0, 0.12);margin:2px 10px 2px 10px;"></span> -->
+                <!-- <span>{{item.answer_num}} 回答</span> -->
               </div>
             </div>
             <q-separator style="margin:5px 0 5px 0;" v-if="index!==myasks.length-1" />
           </div>
+          <q-pagination
+            v-if="pageMaxMy > 1"
+            v-model="currentPageMy"
+            :max="pageMaxMy"
+            :direction-links="true"
+            style="margin-top:30px;align-self:center;"
+            @input="paginMyClick"
+          ></q-pagination>
         </q-tab-panel>
         <q-tab-panel name="creatask" class="flex-col">
           <q-input
@@ -139,7 +163,20 @@ export default {
       loginDialog: {
         show: false,
         title: "快捷登陆"
-      }
+      },
+      pageMaxAll: 1,
+      currentPageAll: 1,
+      pageMaxHcoin: 1,
+      currentPageHcoin: 1,
+      pageMaxMy: 1,
+      currentPageMy: 1,
+      lastPageAll: 1,
+      lastPageHcoin: 1,
+      lastPageMy: 1,
+      offsetALL: 0,
+      offsetHcoin: 0,
+      offsetMy: 0,
+      limit: 6
     };
   },
   computed: {
@@ -158,6 +195,28 @@ export default {
     this.getMyAsks();
   },
   methods: {
+    paginMyClick(pageIndex) {
+      if (this.lastPageMy === pageIndex) return;
+
+      this.offsetMy += this.limit * (pageIndex - this.lastPageMy);
+      this.lastPageMy = pageIndex;
+      this.getMyAsks();
+    },
+    paginAllClick(pageIndex) {
+      // console.log('paginAllClick',11111111)
+      if (this.lastPageAll === pageIndex) return;
+// debugger
+      this.offsetALL += this.limit * (pageIndex - this.lastPageAll);
+      this.lastPageAll = pageIndex;
+      this.getAsks();
+    },
+    paginHcoinClick(pageIndex) {
+       if (this.lastPageHcoin === pageIndex) return;
+
+      this.offsetHcoin += this.limit * (pageIndex - this.lastPageHcoin);
+      this.lastPageHcoin = pageIndex;
+      this.getAwardAsks();
+    },
     toAskDetail(item) {
       this.$router.push({
         path: "/AskDetail",
@@ -169,7 +228,9 @@ export default {
     getMyAsks() {
       let timestamp = new Date().getTime() + 1000 * 60 * 1;
       let params = {
-        user_id: this.user.uuid
+        user_id: this.user.uuid,
+        limit: this.limit + "",
+        offset: this.offsetMy + ""
       };
       this.$axios
         .get(this.global.api.backurl + "ask/getAsk", {
@@ -185,7 +246,9 @@ export default {
         .then(response => {
           //console.log(response);
           if (response.status === 200 && response.data.code === 0) {
-            this.myasks = response.data.data;
+            this.myasks = response.data.data.asks;
+            const total = response.data.data.total[0].total;
+            this.pageMaxMy = Math.ceil(total / this.limit);
           }
         })
         .catch(error => {
@@ -195,7 +258,9 @@ export default {
     getAwardAsks() {
       let timestamp = new Date().getTime() + 1000 * 60 * 1;
       let params = {
-        reward: 1 + ""
+        reward: 1 + "",
+        limit: this.limit + "",
+        offset: this.offsetHcoin + ""
       };
       this.$axios
         .get(this.global.api.backurl + "ask/getAsk", {
@@ -211,7 +276,9 @@ export default {
         .then(response => {
           //console.log(response);
           if (response.status === 200 && response.data.code === 0) {
-            this.awardasks = response.data.data;
+            this.awardasks = response.data.data.asks;
+            const total = response.data.data.total[0].total;
+            this.pageMaxHcoin = Math.ceil(total / this.limit);
           }
         })
         .catch(error => {
@@ -220,19 +287,24 @@ export default {
     },
     getAsks() {
       let timestamp = new Date().getTime() + 1000 * 60 * 1;
-      let params = null;
+      let params = {
+        limit: this.limit + "",
+        offset: this.offsetALL + ""
+      };
       this.$axios
         .get(this.global.api.backurl + "ask/getAsk", {
           params: params,
           headers: {
-            "access-token": this.util.generateToken(null, timestamp),
+            "access-token": this.util.generateToken(JSON.stringify(params), timestamp),
             timestamp2: timestamp
           }
         })
         .then(response => {
-          //console.log(response);
+          // console.log('getAsks------------',response); 
           if (response.status === 200 && response.data.code === 0) {
-            this.asks = response.data.data;
+            this.asks = response.data.data.asks;
+            const total = response.data.data.total[0].total;
+            this.pageMaxAll = Math.ceil(total / this.limit);
           }
         })
         .catch(error => {
@@ -323,8 +395,8 @@ export default {
             if (params.reward) {
               let userData = JSON.parse(JSON.stringify(this.user));
               userData.coin -= params.reward_num;
-              this.user=userData
-              localforage.setItem("user", JSON.stringify(this.user)); 
+              this.user = userData;
+              localforage.setItem("user", JSON.stringify(this.user));
             }
           }
         });

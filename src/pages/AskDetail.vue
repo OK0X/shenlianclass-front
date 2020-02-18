@@ -490,7 +490,7 @@ export default {
   },
   methods: {
     paginationClick(pageIndex) {
-      console.log(this.lastPage, pageIndex);
+      // console.log(this.lastPage, pageIndex);
       if (this.lastPage === pageIndex) return;
 
       this.offset += this.limit * (pageIndex - this.lastPage);
