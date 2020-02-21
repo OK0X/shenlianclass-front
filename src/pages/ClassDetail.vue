@@ -118,6 +118,7 @@ export default {
   mounted() {
     if (typeof this.$route.query.out_trade_no !== "undefined") {
       //支付完成跳转过来
+      console.log(111,this.$route.query)
       this.queryPayResult(this.$route.query.out_trade_no);
     } else {
       this.item = this.$route.query.arg;

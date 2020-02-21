@@ -61,19 +61,19 @@
         </div>
         <div style="display:flex;">
           <img
-            :src="myanswer.zan?'statics/zan-click.png':'statics/zan.png'"
+            :src="myanswer.zan?'statics/zan-click.png':'statics/zan-black.png'"
             class="zan-cai"
             @click="zancaiAnswer(myanswer,'zan')"
           />
           <span class="zan-cai-num">{{myanswer.agree}}</span>
           <img
-            :src="myanswer.cai?'statics/cai-click.png':'statics/cai.png'"
+            :src="myanswer.cai?'statics/cai-click.png':'statics/cai-black.png'"
             class="zan-cai"
             @click="zancaiAnswer(myanswer,'cai')"
           />
           <span class="zan-cai-num">{{myanswer.disagree}}</span>
           <img
-            src="statics/comment-focus.png"
+            src="statics/reply.png"
             class="comment-icon"
             @click="myanswer.comments_show=!myanswer.comments_show"
           />
@@ -186,19 +186,19 @@
         ></div>
         <div style="display:flex;">
           <img
-            :src="acceptanswer.zan?'statics/zan-click.png':'statics/zan.png'"
+            :src="acceptanswer.zan?'statics/zan-click.png':'statics/zan-black.png'"
             class="zan-cai"
             @click="zancaiAnswer(acceptanswer,'zan')"
           />
           <span class="zan-cai-num">{{acceptanswer.agree}}</span>
           <img
-            :src="acceptanswer.cai?'statics/cai-click.png':'statics/cai.png'"
+            :src="acceptanswer.cai?'statics/cai-click.png':'statics/cai-black.png'"
             class="zan-cai"
             @click="zancaiAnswer(acceptanswer,'cai')"
           />
           <span class="zan-cai-num">{{acceptanswer.disagree}}</span>
           <img
-            src="statics/comment-focus.png"
+            src="statics/reply.png"
             class="comment-icon"
             @click="acceptanswer.comments_show=!acceptanswer.comments_show"
           />
@@ -314,20 +314,20 @@
           </div>
           <div style="display:flex;" v-show="ask.hasaccept||user.uuid!==ask.user_id">
             <img
-              :src="item.zan?'statics/zan-click.png':'statics/zan.png'"
+              :src="item.zan?'statics/zan-click.png':'statics/zan-black.png'"
               class="zan-cai"
               @click="zancaiAnswer(item,'zan')"
             />
             <span class="zan-cai-num">{{item.agree}}</span>
             <img
-              :src="item.cai?'statics/cai-click.png':'statics/cai.png'"
+              :src="item.cai?'statics/cai-click.png':'statics/cai-black.png'"
               class="zan-cai"
               @click="zancaiAnswer(item,'cai')"
             />
             <span class="zan-cai-num">{{item.disagree}}</span>
           </div>
           <img
-            src="statics/comment-focus.png"
+            src="statics/reply.png"
             class="comment-icon"
             @click="item.comments_show=!item.comments_show"
           />
@@ -498,6 +498,12 @@ export default {
       this.getAnswer();
     },
     zanComments(comment) {
+      if (typeof this.user.uuid === "undefined") {
+        toast("请先登陆再操作");
+        this.loginDialog.show = true;
+        return;
+      }
+
       if (this.zcClickNum[comment.uuid] > 3) {
         toast("您变心太快，暂不能进行操纵了哦");
         return;
@@ -539,8 +545,13 @@ export default {
         });
     },
     zancaiAnswer(answer, zc) {
-      // console.log(333, answer);
-      // console.log(3333, this.zcClickNum);
+      // todo
+      if (typeof this.user.uuid === "undefined") {
+        toast("请先登陆再操作");
+        this.loginDialog.show = true;
+        return;
+      }
+
       if (this.zcClickNum[answer.uuid] > 3) {
         toast("您变心太快，暂不能进行操纵了哦");
         return;
@@ -1152,7 +1163,7 @@ export default {
 }
 .zan-cai-num {
   margin-left: 5px;
-  color: $primary;
+  color: #7a8f9a;
   /* font-weight: bold; */
   // cursor: pointer;
 }
@@ -1170,7 +1181,7 @@ export default {
   cursor: pointer;
 }
 .comment-tx {
-  color: $primary;
+  color: #7a8f9a;
   // cursor: pointer;
   /* font-weight: bold; */
   margin-left: 5px;
