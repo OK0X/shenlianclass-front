@@ -200,7 +200,7 @@ export default {
       let timestamp = new Date().getTime() + 1000 * 60 * 1;
       let params = {
         user_id: this.user.uuid,
-        subject_id: this.item.uuid
+        course_id: this.item.uuid
       };
       this.$axios
         .get(this.global.api.backurl + "course/isPayed", {
@@ -214,7 +214,7 @@ export default {
           }
         })
         .then(response => {
-          //console.log(888,response);
+          // console.log(888666,response);
           if (response.status === 200 && response.data.code === 0) {
             if (response.data.data.length >= 1) {
               this.isPayed = true;

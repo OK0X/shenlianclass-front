@@ -8,7 +8,11 @@
         @click="toCourseDetail(item)"
       >
         <div style="display: flex;flex:1;">
-          <img :src="global.api.aliyunosshostpubread + '/' + item.converimg" class="course-cover" onerror="src = 'statics/default-conver.jpg'"/>
+          <img
+            :src="global.api.aliyunosshostpubread + '/' + item.converimg"
+            class="course-cover"
+            onerror="src = 'statics/default-conver.jpg'"
+          />
           <div class="course-summary">
             <span style="font-size:24px;color:#1f2328;">{{item.classname}}</span>
             <span>{{item.classsummary}}</span>
@@ -24,7 +28,7 @@
             <span style="margin-top:20px;">学习人数：{{item.studynum}}人</span>
           </div>
         </div>
-        <q-separator style="flex:0;" v-if="index!==payedCourses.length-1"/>
+        <q-separator style="flex:0;" v-if="index!==payedCourses.length-1" />
       </div>
     </div>
     <MyFooter />
@@ -62,25 +66,24 @@ export default {
     }
   },
   mounted() {
-    if (typeof this.user.uuid === "undefined") {
-      toast('请登陆后查看')
-      this.loginDialog.show = true;
-      return
-    }
-
     this.getPayedCourse();
   },
   methods: {
-    toCourseDetail(item){
+    toCourseDetail(item) {
       this.$router.push({
-        path:'/ClassDetail',
-        query:{
-          arg:item,
-          from:'myclass'
+        path: "/ClassDetail",
+        query: {
+          arg: item,
+          from: "myclass"
         }
-      })
+      });
     },
     getPayedCourse() {
+      if (typeof this.user.uuid === "undefined") {
+        toast("请登陆后查看");
+        this.loginDialog.show = true;
+        return;
+      }
       let timestamp = new Date().getTime() + 1000 * 60 * 1;
 
       let params = {
