@@ -65,7 +65,7 @@ export default {
   methods: {
     toCheckDetail(item) {
       this.$router.push({
-        path: "/ClassDetailCheck",
+        path: "/CourseCheckDetail",
         query: {
           arg: item
         }

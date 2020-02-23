@@ -28,7 +28,7 @@
               <q-item clickable v-close-popup to="/MyInfo">
                 <q-item-section>个人中心</q-item-section>
               </q-item>
-              <q-item clickable v-close-popup to="/MyPub">
+              <q-item clickable v-close-popup to="/MyCreate">
                 <q-item-section>我发布的课程</q-item-section>
               </q-item>
               <q-item clickable v-close-popup v-show="user.role>=2" to="/CourseCheck">
@@ -165,13 +165,13 @@ export default {
           this.$router.push("/");
           break;
         case 1:
-          this.$router.push("/MyClass");
+          this.$router.push("/MyCourses");
           break;
         case 2:
           this.$router.push("/Ask");
           break;
         case 3:
-          this.$router.push("/ClassPub");
+          this.$router.push("/CourseCreate");
           break;
 
         default:

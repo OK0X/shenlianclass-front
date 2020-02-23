@@ -9,28 +9,28 @@ const routes = [
         component: () => import('pages/Index.vue')
       },
       {
-        path: '/ClassDetail',
-        component: () => import('pages/ClassDetail.vue')
+        path: '/CourseDetail',
+        component: () => import('pages/CourseDetail.vue')
       },
       {
-        path: '/ClassPub',
-        component: () => import('pages/ClassPub.vue')
+        path: '/CourseCreate',
+        component: () => import('pages/CourseCreate.vue')
       },
       {
-        path: '/MyClass',
-        component: () => import('pages/MyClass.vue')
+        path: '/MyCourses',
+        component: () => import('pages/MyCourses.vue')
       },
       {
-        path: '/MyPub',
-        component: () => import('pages/MyPub.vue')
+        path: '/MyCreate',
+        component: () => import('pages/MyCreate.vue')
       },
       {
         path: '/CourseCheck',
         component: () => import('pages/CourseCheck.vue')
       },
       {
-        path: '/ClassDetailCheck',
-        component: () => import('pages/ClassDetailCheck.vue')
+        path: '/CourseCheckDetail',
+        component: () => import('pages/CourseCheckDetail.vue')
       },
       {
         path: '/BackendConfig',

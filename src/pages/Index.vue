@@ -96,7 +96,7 @@ export default {
     },
     toDetail(item) {
       this.$router.push({
-        path: "/ClassDetail",
+        path: "/CourseDetail",
         query: {
           arg: item
         }

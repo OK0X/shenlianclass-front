@@ -615,7 +615,7 @@ export default {
                   persistent: true
                 })
                 .onOk(() => {
-                  this.$router.push("/MyPub");
+                  this.$router.push("/MyCreate");
                 });
             }
           });

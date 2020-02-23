@@ -73,7 +73,7 @@ export default {
   methods: {
     toCourseDetail(item) {
       this.$router.push({
-        path: "/ClassDetail",
+        path: "/CourseDetail",
         query: {
           arg: item,
           from: "myclass"
