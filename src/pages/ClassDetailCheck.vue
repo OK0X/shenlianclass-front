@@ -1,21 +1,23 @@
 <template>
   <q-page class="mypage">
     <div class="buywatch">
-      <img :src="global.api.aliyunosshostpubread + '/' + item.converimg" class="course-cover" onerror="src = 'statics/default-conver.jpg'"/>
+      <img :src="global.api.aliyunosshostpubread + '/' + course.converimg" class="course-cover" onerror="src = 'statics/default-conver.jpg'"/>
       <div class="course-summary">
-        <span style="font-size:24px;color:#1f2328;">{{item.classname}}</span>
-        <span>{{item.classsummary}}</span>
+        <span style="font-size:24px;color:#1f2328;">{{course.classname}}</span>
+        <span>{{course.classsummary}}</span>
         <div class="price-share">
-          <span
-            style="align-self: center;margin-left:10px;font-size:24px;color: orange;"
-          >￥ {{item.classprice}}元</span>
+          <div style="align-self: center;margin-left:10px;font-size:24px;color: orange;">
+            <span v-show="course.classprice!==''">{{course.classprice}}元</span>
+            <span v-show="course.classprice!==''&&course.coin!==''">+</span>
+            <span v-show="course.coin!==''">{{course.coin}}积分</span>
+          </div>
           <div style="display:flex;align-self: center;margin-right:10px;">
             <img src="statics/share.png" style="width:20px;height:20px;" />
             <span style="margin-left:5px;">分享</span>
           </div>
         </div>
-        <span style="margin-top:20px;">学习人数：{{item.studynum}}人</span>
-        <q-btn unelevated :label="item.status===0?'审核中':'已发布'" class="study" color="primary" />
+        <span style="margin-top:20px;">学习人数：{{course.studynum}}人</span>
+        <q-btn unelevated :label="course.status===0?'审核中':'已发布'" class="study" color="primary" />
       </div>
     </div>
     <div class="detail">
@@ -34,7 +36,7 @@
       <q-separator />
       <q-tab-panels v-model="tab" animated>
         <q-tab-panel name="detail">
-          <div v-html="item.classdetail"></div>
+          <div v-html="course.classdetail"></div>
         </q-tab-panel>
         <q-tab-panel name="chapters">
           <q-timeline color="secondary">
@@ -54,7 +56,7 @@
                 color="primary"
                 label="转码"
                 style="width:100px;margin-top:10px;"
-                @click="videoMgr(item.video_id)"
+                @click="videoMgr(item)"
                 v-show="user.role>=2&&item.status===0"
               />
             </q-timeline-entry>
@@ -94,7 +96,7 @@ export default {
   data() {
     return {
       tab: "detail",
-      item: this.$route.query.arg,
+      course: this.$route.query.arg,
       videos: []
     };
   },
@@ -110,7 +112,7 @@ export default {
       let timestamp = new Date().getTime() + 1000 * 60 * 1;
       this.$axios
         .put(
-          this.global.api.backurl + "course/updateStatus?uuid=" + this.item.uuid,
+          this.global.api.backurl + "course/updateStatus?uuid=" + this.course.uuid,
           params,
           {
             headers: {
@@ -133,7 +135,7 @@ export default {
       if (this.user.role <= 0) {
         return false;
       } else {
-        if(this.item.status===1){
+        if(this.course.status===1){
           return false
         }
         for (let i = 0; i < this.videos.length; i++) {
@@ -171,10 +173,11 @@ export default {
           }
         });
     },
-    videoMgr(videoID) {
+    videoMgr(video) {
       let timestamp = new Date().getTime() + 1000 * 60 * 1;
       let params = {
-        videoid: videoID
+        videoid: video.video_id,
+        course_id:this.course.uuid
       };
       this.$axios
         .get(this.global.api.backurl + "vod/submitTranscodeJob", {
@@ -191,6 +194,7 @@ export default {
           //console.log(response);
           if (response.status === 200 && response.data.code === 0) {
             toast("提交转码成功,10分钟后可查看转码结果");
+            video.status=1
           }
         });
     },

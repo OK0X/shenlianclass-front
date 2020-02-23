@@ -32,12 +32,16 @@
             <span class="card-title">{{item.classname}}</span>
             <div class="more-text">
               <span>
-                学习人数：
+                学习人数:
                 <span style="color: orange;">{{item.studynum}}</span>
               </span>
               <span>
-                价格：
-                <span style="color: orange;">￥：{{item.classprice}}</span>
+                价格:
+                <span style="color: orange;">
+                  <span v-show="item.classprice!==''">{{item.classprice}}元</span>
+                  <span v-show="item.classprice!==''&&item.coin!==''">+</span>
+                  <span v-show="item.coin!==''">{{item.coin}}积分</span>
+                </span>
               </span>
             </div>
           </div>

@@ -2,20 +2,26 @@
   <q-page class="mypage">
     <GoBack />
     <div class="summary-part">
-      <img :src="global.api.aliyunosshostpubread + '/' + item.converimg" class="course-cover" onerror="src = 'statics/default-conver.jpg'"/>
+      <img
+        :src="global.api.aliyunosshostpubread + '/' + course.converimg"
+        class="course-cover"
+        onerror="src = 'statics/default-conver.jpg'"
+      />
       <div class="course-summary">
-        <span style="font-size:24px;color:#1f2328;">{{item.classname}}</span>
-        <span>{{item.classsummary}}</span>
+        <span style="font-size:24px;color:#1f2328;">{{course.classname}}</span>
+        <span>{{course.classsummary}}</span>
         <div class="price-share">
-          <span
-            style="align-self: center;margin-left:10px;font-size:24px;color: orange;"
-          >￥ {{item.classprice}}元</span>
+          <div style="align-self: center;margin-left:10px;font-size:24px;color: orange;">
+            <span v-show="course.classprice!==''">{{course.classprice}}元</span>
+            <span v-show="course.classprice!==''&&course.coin!==''">+</span>
+            <span v-show="course.coin!==''">{{course.coin}}积分</span>
+          </div>
           <div style="display:flex;align-self: center;margin-right:10px;">
             <img src="statics/share.png" style="width:20px;height:20px;" />
             <span style="margin-left:5px;">分享</span>
           </div>
         </div>
-        <span style="margin-top:20px;">学习人数：{{item.studynum}}人</span>
+        <span style="margin-top:20px;">学习人数：{{course.studynum}}人</span>
         <q-btn unelevated label="立即购买" class="study" @click="buyCourse" v-show="!isPayed" />
       </div>
     </div>
@@ -35,7 +41,7 @@
       <!-- <q-separator /> -->
       <q-tab-panels v-model="tab" animated>
         <q-tab-panel name="detail">
-          <div v-html="item.classdetail"></div>
+          <div v-html="course.classdetail"></div>
         </q-tab-panel>
         <q-tab-panel name="chapters">
           <div
@@ -79,6 +85,7 @@ import { openURL } from "quasar";
 import LoginDialog from "../components/LoginDialog";
 import GoBack from "../components/GoBack";
 import { bus } from "../bus.js";
+import localforage from "localforage";
 
 export default {
   components: {
@@ -90,7 +97,7 @@ export default {
   data() {
     return {
       tab: "detail",
-      item: {},
+      course: {},
       videos: [],
       videoDialog: {
         show: false
@@ -118,10 +125,10 @@ export default {
   mounted() {
     if (typeof this.$route.query.out_trade_no !== "undefined") {
       //支付完成跳转过来
-      console.log(111,this.$route.query)
+      console.log(111, this.$route.query);
       this.queryPayResult(this.$route.query.out_trade_no);
     } else {
-      this.item = this.$route.query.arg;
+      this.course = this.$route.query.arg;
 
       if (this.$route.query.from === "myclass") {
         this.isPayed = true;
@@ -147,7 +154,7 @@ export default {
       //console.log(999,this.videos)
       let params = {
         user_id: this.user.uuid,
-        course_id: this.item.uuid,
+        course_id: this.course.uuid,
         video_id: encodeURIComponent(JSON.stringify(videoIds))
       };
       this.$axios
@@ -192,7 +199,7 @@ export default {
       }
     },
     checkisPayed() {
-      //console.log(this.item);
+      //console.log(this.course);
       if (typeof this.user.uuid === "undefined") {
         //未登陆
         return;
@@ -200,7 +207,7 @@ export default {
       let timestamp = new Date().getTime() + 1000 * 60 * 1;
       let params = {
         user_id: this.user.uuid,
-        course_id: this.item.uuid
+        course_id: this.course.uuid
       };
       this.$axios
         .get(this.global.api.backurl + "course/isPayed", {
@@ -245,7 +252,7 @@ export default {
         .then(response => {
           //console.log(response);
           if (response.status === 200 && response.data.code === 0) {
-            this.item = response.data.data.course;
+            this.course = response.data.data.course;
             this.setVideos(response.data.data.videos);
             this.isPayed = true;
             this.tab = "chapters";
@@ -271,6 +278,55 @@ export default {
         return;
       }
 
+      if (this.course.classprice !== "" && this.course.coin === "") {
+        //只支持现金付款
+        this.buyUseAliPay();
+      } else if (this.course.classprice === "" && this.course.coin !== "") {
+        //只支持积分付款
+        this.buyUseCoin();
+      } else {
+        //现金+积分付款
+      }
+    },
+    buyUseCoin() {
+      if (this.user.coin - parseFloat(this.course.coin) < 0) {
+        toast("您的SC余额不足，请充值后再进行购买");
+        return;
+      }
+
+      this.util.loadingShow(this);
+      let params = {
+        user_id: this.user.uuid,
+        course_id: this.course.uuid,
+        coin: this.course.coin
+      };
+      let timestamp = new Date().getTime() + 1 * 60 * 1000;
+      this.$axios
+        .post(this.global.api.backurl + "course/addPayedCourse", params, {
+          headers: {
+            "access-token": this.util.generateToken(
+              JSON.stringify(params),
+              timestamp
+            ),
+            timestamp2: timestamp
+          }
+        })
+        .then(response => {
+          this.util.loadingHide(this);
+          if (response.status === 200 && response.data.code === 0) {
+            if (response.data.data === "ok") {
+              toast("购买成功");
+              this.isPayed = true;
+              this.tab = "chapters";
+              let userData = JSON.parse(JSON.stringify(this.user));
+              userData.coin -= parseInt(this.course.coin);
+              this.user = userData;
+              localforage.setItem("user", JSON.stringify(this.user));
+            }
+          }
+        });
+    },
+    buyUseAliPay() {
       this.$q
         .dialog({
           message: "请在打开页面完成支付",
@@ -293,9 +349,9 @@ export default {
 
       let params = {
         user_id: this.user.uuid,
-        subject_title: this.item.classname,
-        subject_id: this.item.uuid,
-        total_amount: this.item.classprice
+        subject_title: this.course.classname,
+        subject_id: this.course.uuid,
+        total_amount: this.course.classprice
       };
       let timestamp = new Date().getTime() + 1 * 60 * 1000;
       this.$axios
@@ -325,7 +381,7 @@ export default {
         // if (typeof this.studyProgress[item.video_id] !== "undefined") {
         this.videoDialog.studyProgress = this.studyProgress;
         // }
-        this.videoDialog.course_id = this.item.uuid;
+        this.videoDialog.course_id = this.course.uuid;
         this.videoDialog.show = true;
       } else {
         this.buyCourse();
@@ -334,7 +390,7 @@ export default {
     getVideos() {
       let timestamp = new Date().getTime() + 1000 * 60 * 1;
       let params = {
-        course_id: this.item.uuid + ""
+        course_id: this.course.uuid + ""
       };
       this.$axios
         .get(this.global.api.backurl + "video/getVideos", {

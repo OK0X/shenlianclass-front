@@ -3,13 +3,26 @@
     <div class="page-content">
       <!-- <span style="color:#1f2328;font-size:24px;">我发布的课程</span> -->
       <!-- <q-separator /> -->
-      <div style=" height: 355px;display: flex;" v-for="(item,index) in myCourses" :key="index" @click="toCheckDetail(item)">
-        <img :src="global.api.aliyunosshostpubread + '/' + item.converimg" class="course-cover" onerror="src = 'statics/default-conver.jpg'"/>
+      <div
+        style=" height: 355px;display: flex;"
+        v-for="(item,index) in myCourses"
+        :key="index"
+        @click="toCheckDetail(item)"
+      >
+        <img
+          :src="global.api.aliyunosshostpubread + '/' + item.converimg"
+          class="course-cover"
+          onerror="src = 'statics/default-conver.jpg'"
+        />
         <div class="course-summary">
           <span style="font-size:24px;color:#1f2328;">{{item.classname}}</span>
           <span>{{item.classsummary}}</span>
           <div class="price-share">
-            <span style="align-self: center;margin-left:10px;font-size:24px;color: orange;">￥ {{item.classprice}}元</span>
+            <div style="align-self: center;margin-left:10px;font-size:24px;color: orange;">
+              <span v-show="item.classprice!==''">{{item.classprice}}元</span>
+              <span v-show="item.classprice!==''&&item.coin!==''">+</span>
+              <span v-show="item.coin!==''">{{item.coin}}积分</span>
+            </div>
             <div style="display:flex;align-self: center;margin-right:10px;">
               <img src="statics/share.png" style="width:20px;height:20px;" />
               <span style="margin-left:5px;">分享</span>
@@ -50,19 +63,19 @@ export default {
     this.getCheckingCourses();
   },
   methods: {
-    toCheckDetail(item){
+    toCheckDetail(item) {
       this.$router.push({
-        path:'/ClassDetailCheck',
-        query:{
-          arg:item
+        path: "/ClassDetailCheck",
+        query: {
+          arg: item
         }
-      })
+      });
     },
     getCheckingCourses() {
       let timestamp = new Date().getTime() + 1000 * 60 * 1;
 
       let params = {
-        status: 0+''
+        status: 0 + ""
       };
 
       this.$axios
@@ -87,7 +100,6 @@ export default {
 };
 </script>
 <style scoped>
-
 .study {
   align-self: flex-start;
   margin-top: 20px;

@@ -1057,7 +1057,7 @@ export default {
           this.util.loadingHide(this);
           //console.log(response);
           if (response.status === 200 && response.data.code === 0) {
-            toast("回答成功,已到账奖励："+this.global.backendConfig.answerReward+'SC');
+            toast("回答成功,已到账奖励："+this.global.backendConfig.answerReward+'积分');
             //123
             this.myanswer = {
               accept: 0,

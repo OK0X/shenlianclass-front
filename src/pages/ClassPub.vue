@@ -83,8 +83,13 @@
         style="width:100px;margin-top:10px;"
         @click="addchapters"
       />
-      <span style="margin-top:30px;">课程价格：</span>
-      <q-input v-model="classprice" :dense="true" style="width:300px;" counter maxlength="10" />
+      <span style="margin-top:30px;">销售方式：(至少选择一种方式)</span>
+      <div style="display:flex;">
+        <q-checkbox v-model="usemoney" label="现金"/>
+        <q-input v-model="classprice" :dense="true" style="width:50px;margin-left:5px;" /><span style="align-self: center;">元</span>
+        <q-checkbox v-model="usecoin" label="SC积分" style="margin-left:20px;"/>
+        <q-input v-model="scoin" :dense="true" style="width:50px;margin-left:5px;" /><span style="align-self: center;">个</span>
+      </div>
     </div>
     <q-btn
       unelevated
@@ -141,7 +146,10 @@ export default {
       loginDialog: {
         show: false,
         title: "快捷登陆"
-      }
+      },
+      usemoney:true,
+      usecoin:false,
+      scoin:''
     };
   },
   computed: {
@@ -527,8 +535,18 @@ export default {
         return false;
       }
 
-      if (this.classprice === "") {
-        toast("请填写课程售价");
+      if (!this.usemoney&&!this.usecoin) {
+        toast("请至少选择一种销售方式");
+        return false;
+      }
+
+      if (this.classprice === ''&&this.scoin==='') {
+        toast("请填写课程销售方式");
+        return false;
+      }
+
+      if (parseFloat(this.classprice) > 20000) {
+        toast("单门课程售价不能超过2万元");
         return false;
       }
 
@@ -564,9 +582,17 @@ export default {
           converimg: this.converimg,
           classsummary: this.classsummary,
           classdetail: this.classdetail,
-          classprice: this.classprice,
-          videos: this.chpters
+          videos: this.chpters,
         };
+
+        if(this.usemoney){
+          params.classprice= this.classprice
+        }
+
+        if(this.usecoin){
+          params.coin= this.scoin
+        }
+        
         let timestamp = new Date().getTime() + 1 * 60 * 1000;
         this.$axios
           .post(this.global.api.backurl + "course/createCourse", params, {

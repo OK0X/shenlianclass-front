@@ -4,7 +4,7 @@
       <div class="header-top">
         <img
           src="statics/test-logo.png"
-          style="width:131px;height:51px;align-self: center;margin-left:50px;"
+          style="width:131px;height:51px;align-self: center;margin-left:20px;"
         />
         <q-input bottom-slots v-model="searchText" :dense="true" class="search-bar">
           <template v-slot:append>
@@ -69,9 +69,19 @@
         >知识问答</div>
         <div
           class="main-tab"
+          @click="showTab(4)"
+          :style="tabIndex===4?'color: #027be3;':'color: black;'"
+        >资源下载</div>
+        <div
+          class="main-tab"
           @click="showTab(3)"
           :style="tabIndex===3?'color: #027be3;':'color: black;'"
         >课程发布</div>
+        <div
+          class="main-tab"
+          @click="showTab(5)"
+          :style="tabIndex===5?'color: #027be3;':'color: black;'"
+        >关于</div>
       </div>
     </q-header>
     <q-page-container style="background-color: #f2f5f9;">

@@ -25,7 +25,7 @@
           </div>
           <div style="display:flex;">
             <img src="statics/coin.png" style="width: 13px;height: 12px;align-self:center;" />
-            <span style="margin-left:10px;">{{user.coin}} SC</span>
+            <span style="margin-left:10px;">{{user.coin}} 积分</span>
           </div>
         </div>
       </div>

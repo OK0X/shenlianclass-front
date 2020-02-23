@@ -17,9 +17,11 @@
             <span style="font-size:24px;color:#1f2328;">{{item.classname}}</span>
             <span>{{item.classsummary}}</span>
             <div class="price-share">
-              <span
-                style="align-self: center;margin-left:10px;font-size:24px;color: orange;"
-              >￥ {{item.classprice}}元</span>
+              <div style="align-self: center;margin-left:10px;font-size:24px;color: orange;">
+                <span v-show="item.classprice!==''">{{item.classprice}}元</span>
+                <span v-show="item.classprice!==''&&item.coin!==''">+</span>
+                <span v-show="item.coin!==''">{{item.coin}}积分</span>
+              </div>
               <div style="display:flex;align-self: center;margin-right:10px;">
                 <img src="statics/share.png" style="width:20px;height:20px;" />
                 <span style="margin-left:5px;">分享</span>
