@@ -29,7 +29,7 @@
             </div>
           </div>
           <span style="margin-top:20px;">学习人数：{{item.studynum}}人</span>
-          <q-btn unelevated :label="item.status===0?'审核中':'审核通过'" class="study" color="primary" />
+          <q-btn unelevated :label="util.getCourseStatus(item.status)" class="study" color="primary" />
         </div>
       </div>
     </div>
@@ -79,7 +79,7 @@ export default {
       };
 
       this.$axios
-        .get(this.global.api.backurl + "course/getCourses", {
+        .get(this.global.api.backurl + "course/getMyCreate", {
           params: params,
           headers: {
             "access-token": this.util.generateToken(

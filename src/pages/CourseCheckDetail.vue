@@ -17,7 +17,7 @@
           </div>
         </div>
         <span style="margin-top:20px;">学习人数：{{course.studynum}}人</span>
-        <q-btn unelevated :label="course.status===0?'审核中':'已发布'" class="study" color="primary" />
+        <q-btn unelevated :label="util.getCourseStatus(course.status)" class="study" color="primary" />
       </div>
     </div>
     <div class="detail">
@@ -67,9 +67,17 @@
     <q-btn
       unelevated
       color="primary"
+      label="审核通过"
+      style="width:100px;margin-bottom:30px;"
+      @click="changeCourseStatus(1)"
+      v-show="user.role>=2&&course.status===0"
+    />
+    <q-btn
+      unelevated
+      color="primary"
       label="发布"
       style="width:100px;margin-bottom:30px;"
-      @click="pubMyCourse"
+      @click="changeCourseStatus(2)"
       v-show="isCanPub()"
     />
     <MyFooter />
@@ -105,9 +113,10 @@ export default {
     this.getVideos();
   },
   methods: {
-    pubMyCourse() {
+    changeCourseStatus(status) {
       let params = {
-        status: 1
+        status: status+'',
+        author: this.course.author
       };
       let timestamp = new Date().getTime() + 1000 * 60 * 1;
       this.$axios
@@ -124,20 +133,20 @@ export default {
             }
           }
         )
-        .then(function(response) {
+        .then((response) =>{
           //console.log(response);
           if (response.status === 200 && response.data.code === 0){
-            toast('发布成功')
+            
+            this.course.status=status
+            toast('操作成功'+(status===2?',预计5分钟内生效':''))
           }
         });
     },
     isCanPub() {
-      if (this.user.role <= 0) {
+      if (this.user.uuid !== this.course.author||this.course.status!==1) {
         return false;
       } else {
-        if(this.course.status===1){
-          return false
-        }
+
         for (let i = 0; i < this.videos.length; i++) {
           if (this.videos[i].status <= 1) {
             return false;
