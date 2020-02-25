@@ -71,9 +71,10 @@
         </q-tab-panel>
       </q-tab-panels>
     </div>
-    <VideoDialog :videoDialog="videoDialog" />
     <MyFooter />
+    <VideoDialog :videoDialog="videoDialog" />
     <LoginDialog :dialogData="loginDialog" />
+    <PayWaitDialog :data="payWaitDialog" @finishedPay="finishedPay"/>
   </q-page>
 </template>
 
@@ -86,13 +87,15 @@ import LoginDialog from "../components/LoginDialog";
 import GoBack from "../components/GoBack";
 import { bus } from "../bus.js";
 import localforage from "localforage";
+import PayWaitDialog from "../components/PayWaitDialog";
 
 export default {
   components: {
     MyFooter,
     VideoDialog,
     LoginDialog,
-    GoBack
+    GoBack,
+    PayWaitDialog
   },
   data() {
     return {
@@ -109,7 +112,10 @@ export default {
       isPayed: false, //是否已购买
       out_trade_no: "",
       payurl: "",
-      studyProgress: {}
+      studyProgress: {},
+      payWaitDialog:{
+        show:false
+      }
     };
   },
   computed: {
@@ -125,7 +131,7 @@ export default {
   mounted() {
     if (typeof this.$route.query.out_trade_no !== "undefined") {
       //支付完成跳转过来
-      console.log(111, this.$route.query);
+      // console.log(111, this.$route.query);
       this.queryPayResult(this.$route.query.out_trade_no);
     } else {
       this.course = this.$route.query.arg;
@@ -234,12 +240,14 @@ export default {
         });
     },
     queryPayResult(out_trade_no) {
+      this.util.loadingShow(this)
       let timestamp = new Date().getTime() + 1000 * 60 * 1;
       let params = {
-        out_trade_no: out_trade_no
+        out_trade_no: out_trade_no,
+        subject_type:1+''
       };
       this.$axios
-        .get(this.global.api.backurl + "alipay/getResult", {
+        .get(this.global.api.backurl + "alipay/getPayResult", {
           params: params,
           headers: {
             "access-token": this.util.generateToken(
@@ -250,17 +258,21 @@ export default {
           }
         })
         .then(response => {
-          //console.log(response);
+          this.util.loadingHide(this)
           if (response.status === 200 && response.data.code === 0) {
             this.course = response.data.data.course;
             this.setVideos(response.data.data.videos);
             this.isPayed = true;
             this.tab = "chapters";
             toast("购买成功!");
+          }else{
+            if(response.data.code === 6006){
+              toast('请完成支付后点击该操作')
+            }
           }
         })
         .catch(error => {
-          //console.log(error);
+          console.log(error);
         });
     },
     setVideos(videos) {
@@ -326,36 +338,32 @@ export default {
           }
         });
     },
+    finishedPay(){
+      this.payWaitDialog.show=false
+      this.queryPayResult(this.out_trade_no);
+    },
     buyUseAliPay() {
-      this.$q
-        .dialog({
-          message: "请在打开页面完成支付",
-          // title:'温馨提示',
-          ok: "已完成支付",
-          cancel: "支付遇到问题",
-          persistent: true
-        })
-        .onOk(() => {
-          this.queryPayResult(this.out_trade_no);
-        })
-        .onCancel(() => {
-          //
-        });
+      this.payWaitDialog.show=true
 
+        
+      //已生成过支付链接直接打开  
       if (this.out_trade_no !== "" && this.payurl !== "") {
         openURL(this.payurl);
         return;
       }
 
+      this.util.loadingShow(this)
       let params = {
         user_id: this.user.uuid,
         subject_title: this.course.classname,
         subject_id: this.course.uuid,
-        total_amount: this.course.classprice
+        subject_type:1+'',//购买课程
+        total_amount: this.course.classprice,
+        return_url:'https://www.shenlianclass.com/#/ClassDetail'
       };
       let timestamp = new Date().getTime() + 1 * 60 * 1000;
       this.$axios
-        .post(this.global.api.backurl + "alipay/tradepagepay", params, {
+        .post(this.global.api.backurl + "alipay/tradePagePay", params, {
           headers: {
             "access-token": this.util.generateToken(
               JSON.stringify(params),
@@ -365,9 +373,11 @@ export default {
           }
         })
         .then(response => {
+          this.util.loadingHide(this)
           if (response.status === 200 && response.data.code === 0) {
             //console.log(response.data.data);
             const result = response.data.data;
+            //支付链接缓存，离开该页面失效
             this.out_trade_no = result.out_trade_no;
             this.payurl = result.payurl;
             openURL(result.payurl);

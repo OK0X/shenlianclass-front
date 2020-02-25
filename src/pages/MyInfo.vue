@@ -26,6 +26,7 @@
           <div style="display:flex;">
             <img src="statics/coin.png" style="width: 13px;height: 12px;align-self:center;" />
             <span style="margin-left:10px;">{{user.coin}} 积分</span>
+            <span style="margin-left:10px;color:#1976D2;cursor: pointer;" @click="showCharge">充值</span>
           </div>
         </div>
       </div>
@@ -40,6 +41,7 @@
     <MyFooter />
     <CropperDialog :data="cropperDialog" @uploadImgOK="uploadImgOK" />
     <LoginDialog :dialogData="loginDialog" />
+    <PayWaitDialog :data="payWaitDialog" @finishedPay="finishedPay" />
   </q-page>
 </template>
 
@@ -49,13 +51,17 @@ import MyFooter from "../components/MyFooter";
 import GoBack from "../components/GoBack";
 import CropperDialog from "../components/CropperDialog";
 import LoginDialog from "../components/LoginDialog";
+import PayWaitDialog from "../components/PayWaitDialog";
+import { openURL } from "quasar";
+import localforage from "localforage";
 
 export default {
   components: {
     MyFooter,
     GoBack,
     CropperDialog,
-    LoginDialog
+    LoginDialog,
+    PayWaitDialog
   },
   data() {
     return {
@@ -66,8 +72,13 @@ export default {
       loginDialog: {
         show: false,
         title: "修改手机号",
-        placeholder:'请输入新手机号'
-      }
+        placeholder: "请输入新手机号"
+      },
+      payWaitDialog: {
+        show: false
+      },
+      out_trade_no: "",
+      chargeNum: 0
     };
   },
   computed: {
@@ -80,10 +91,121 @@ export default {
       }
     }
   },
-  mounted() {},
+  mounted() {
+    if (typeof this.$route.query.out_trade_no !== "undefined") {
+      //支付完成跳转过来
+      // console.log(111, this.$route.query);
+      this.queryPayResult(this.$route.query.out_trade_no);
+    }
+  },
   methods: {
-    editMobile(){
+    showCharge() {
+      this.$q
+        .dialog({
+          title: "积分充值",
+          message: "请输入充值金额（1元=10积分）: ",
+          prompt: {
+            model: "",
+            type: "number" // optional
+          },
+          ok: "确定",
+          cancel: "取消",
+          persistent: true
+        })
+        .onOk(data => {
+          if (data > 5000) {
+            toast("单次充值不能大于5000元");
+            return;
+          }
+          this.gotoPay(data);
+        });
+    },
+    finishedPay() {
+      this.payWaitDialog.show = false;
+      this.queryPayResult(this.out_trade_no);
+    },
+    queryPayResult(out_trade_no) {
+      this.util.loadingShow(this);
+      let timestamp = new Date().getTime() + 1000 * 60 * 1;
+      let params = {
+        out_trade_no: out_trade_no,
+        subject_type: 2 + ""
+      };
+      this.$axios
+        .get(this.global.api.backurl + "alipay/getPayResult", {
+          params: params,
+          headers: {
+            "access-token": this.util.generateToken(
+              JSON.stringify(params),
+              timestamp
+            ),
+            timestamp2: timestamp
+          }
+        })
+        .then(response => {
+          this.util.loadingHide(this);
+          if (response.status === 200 && response.data.code === 0) {
+            toast("充值成功，积分已实时到账!");
 
+            // let userData = JSON.parse(JSON.stringify(this.user));
+            // userData.coin += response.data.data.addcoin;
+            // this.user = userData;
+            // localforage.setItem("user", JSON.stringify(this.user));
+          } else {
+            if (response.data.code === 6006) {
+              toast("请完成支付后点击该操作");
+            }
+
+            //刷新积分
+            // localforage.getItem("user").then(value => {
+            //   if (value !== null) {
+            //     this.user = JSON.parse(value);
+            //   } 
+            // });
+          }
+
+          this.getUserInfo();
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    gotoPay(price) {
+      this.chargeNum = price * 10;
+      this.util.loadingShow(this);
+      let params = {
+        user_id: this.user.uuid,
+        subject_title: "积分充值",
+        subject_id: this.util.randomUUID(),
+        subject_type: 2 + "", //积分充值
+        total_amount: price + "",
+        return_url: "https://www.shenlianclass.com/#/MyInfo"
+      };
+      let timestamp = new Date().getTime() + 1 * 60 * 1000;
+      this.$axios
+        .post(this.global.api.backurl + "alipay/tradePagePay", params, {
+          headers: {
+            "access-token": this.util.generateToken(
+              JSON.stringify(params),
+              timestamp
+            ),
+            timestamp2: timestamp
+          }
+        })
+        .then(response => {
+          this.util.loadingHide(this);
+
+          if (response.status === 200 && response.data.code === 0) {
+            this.payWaitDialog.show = true;
+            //console.log(response.data.data);
+            const result = response.data.data;
+            this.out_trade_no = result.out_trade_no;
+            // this.payurl = result.payurl;
+            openURL(result.payurl);
+          }
+        });
+    },
+    editMobile() {
       this.loginDialog.show = true;
     },
     editNickName() {
@@ -108,7 +230,7 @@ export default {
           let params = {
             nick: data
           };
-          this.updateUser(params)
+          this.updateUser(params);
         })
         .onCancel(() => {
           //console.log('>>>> Cancel')
@@ -121,9 +243,7 @@ export default {
       let timestamp = new Date().getTime() + 1000 * 60 * 1;
       this.$axios
         .put(
-          this.global.api.backurl +
-            "user/updateUser?uuid=" +
-            this.user.uuid,
+          this.global.api.backurl + "user/updateUser?uuid=" + this.user.uuid,
           params,
           {
             headers: {
@@ -135,24 +255,27 @@ export default {
             }
           }
         )
-        .then((response)=> {
+        .then(response => {
           //console.log(response);
           if (response.status === 200 && response.data.code === 0) {
             toast("设置成功");
-            this.getUserInfo()
+            this.getUserInfo();
           }
         });
     },
     getUserInfo() {
       let timestamp = new Date().getTime() + 1000 * 60 * 1;
-      let params={
-        uuid:this.user.uuid
-      }
+      let params = {
+        uuid: this.user.uuid
+      };
       this.$axios
         .get(this.global.api.backurl + "user/getinfo", {
           params: params,
           headers: {
-            "access-token": this.util.generateToken(JSON.stringify(params), timestamp),
+            "access-token": this.util.generateToken(
+              JSON.stringify(params),
+              timestamp
+            ),
             timestamp2: timestamp
           }
         })
@@ -160,13 +283,13 @@ export default {
           //console.log(333,response);
           if (response.status === 200 && response.data.code === 0) {
             let data = response.data.data;
-            data.avatar=this.global.api.aliyunosshostpubread+'/'+data.uuid+'.jpg'
-            this.user=data
-            localforage.setItem("user",JSON.stringify(this.user))
+            data.avatar =
+              this.global.api.aliyunosshostpubread + "/" + data.uuid + ".jpg";
+            this.user = data;
+            localforage.setItem("user", JSON.stringify(this.user));
           }
         })
         .catch(error => {
-
           //console.log(error);
         });
     },
