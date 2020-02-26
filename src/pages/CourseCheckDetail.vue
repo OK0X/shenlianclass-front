@@ -57,7 +57,7 @@
                 label="转码"
                 style="width:100px;margin-top:10px;"
                 @click="videoMgr(item)"
-                v-show="user.role>=2&&item.status===1"
+                v-show="user.role>=1&&course.status===1&&item.status===0"
               />
             </q-timeline-entry>
           </q-timeline>

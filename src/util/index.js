@@ -176,6 +176,8 @@ function getCourseStatus(status) {
       return '审核通过'
     case 2:
       return '已发布'
+    case -1:
+      return '已失效'
   }
 }
 
