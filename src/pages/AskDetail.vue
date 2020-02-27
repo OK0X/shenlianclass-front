@@ -439,6 +439,8 @@ import GoBack from "../components/GoBack";
 import { VueEditor } from "vue2-editor";
 import LoginDialog from "../components/LoginDialog";
 import { bus } from "../bus.js";
+import localforage from "localforage";
+
 export default {
   components: {
     GoBack,
