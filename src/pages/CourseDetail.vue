@@ -65,7 +65,8 @@
             <div class="chapter-summary">
               <h1 style="margin:0 0 10px 0;">{{'第'+(index+1)+'节：'+item.title}}</h1>
               <div>{{item.summary}}</div>
-              <span style="color:#027be3" v-if="item.freesee">试看</span>
+              <q-btn unelevated color="primary" label="试看" style="width:100px;margin-top:10px;" v-if="item.freesee"/>
+              <q-btn unelevated color="primary" label="开始学习" style="width:100px;margin-top:10px;"/>
             </div>
           </div>
         </q-tab-panel>
