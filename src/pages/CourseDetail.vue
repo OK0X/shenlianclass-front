@@ -22,7 +22,7 @@
           </div>
         </div>
         <span style="margin-top:20px;">学习人数：{{course.studynum}}人</span>
-        <q-btn unelevated label="立即购买" class="study" @click="buyCourse" v-show="!isPayed" />
+        <q-btn unelevated label="立即购买" class="orenge-btn" @click="buyCourse" v-show="!isPayed" />
       </div>
     </div>
     <div class="detail-part">
@@ -54,7 +54,7 @@
             <div class="chapter-progress">
               <img
                 :src="item.finished?'statics/finished.png':'statics/ing.png'"
-                style="width:25px;height:25px;"
+                style="width:25px;height:25px;margin-top:4px;"
               />
               <div
                 class="chapter-progress-line"
@@ -65,8 +65,8 @@
             <div class="chapter-summary">
               <h1 style="margin:0 0 10px 0;">{{'第'+(index+1)+'节：'+item.title}}</h1>
               <div>{{item.summary}}</div>
-              <q-btn unelevated color="primary" label="试看" style="width:100px;margin-top:10px;" v-if="item.freesee"/>
-              <q-btn unelevated color="primary" label="开始学习" style="width:100px;margin-top:10px;"/>
+              <q-btn unelevated label="试看" class="orenge-btn" style="width:100px;height:36px;font-size:14px;margin-top:10px;" v-if="item.freesee"/>
+              <q-btn unelevated color="primary" label="开始学习" style="width:100px;margin-top:10px;" v-if="!item.freesee"/>
             </div>
           </div>
         </q-tab-panel>
@@ -360,7 +360,7 @@ export default {
         subject_id: this.course.uuid,
         subject_type:1+'',//购买课程
         total_amount: this.course.classprice,
-        return_url:'https://www.shenlianclass.com/#/ClassDetail'
+        return_url:'https://www.shenlianclass.com/#/CourseDetail'
       };
       let timestamp = new Date().getTime() + 1 * 60 * 1000;
       this.$axios
@@ -393,6 +393,7 @@ export default {
         this.videoDialog.studyProgress = this.studyProgress;
         // }
         this.videoDialog.course_id = this.course.uuid;
+        this.videoDialog.course_payed=this.isPayed
         this.videoDialog.show = true;
       } else {
         this.buyCourse();
@@ -446,7 +447,7 @@ export default {
   margin: 5px 0 30px 0;
 }
 
-.study {
+.orenge-btn {
   align-self: flex-start;
   margin-top: 20px;
   width: 145px;

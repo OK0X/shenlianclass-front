@@ -10,7 +10,7 @@
     <q-card class="bg-black text-white">
       <q-card-section style="display:flex;justify-content:space-between;">
         <div class="text-h6">{{'第'+(playIndex+1)+'节：'+currentVideo.title}}</div>
-        <q-btn dense outline round icon="close" @click="close" >
+        <q-btn dense outline round icon="close" @click="close">
           <q-tooltip content-class="bg-white text-primary">关闭</q-tooltip>
         </q-btn>
       </q-card-section>
@@ -173,6 +173,13 @@ export default {
                 player.on("ended", () => {
                   //自动播放下一节
                   this.updateProgress();
+
+                  if (!this.videoDialog.course_payed) {
+                    toast("请购买后观看");
+                    this.videoDialog.show = false;
+                    return;
+                  }
+
                   this.playIndex++;
                   this.currentVideo = this.videos[this.playIndex];
                   this.playVID = this.currentVideo.video_id;
@@ -202,10 +209,16 @@ export default {
         });
     },
     switchVideo(index) {
-      if(this.playIndex===index)
-      return
+      if (this.playIndex === index) return;
       this.updateProgress();
-      this.playIndex=index
+
+      if (!this.videoDialog.course_payed) {
+        toast("请购买后观看");
+        this.videoDialog.show = false;
+        return;
+      }
+
+      this.playIndex = index;
       this.currentVideo = this.videos[this.playIndex];
       this.playVID = this.currentVideo.video_id;
       this.getPlayAuth();
