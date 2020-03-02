@@ -113,10 +113,15 @@ export default {
           persistent: true
         })
         .onOk(data => {
-          if (data > 5000) {
-            toast("单次充值不能大于5000元");
+          if(data <=1){
+            toast("充值金额需大于1元");
             return;
           }
+          if(data >= 5000){
+            toast("单次充值金额需小于5000元");
+            return;
+          }
+
           this.gotoPay(data);
         });
     },

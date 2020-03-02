@@ -49,7 +49,7 @@
             </q-list>
           </q-menu>
         </div>
-        <span style="color:#ff7a00;align-self:center;cursor: pointer;" @click="login">{{role}}</span>
+        <span style="color:#ff7a00;align-self:center;" @click="login">{{role}}</span>
       </div>
       <div class="main-tabs">
         <div
