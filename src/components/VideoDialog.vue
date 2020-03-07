@@ -9,10 +9,20 @@
   >
     <q-card class="bg-black text-white">
       <q-card-section style="display:flex;justify-content:space-between;">
-        <div class="text-h6">{{'第'+(playIndex+1)+'节：'+currentVideo.title}}</div>
-        <q-btn dense outline round icon="close" @click="close">
+        <div style="display:flex;">
+          <div  @click="close">
+            <img src="statics/back-white.png" style="width: 35px;height: 35px;cursor: pointer;" />
+            <q-tooltip content-class="bg-white text-primary">返回</q-tooltip>
+          </div>
+          <div
+            class="text-h6"
+            style="margin-left:15px"
+          >{{'第'+(playIndex+1)+'节：'+currentVideo.title}}</div>
+        </div>
+        <div @click="close">
+          <img src="statics/close.png" style="width: 35px;height: 35px;cursor: pointer;" />
           <q-tooltip content-class="bg-white text-primary">关闭</q-tooltip>
-        </q-btn>
+        </div>
       </q-card-section>
       <q-card-section style="display:flex;">
         <div id="ali-h5-player" style="flex-shrink:0;"></div>
@@ -185,7 +195,7 @@ export default {
                   this.playVID = this.currentVideo.video_id;
                   this.getPlayAuth();
                 });
-                // player.fullscreenService.requestFullScreen();
+                player.fullscreenService.requestFullScreen();
                 localforage.getItem(this.playVID).then(value => {
                   let seek = 0;
                   if (value !== null) {
