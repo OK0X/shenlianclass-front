@@ -93,7 +93,7 @@ function awaitWrap(promise) {
 }
 
 function makeImgUrl(_this, filename) {
-  let Expires = parseInt(new Date().getTime() / 1000) + 600;
+  let Expires = parseInt(new Date().getTime() / 1000) + 60*10;//10分钟
   let StringToSign =
     "GET\n\n\n" + Expires + "\n" + "/shenlianclass/" + filename;
 

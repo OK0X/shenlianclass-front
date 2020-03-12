@@ -1,19 +1,22 @@
 <template>
   <q-page class="mypage">
     <div class="white-block">
-      <span>课程名称：</span>
+      <span class="tx-bold">课程名称：</span>
       <q-input v-model="classname" :dense="true" style="width:300px;" counter maxlength="20" />
-      <span>课程封面：</span>
+      <span class="tx-bold" style="margin-top:10px;">课程封面：(请上传尺寸为530×320像素的jpg图片)</span>
       <input type="file" accept="image/*" style="margin-top:10px;" @change="converFileChange" />
       <img :src="imgsrc" style="margin-top:10px;width:530px;height:320px;" v-show="imgShow" />
-      <span style="color:red;">请上传尺寸为530×320像素的jpg图片</span>
-      <button
-        type="button"
-        style="width:72px;margin-top:10px;"
-        v-show="imgShow"
-        @click="uploadConverImg"
-      >开始上传</button>
-      <span style="margin-top:30px;">课程简介：</span>
+      <div>
+        <button
+          type="button"
+          style="width:72px;margin-top:10px;"
+          @click="uploadConverImg"
+          :disabled="coverUploadDisable"
+        >开始上传</button>
+        <span style="margin-left:10px;">上传进度：{{coverUProgress}}</span>
+        <span style="color:green;" v-show="coverUProgress === '100%'">(已保存上传记录,相同图片无需再次上传)</span>
+      </div>
+      <span style="margin-top:30px;" class="tx-bold">课程简介：</span>
       <q-input
         :dense="true"
         v-model.trim="classsummary"
@@ -22,14 +25,17 @@
         counter
         maxlength="300"
       />
-      <span style="margin-top:30px;">详细介绍：</span>
+      <span style="margin-top:30px;" class="tx-bold">课程详情：</span>
       <VueEditor
         v-model="classdetail"
         useCustomImageHandler
         @image-added="handleImageAdded"
         style="height: 580px;width:100%;margin-bottom:50px;"
       />
-      <span style="align-self: flex-end;color: rgba(0, 0, 0, 0.54);">{{detailLength()}} / 2000</span>
+      <span
+        style="align-self: flex-end;color: rgba(0, 0, 0, 0.54);"
+      >{{textLength(classdetail)}} / 1500</span>
+      <span style="margin-top:30px;" class="tx-bold">章节信息：</span>
       <div class="chapters" v-for="(item,index) in chpters" v-bind:key="index">
         <span>第{{index+1}}节</span>
         <q-input
@@ -56,6 +62,7 @@
             <label class="status">
               上传状态:
               <span>{{item.statusText}}</span>
+              <span style="color:green;" v-show="item.statusText === '文件上传完毕'">(已保存该节上传记录,相同视频无需再次上传)</span>
             </label>
           </div>
           <div class="upload-type">
@@ -66,7 +73,7 @@
             </span>
           </div>
         </div>
-        <q-checkbox v-model="item.freesee" label="将该节设置为试看"/>
+        <q-checkbox v-model="item.freesee" label="将该节设置为试看" />
         <q-btn
           unelevated
           color="red"
@@ -83,12 +90,45 @@
         style="width:100px;margin-top:10px;"
         @click="addchapters"
       />
-      <span style="margin-top:30px;">销售方式：(至少选择一种方式)</span>
+      <span style="margin-top:30px;" class="tx-bold">课程资源（描述并上传你的课程资源，如果有的话）：</span>
+      <VueEditor
+        v-model="corResDiscribe"
+        useCustomImageHandler
+        @image-added="handleImageAdded"
+        style="height: 300px;width:100%;margin-bottom:50px;"
+      />
+      <span
+        style="align-self: flex-end;color: rgba(0, 0, 0, 0.54);"
+      >{{textLength(corResDiscribe)}} / 500</span>
+      <input type="file" accept="*/*" style="margin-top:10px;" @change="courseFileChange" />
+      <div>
+        <button
+          type="button"
+          style="width:72px;margin-top:10px;"
+          @click="uploadCourseRes"
+          :disabled="coResUploadDisable"
+        >开始上传</button>
+        <span style="margin-left:10px;">上传进度：{{courseResUProgress}}</span>
+        <span style="color:green;" v-show="courseResUProgress === '100%'">(已保存该节上传记录,相同资源无需再次上传)</span>
+      </div>
+      <span style="margin-top:30px;" class="tx-bold">课后作业：</span>
+      <VueEditor
+        v-model="courseWork"
+        useCustomImageHandler
+        @image-added="handleImageAdded"
+        style="height: 300px;width:100%;margin-bottom:50px;"
+      />
+      <span
+        style="align-self: flex-end;color: rgba(0, 0, 0, 0.54);"
+      >{{textLength(courseWork)}} / 500</span>
+      <span style="margin-top:30px;" class="tx-bold">课程售价：(至少选择一种方式)</span>
       <div style="display:flex;">
-        <q-checkbox v-model="usemoney" label="现金"/>
-        <q-input v-model="classprice" :dense="true" style="width:50px;margin-left:5px;" /><span style="align-self: center;">元</span>
-        <q-checkbox v-model="usecoin" label="SC积分" style="margin-left:20px;"/>
-        <q-input v-model="scoin" :dense="true" style="width:50px;margin-left:5px;" /><span style="align-self: center;">个</span>
+        <q-checkbox v-model="usemoney" label="现金" />
+        <q-input v-model="classprice" :dense="true" style="width:50px;margin-left:5px;" />
+        <span style="align-self: center;">元</span>
+        <q-checkbox v-model="usecoin" label="SC积分" style="margin-left:20px;" />
+        <q-input v-model="scoin" :dense="true" style="width:50px;margin-left:5px;" />
+        <span style="align-self: center;">个</span>
       </div>
     </div>
     <q-btn
@@ -120,6 +160,15 @@ export default {
   },
   data() {
     return {
+      courseWork: "",
+      coverUProgress: "0%",
+      coverUploadDisable: true,
+      coResUploadDisable: true,
+      courseFile: null,
+      courseFileName: "",
+      courseResPicked: false,
+      courseResUProgress: "0%",
+      corResDiscribe: "",
       saveTxInterval: "",
       classname: "",
       imgsrc: "",
@@ -133,7 +182,7 @@ export default {
           title: "",
           summary: "",
           video: null,
-          freesee:false,
+          freesee: false,
           file: null,
           authProgress: 0,
           uploadDisabled: true,
@@ -147,9 +196,9 @@ export default {
         show: false,
         title: "快捷登陆"
       },
-      usemoney:true,
-      usecoin:false,
-      scoin:''
+      usemoney: true,
+      usecoin: false,
+      scoin: ""
     };
   },
   computed: {
@@ -177,27 +226,45 @@ export default {
       let _this = this;
       let files = e.target.files || e.dataTransfer.files;
       if (!files.length) return;
-      let file = files[0]; //File对象
-      this.imgfile = file;
-      let reader = new FileReader(); //FileReader对象
-      reader.readAsDataURL(file); //该方法会读取指定的 Blob 或 File 对象。读取操作完成的时候，readyState 会变成已完成（DONE），并触发 loadend 事件，同时 result 属性将包含一个data:URL格式的字符串（base64编码）以表示所读取文件的内容。
+      this.imgfile = files[0]; //File对象
 
+      this.converimg =
+        new Date().getTime() +
+        this.imgfile.name.substring(this.imgfile.name.length - 4);
+      this.coverUploadDisable = false;
+      this.coverUProgress = "0%";
+
+      let reader = new FileReader(); //FileReader对象
+      reader.readAsDataURL(this.imgfile); //该方法会读取指定的 Blob 或 File 对象。读取操作完成的时候，readyState 会变成已完成（DONE），并触发 loadend 事件，同时 result 属性将包含一个data:URL格式的字符串（base64编码）以表示所读取文件的内容。
       reader.onload = function(e) {
         _this.imgsrc = e.target.result; //图片内容的base64编码
         _this.imgShow = true;
       };
     },
     uploadConverImg() {
+      //
+      this.coverUploadDisable = true;
+      let progress = progressEvent => {
+        // 使用本地 progress 事件
+        if (progressEvent.lengthComputable) {
+          this.coverUProgress =
+            Math.round((progressEvent.loaded / progressEvent.total) * 100) +
+            "%";
+        }
+      };
+      this.uploadFile2OSS(this.converimg, this.imgfile, true, progress, null);
+    },
+    uploadFile2OSS(filename, file, pubRead, progress, success) {
       //aliyun oss
-      this.util.loadingShow(this)
+      this.util.loadingShow(this);
 
       var expireTime = new Date();
-      expireTime.setSeconds(expireTime.getSeconds() + 600);
+      expireTime.setSeconds(expireTime.getSeconds() + 60 * 10); //10分钟
 
       var policyText = {
         expiration: expireTime.toISOString(), //设置该Policy的失效时间，超过这个失效时间之后，就没有办法通过这个policy上传文件了
         conditions: [
-          ["content-length-range", 0, 1048576000] // 设置上传文件的大小限制
+          ["content-length-range", 0, 1024 * 1024 * 50] // 设置上传文件的大小限制单位字节，当前50M
         ]
       };
 
@@ -208,41 +275,76 @@ export default {
       );
       var signature = CryptoJS.enc.Base64.stringify(encrypted);
 
-      let filename = this.user.uuid + new Date().getTime() + ".jpg";
       let formData = new FormData();
       formData.append("key", filename);
       formData.append("policy", policyBase64);
       formData.append("OSSAccessKeyId", this.global.api.aliyunossaccessid);
       formData.append("success_action_status", "200");
       formData.append("signature", signature);
-      formData.append("file", this.imgfile, filename);
+      formData.append("file", file, filename);
 
+      let url = pubRead
+        ? this.global.api.aliyunosshostpubread
+        : this.global.api.aliyunosshost;
       this.$axios
-        .post(this.global.api.aliyunosshostpubread, formData, {
+        .post(url, formData, {
           headers: {
             "Content-Type":
               "application/x-www-form-urlencoded;boundary=----WebKitFormBoundarytkUbKWcxgeMi1fIr"
-          }
+          },
+          onUploadProgress: progress
         })
         .then(response => {
           //console.log(response);
           if (response.status === 200) {
             toast("上传成功");
-            this.converimg = filename;
-            // this.imgbmobUrl = filename
-            // this.submit2bmob();
-            // this.getFile();
+            if (success !== null) success();
           }
-          this.util.loadingHide(this)
+          this.util.loadingHide(this);
         })
         .catch(error => {
           console.error(error);
-          // toast(_this.$t("smscodeerror"));
-          this.util.loadingHide(this)
+
+          this.util.loadingHide(this);
         });
     },
-    detailLength() {
-      let text = this.classdetail.replace(/<\/?[^>]+(>|$)/g, "");
+    courseFileChange(e) {
+      //上传
+      let _this = this;
+      let files = e.target.files || e.dataTransfer.files;
+      if (!files.length) return;
+      this.courseFile = files[0]; //File对象
+
+      this.courseFileName =
+        new Date().getTime() +
+        this.courseFile.name.substring(this.courseFile.name.length - 4);
+      this.coResUploadDisable = false;
+      this.courseResUProgress = "0%";
+
+      //下载
+      // console.log(this.util.makeImgUrl(this,'70e44e78b9274a8aae9a8c5e9bc701b41583929262801.mp4')
+    },
+    uploadCourseRes() {
+      this.coResUploadDisable = true;
+      let progress = progressEvent => {
+        // 使用本地 progress 事件
+        if (progressEvent.lengthComputable) {
+          this.courseResUProgress =
+            Math.round((progressEvent.loaded / progressEvent.total) * 100) +
+            "%";
+        }
+      };
+
+      this.uploadFile2OSS(
+        this.courseFileName,
+        this.courseFile,
+        false,
+        progress,
+        null
+      );
+    },
+    textLength(text) {
+      text = text.replace(/<\/?[^>]+(>|$)/g, "");
       let len = text.length;
       return len;
     },
@@ -254,7 +356,7 @@ export default {
         title: "",
         summary: "",
         video: null,
-        freesee:false,
+        freesee: false,
         file: null,
         authProgress: 0,
         uploadDisabled: true,
@@ -461,6 +563,12 @@ export default {
               _this.classdetail = _this.draft.classdetail;
               _this.classprice = _this.draft.classprice;
               _this.chpters = _this.draft.chpters;
+              _this.courseWork = _this.draft.courseWork;
+              _this.corResDiscribe = _this.draft.corResDiscribe;
+              _this.coverUProgress = _this.draft.coverUProgress;
+              _this.converimg = _this.draft.converimg;
+              _this.courseResUProgress = _this.draft.courseResUProgress;
+              _this.courseFileName = _this.draft.courseFileName;
             })
             .onCancel(() => {
               localforage.removeItem("classpubdraft");
@@ -470,23 +578,25 @@ export default {
     },
     saveDraft() {
       this.saveTxInterval = setInterval(() => {
-        //每分钟保存一次
-
         let chpters2 = [];
         for (let i = 0; i < this.chpters.length; i++) {
-          chpters2.push({
-            title: this.chpters[i].title,
-            summary: this.chpters[i].summary,
-            freesee:this.chpters[i].freesee,
-            video: null,
-            file: null,
-            authProgress: 0,
-            uploadDisabled: true,
-            resumeDisabled: true,
-            pauseDisabled: true,
-            uploader: null,
-            statusText: ""
-          });
+          if (this.chpters[i].statusText === "文件上传完毕") {
+            chpters2.push(this.chpters[i]);
+          } else {
+            chpters2.push({
+              title: this.chpters[i].title,
+              summary: this.chpters[i].summary,
+              freesee: this.chpters[i].freesee,
+              video: null,
+              file: null,
+              authProgress: 0,
+              uploadDisabled: true,
+              resumeDisabled: true,
+              pauseDisabled: true,
+              uploader: null,
+              statusText: ""
+            });
+          }
         }
 
         this.draft = {
@@ -495,8 +605,20 @@ export default {
           classdetail: this.classdetail,
           classprice: this.classprice,
           chpters: chpters2,
-          time: new Date().toLocaleString()
+          time: new Date().toLocaleString(),
+          courseWork: this.courseWork,
+          corResDiscribe: this.corResDiscribe
         };
+
+        if(this.coverUProgress === '100%'){
+          this.draft.coverUProgress=this.coverUProgress
+          this.draft.converimg=this.converimg
+        }
+
+        if(this.courseResUProgress === '100%'){
+          this.draft.courseResUProgress=this.courseResUProgress
+          this.draft.courseFileName=this.courseFileName
+        }
 
         if (
           this.classdetail !== "" ||
@@ -506,7 +628,7 @@ export default {
           localforage.setItem("classpubdraft", JSON.stringify(this.draft));
           //console.log("saved，" + new Date().toLocaleString(),this.draft);
         }
-      }, 1 * 60 * 1000);
+      }, 5 * 1000); //每5秒钟保存一次
     },
     checkInfoOk() {
       // debugger
@@ -530,17 +652,27 @@ export default {
         return false;
       }
 
-      if (this.classdetail.replace(/<\/?[^>]+(>|$)/g, "").length > 2000) {
-        toast("课程详情需小于2000字");
+      if (this.classdetail.replace(/<\/?[^>]+(>|$)/g, "").length > 1500) {
+        toast("课程详情需小于1500字");
         return false;
       }
 
-      if (!this.usemoney&&!this.usecoin) {
+      if (this.courseWork.replace(/<\/?[^>]+(>|$)/g, "").length > 500) {
+        toast("资源描述需小于500字");
+        return false;
+      }
+
+      if (this.courseWork.replace(/<\/?[^>]+(>|$)/g, "").length > 500) {
+        toast("作业描述需小于500字");
+        return false;
+      }
+
+      if (!this.usemoney && !this.usecoin) {
         toast("请至少选择一种销售方式");
         return false;
       }
 
-      if (this.classprice === ''&&this.scoin==='') {
+      if (this.classprice === "" && this.scoin === "") {
         toast("请填写课程销售方式");
         return false;
       }
@@ -570,6 +702,7 @@ export default {
       return true;
     },
     submit() {
+      
       if (typeof this.user.uuid === "undefined") {
         toast("当前未登陆，无法发布课程");
         return;
@@ -583,16 +716,19 @@ export default {
           classsummary: this.classsummary,
           classdetail: this.classdetail,
           videos: this.chpters,
+          res_name: this.courseFileName,
+          res_discribe: this.corResDiscribe,
+          homework: this.courseWork
         };
 
-        if(this.usemoney){
-          params.classprice= this.classprice
+        if (this.usemoney) {
+          params.classprice = this.classprice;
         }
 
-        if(this.usecoin){
-          params.coin= this.scoin
+        if (this.usecoin) {
+          params.coin = this.scoin;
         }
-        
+
         let timestamp = new Date().getTime() + 1 * 60 * 1000;
         this.$axios
           .post(this.global.api.backurl + "course/createCourse", params, {
@@ -621,57 +757,62 @@ export default {
           });
       }
     },
-    handleImageAdded: function(file, Editor, cursorLocation, resetUploader) {
+    handleImageAdded(file, Editor, cursorLocation, resetUploader) {
+      // var expireTime = new Date();
+      // expireTime.setSeconds(expireTime.getSeconds() + 600);
 
-      var expireTime = new Date();
-      expireTime.setSeconds(expireTime.getSeconds() + 600);
+      // var policyText = {
+      //   expiration: expireTime.toISOString(), //设置该Policy的失效时间，超过这个失效时间之后，就没有办法通过这个policy上传文件了
+      //   conditions: [
+      //     ["content-length-range", 0, 1048576000] // 设置上传文件的大小限制
+      //   ]
+      // };
 
-      var policyText = {
-        expiration: expireTime.toISOString(), //设置该Policy的失效时间，超过这个失效时间之后，就没有办法通过这个policy上传文件了
-        conditions: [
-          ["content-length-range", 0, 1048576000] // 设置上传文件的大小限制
-        ]
-      };
+      // var policyBase64 = Base64.encode(JSON.stringify(policyText));
+      // var encrypted = CryptoJS.HmacSHA1(
+      //   policyBase64,
+      //   this.global.api.aliyunossaccesskey
+      // );
+      // var signature = CryptoJS.enc.Base64.stringify(encrypted);
 
-      var policyBase64 = Base64.encode(JSON.stringify(policyText));
-      var encrypted = CryptoJS.HmacSHA1(
-        policyBase64,
-        this.global.api.aliyunossaccesskey
-      );
-      var signature = CryptoJS.enc.Base64.stringify(encrypted);
+      // let filename = new Date().getTime() + ".jpg";
+      // let formData = new FormData();
+      // formData.append("key", filename);
+      // formData.append("policy", policyBase64);
+      // formData.append("OSSAccessKeyId", this.global.api.aliyunossaccessid);
+      // formData.append("success_action_status", "200");
+      // formData.append("signature", signature);
+      // formData.append("file", file, filename);
 
-      let filename = new Date().getTime() + ".jpg";
-      let formData = new FormData();
-      formData.append("key", filename);
-      formData.append("policy", policyBase64);
-      formData.append("OSSAccessKeyId", this.global.api.aliyunossaccessid);
-      formData.append("success_action_status", "200");
-      formData.append("signature", signature);
-      formData.append("file", file, filename);
+      // this.$axios
+      //   .post(this.global.api.aliyunosshostpubread, formData, {
+      //     headers: {
+      //       "Content-Type":
+      //         "application/x-www-form-urlencoded;boundary=----WebKitFormBoundarytkUbKWcxgeMi1fIr"
+      //     }
+      //   })
+      //   .then(response => {
+      //     //console.log(response);
 
-      this.$axios
-        .post(this.global.api.aliyunosshostpubread, formData, {
-          headers: {
-            "Content-Type":
-              "application/x-www-form-urlencoded;boundary=----WebKitFormBoundarytkUbKWcxgeMi1fIr"
-          }
-        })
-        .then(response => {
-          //console.log(response);
+      //     if (response.status === 200) {
 
-          if (response.status === 200) {
-            Editor.insertEmbed(
-              cursorLocation,
-              "image",
-              this.global.api.aliyunosshostpubread + "/" + filename
-            );
-            resetUploader();
-          }
-          // this.util.loadingHide(this)
-        })
-        .catch(error => {
-          console.error(error);
-        });
+      //     }
+      //     // this.util.loadingHide(this)
+      //   })
+      //   .catch(error => {
+      //     console.error(error);
+      //   });
+
+      let filename =
+        new Date().getTime() + file.name.substring(file.name.length - 4);
+      this.uploadFile2OSS(filename, file, true, null, () => {
+        Editor.insertEmbed(
+          cursorLocation,
+          "image",
+          this.global.api.aliyunosshostpubread + "/" + filename
+        );
+        resetUploader();
+      });
     }
   }
 };
@@ -697,5 +838,8 @@ export default {
 }
 .upload-type {
   margin-top: 10px;
+}
+.tx-bold {
+  font-weight: bold;
 }
 </style>

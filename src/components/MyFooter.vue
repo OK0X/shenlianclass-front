@@ -12,9 +12,9 @@
     <div class="footer">
       <div class="footer-content">
         <div class="beian">
-          <img src="statics/test-fot.png" style="width:156px;50px;" />
-          <span style="color:#a1a1a3;margin-top:10px;">备案号：粤ICP备19159723号</span>
-          <span style="color:#a1a1a3;margin-top:10px;">Copyright © 2020 深圳市深链网络科技有限公司 版权所有</span>
+          <img src="statics/foot-logo.png" style="width:156px;50px;" />
+          <span style="color:#a1a1a3;margin-top:10px;">粤ICP备19159723号</span>
+          <span style="color:#a1a1a3;margin-top:10px;">Copyright © 2020 深圳市深链网络科技有限公司</span>
         </div>
         <div style="display:flex;">
           <div style="display: flex;flex-direction: column;">

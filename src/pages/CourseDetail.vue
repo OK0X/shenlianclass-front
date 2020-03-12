@@ -37,6 +37,9 @@
       >
         <q-tab name="detail" label="课程介绍" />
         <q-tab name="chapters" label="课程目录" />
+        <q-tab name="resources" label="课程资源" />
+        <q-tab name="homework" label="课后作业" />
+        <q-tab name="appraise" label="课程评价" />
       </q-tabs>
       <!-- <q-separator /> -->
       <q-tab-panels v-model="tab" animated>
