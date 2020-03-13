@@ -68,17 +68,68 @@
             <div class="chapter-summary">
               <h1 style="margin:0 0 10px 0;">{{'第'+(index+1)+'节：'+item.title}}</h1>
               <div>{{item.summary}}</div>
-              <q-btn unelevated label="试看" class="orenge-btn" style="width:100px;height:36px;font-size:14px;margin-top:10px;" v-if="item.freesee"/>
-              <q-btn unelevated color="primary" label="开始学习" style="width:100px;margin-top:10px;" v-if="!item.freesee"/>
+              <q-btn
+                unelevated
+                label="试看"
+                class="orenge-btn"
+                style="width:100px;height:36px;font-size:14px;margin-top:10px;"
+                v-if="item.freesee"
+              />
+              <q-btn
+                unelevated
+                color="primary"
+                label="开始学习"
+                style="width:100px;margin-top:10px;"
+                v-if="!item.freesee"
+              />
             </div>
           </div>
+        </q-tab-panel>
+        <q-tab-panel name="resources">
+          <div v-html="course.res_discribe===''?'该课程无额外资源':course.res_discribe"></div>
+          <div
+            style="display:flex;cursor: pointer;"
+            @click="downloadRes"
+            v-show="course.res_discribe!==''"
+          >
+            <img :src="setFileIcon()" style="width:32px;height:32px" />
+            <span class="tx-cour-res">{{course.res_name}}</span>
+          </div>
+        </q-tab-panel>
+        <q-tab-panel name="homework" class="flex-col">
+          <div v-html="course.homework===''?'该课程无作业':course.homework"></div>
+          <q-separator />
+          <div class="flex-col" v-show="!isWorkFinished">
+            <VueEditor
+              v-model="homework"
+              useCustomImageHandler
+              @image-added="handleImageAdded"
+              style="height: 300px;width:100%;margin-bottom:50px;margin-top:20px;"
+            />
+            <span
+              style="align-self: flex-end;color: rgba(0, 0, 0, 0.54);"
+            >{{textLength(homework)}} / 1000</span>
+            <q-btn
+              unelevated
+              color="primary"
+              label="提交作业"
+              style="width:150px;margin-top:10px;"
+              @click="submitHomeWork"
+            >
+              <q-tooltip
+                content-class="bg-amber text-black shadow-4"
+                :offset="[10, 10]"
+              >提交作业后可阅览他人作业</q-tooltip>
+            </q-btn>
+          </div>
+          <CommentReply :ask="homeworkAsk" :myanswer="myanswer" :option="CROption" v-show="isWorkFinished"/>
         </q-tab-panel>
       </q-tab-panels>
     </div>
     <MyFooter />
     <VideoDialog :videoDialog="videoDialog" />
     <LoginDialog :dialogData="loginDialog" />
-    <PayWaitDialog :data="payWaitDialog" @finishedPay="finishedPay"/>
+    <PayWaitDialog :data="payWaitDialog" @finishedPay="finishedPay" />
   </q-page>
 </template>
 
@@ -92,6 +143,8 @@ import GoBack from "../components/GoBack";
 import { bus } from "../bus.js";
 import localforage from "localforage";
 import PayWaitDialog from "../components/PayWaitDialog";
+import { VueEditor } from "vue2-editor";
+import CommentReply from "../components/CommentReply";
 
 export default {
   components: {
@@ -99,10 +152,15 @@ export default {
     VideoDialog,
     LoginDialog,
     GoBack,
-    PayWaitDialog
+    PayWaitDialog,
+    VueEditor,
+    CommentReply
   },
   data() {
     return {
+      CROption: {
+        showCai: false
+      },
       tab: "detail",
       course: {},
       videos: [],
@@ -117,9 +175,13 @@ export default {
       out_trade_no: "",
       payurl: "",
       studyProgress: {},
-      payWaitDialog:{
-        show:false
-      }
+      payWaitDialog: {
+        show: false
+      },
+      homework: "",
+      homeworkAsk: "",
+      isWorkFinished:false,
+      myanswer:''
     };
   },
   computed: {
@@ -133,11 +195,18 @@ export default {
     }
   },
   mounted() {
+    console.log("课程信息", this.$route.query.arg);
+    this.homeworkAsk = {
+      hasaccept: 1,
+      reward: 0,
+      user_id: this.user.uuid,
+      uuid: this.$route.query.arg.uuid
+    };
     if (typeof this.$route.query.out_trade_no !== "undefined") {
-      //支付完成跳转过来
-      // console.log(111, this.$route.query);
+      //处理支付完成的跳转
       this.queryPayResult(this.$route.query.out_trade_no);
     } else {
+      //非支付的情况
       this.course = this.$route.query.arg;
 
       if (this.$route.query.from === "myclass") {
@@ -148,13 +217,153 @@ export default {
       }
 
       this.getVideos();
+
+      if (typeof this.user.uuid !== "undefined") {
+        this.isMyWorkFinish();
+      }
     }
 
     bus.$on("loginok", () => {
       this.checkisPayed();
+      this.isMyWorkFinish();
     });
+
+    bus.$on("logout", () => {
+      this.isWorkFinished=false
+    });
+    
   },
   methods: {
+    isMyWorkFinish() {
+      let timestamp = new Date().getTime() + 1000 * 60 * 1;
+      let params={
+        userid:this.user.uuid,
+        courseid:this.course.uuid
+      }
+      this.$axios
+        .get(this.global.api.backurl + "course/isHomeWorkFinish", {
+          params: params,
+          headers: {
+            "access-token": this.util.generateToken(JSON.stringify(params), timestamp),
+            timestamp2: timestamp
+          }
+        })
+        .then(response => {
+          console.log(333,response);
+          if (response.status === 200 && response.data.code === 0) {
+            this.isWorkFinished=response.data.data
+          }
+        })
+        .catch(error => {
+
+          //console.log(error);
+        });
+    },
+    handleImageAdded(file, Editor, cursorLocation, resetUploader) {
+      let filename =
+        new Date().getTime() + file.name.substring(file.name.length - 4);
+      this.util.uploadFile2OSS(this, filename, file, true, null, () => {
+        Editor.insertEmbed(
+          cursorLocation,
+          "image",
+          this.global.api.aliyunosshostpubread + "/" + filename
+        );
+        resetUploader();
+      });
+    },
+    submitHomeWork() {
+      if (typeof this.user.uuid === "undefined") {
+        toast("请先登陆后再回答");
+        this.loginDialog.show = true;
+        return;
+      }
+
+      //todo 发布时放开
+      // if (!this.isPayed) {
+      //   toast("请先购买学习完课程后再完成作业");
+      //   return;
+      // }
+
+      if (this.textLength(this.homework) < 10) {
+        toast("作业内容不能少于10个字哦");
+        return;
+      }
+
+      if (this.textLength(this.homework) > 1000) {
+        toast("作业内容需小于1000字");
+        return;
+      }
+      this.util.loadingShow(this);
+
+      let params = {
+        user_id: this.user.uuid,
+        ask_id: this.course.uuid, //这里填course id
+        content: this.homework,
+        from:'course'
+      };
+      let timestamp = new Date().getTime() + 1 * 60 * 1000;
+      this.$axios
+        .post(this.global.api.backurl + "ask/createAnswer", params, {
+          headers: {
+            "access-token": this.util.generateToken(
+              JSON.stringify(params),
+              timestamp
+            ),
+            timestamp2: timestamp
+          }
+        })
+        .then(response => {
+          this.util.loadingHide(this);
+          //console.log(response);
+          if (response.status === 200 && response.data.code === 0) {
+            toast("提交成功");
+            this.isWorkFinished=true
+
+            toast("回答成功,已到账奖励："+this.global.backendConfig.answerReward+'积分');
+            //123
+            this.myanswer = {
+              accept: 0,
+              agree: 0,
+              ask_id: this.course.uuid,
+              comment_new: "",
+              comment_num: 0,
+              comments: [],
+              comments_show: false,
+              content: this.homework,
+              create_at: new Date().getTime(),
+              disagree: 0,
+              nickname: this.user.nick,
+              user_id: this.user.uuid,
+              uuid: response.data.data
+            };
+          }
+        });
+    },
+    textLength(text) {
+      text = text.replace(/<\/?[^>]+(>|$)/g, "");
+      let len = text.length;
+      return len;
+    },
+    downloadRes() {
+      if (this.isPayed) {
+        openURL(this.util.makeDownloadUrl(this, this.course.res_name));
+      } else {
+        toast("购买课程后可下载");
+      }
+    },
+    setFileIcon() {
+      // debugger
+      if (typeof this.course.res_name === "undefined") return;
+      let filetype = this.course.res_name.substring(
+        this.course.res_name.length - 3
+      );
+      switch (filetype) {
+        case "rar":
+          return "statics/rar.png";
+        default:
+          return "statics/file-default.png";
+      }
+    },
     getStudyProgress() {
       let timestamp = new Date().getTime() + 1000 * 60 * 1;
       let videoIds = [];
@@ -244,11 +453,11 @@ export default {
         });
     },
     queryPayResult(out_trade_no) {
-      this.util.loadingShow(this)
+      this.util.loadingShow(this);
       let timestamp = new Date().getTime() + 1000 * 60 * 1;
       let params = {
         out_trade_no: out_trade_no,
-        subject_type:1+''
+        subject_type: 1 + ""
       };
       this.$axios
         .get(this.global.api.backurl + "alipay/getPayResult", {
@@ -262,16 +471,16 @@ export default {
           }
         })
         .then(response => {
-          this.util.loadingHide(this)
+          this.util.loadingHide(this);
           if (response.status === 200 && response.data.code === 0) {
             this.course = response.data.data.course;
             this.setVideos(response.data.data.videos);
             this.isPayed = true;
             this.tab = "chapters";
             toast("购买成功!");
-          }else{
-            if(response.data.code === 6006){
-              toast('请完成支付后点击该操作')
+          } else {
+            if (response.data.code === 6006) {
+              toast("请完成支付后点击该操作");
             }
           }
         })
@@ -342,28 +551,27 @@ export default {
           }
         });
     },
-    finishedPay(){
-      this.payWaitDialog.show=false
+    finishedPay() {
+      this.payWaitDialog.show = false;
       this.queryPayResult(this.out_trade_no);
     },
     buyUseAliPay() {
-      this.payWaitDialog.show=true
+      this.payWaitDialog.show = true;
 
-        
-      //已生成过支付链接直接打开  
+      //已生成过支付链接直接打开
       if (this.out_trade_no !== "" && this.payurl !== "") {
         openURL(this.payurl);
         return;
       }
 
-      this.util.loadingShow(this)
+      this.util.loadingShow(this);
       let params = {
         user_id: this.user.uuid,
         subject_title: this.course.classname,
         subject_id: this.course.uuid,
-        subject_type:1+'',//购买课程
+        subject_type: 1 + "", //购买课程
         total_amount: this.course.classprice,
-        return_url:'https://www.shenlianclass.com/#/CourseDetail'
+        return_url: "https://www.shenlianclass.com/#/CourseDetail"
       };
       let timestamp = new Date().getTime() + 1 * 60 * 1000;
       this.$axios
@@ -377,7 +585,7 @@ export default {
           }
         })
         .then(response => {
-          this.util.loadingHide(this)
+          this.util.loadingHide(this);
           if (response.status === 200 && response.data.code === 0) {
             //console.log(response.data.data);
             const result = response.data.data;
@@ -396,7 +604,7 @@ export default {
         this.videoDialog.studyProgress = this.studyProgress;
         // }
         this.videoDialog.course_id = this.course.uuid;
-        this.videoDialog.course_payed=this.isPayed
+        this.videoDialog.course_payed = this.isPayed;
         this.videoDialog.show = true;
       } else {
         this.buyCourse();
@@ -489,5 +697,11 @@ export default {
   background: #ff9800;
   align-self: center;
   margin: 5px 0 5px 0;
+}
+.tx-cour-res {
+  font-size: 18px;
+  align-self: center;
+  color: blue;
+  text-decoration: underline;
 }
 </style>

@@ -31,7 +31,7 @@
         </div>
       </div>
       <input
-        accept="image/gif, image/jpeg, image/jpg, image/png"
+        accept="image/jpg, image/png"
         type="file"
         @change="onFileChange($event)"
         class="photo-pickup"

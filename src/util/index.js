@@ -1,5 +1,6 @@
 /* eslint-disable */
 import CryptoJS from "crypto-js";
+import { Base64 } from "js-base64";
 
 function showInfoDialog(_this, txhash, isBack) {
   _this.$q
@@ -92,7 +93,7 @@ function awaitWrap(promise) {
     .catch(err => [err, null])
 }
 
-function makeImgUrl(_this, filename) {
+function makeDownloadUrl(_this, filename) {
   let Expires = parseInt(new Date().getTime() / 1000) + 60*10;//10分钟
   let StringToSign =
     "GET\n\n\n" + Expires + "\n" + "/shenlianclass/" + filename;
@@ -199,14 +200,70 @@ function randomUUID() {
   return uuid.join('').replace(/-/g, "").toLowerCase();
 }
 
+function uploadFile2OSS(_this,filename, file, pubRead, progress, success) {
+  //aliyun oss
+  _this.util.loadingShow(_this);
+
+  var expireTime = new Date();
+  expireTime.setSeconds(expireTime.getSeconds() + 60 * 10); //10分钟
+
+  var policyText = {
+    expiration: expireTime.toISOString(), //设置该Policy的失效时间，超过这个失效时间之后，就没有办法通过这个policy上传文件了
+    conditions: [
+      ["content-length-range", 0, 1024 * 1024 * 50] // 设置上传文件的大小限制单位字节，当前50M
+    ]
+  };
+
+  var policyBase64 = Base64.encode(JSON.stringify(policyText));
+  var encrypted = CryptoJS.HmacSHA1(
+    policyBase64,
+    _this.global.api.aliyunossaccesskey
+  );
+  var signature = CryptoJS.enc.Base64.stringify(encrypted);
+
+  let formData = new FormData();
+  formData.append("key", filename);
+  formData.append("policy", policyBase64);
+  formData.append("OSSAccessKeyId", _this.global.api.aliyunossaccessid);
+  formData.append("success_action_status", "200");
+  formData.append("signature", signature);
+  formData.append("file", file, filename);
+
+  let url = pubRead
+    ? _this.global.api.aliyunosshostpubread
+    : _this.global.api.aliyunosshost;
+  _this.$axios
+    .post(url, formData, {
+      headers: {
+        "Content-Type":
+          "application/x-www-form-urlencoded;boundary=----WebKitFormBoundarytkUbKWcxgeMi1fIr"
+      },
+      onUploadProgress: progress
+    })
+    .then(response => {
+      //console.log(response);
+      if (response.status === 200) {
+        toast("上传成功");
+        if (success !== null) success();
+      }
+      _this.util.loadingHide(_this);
+    })
+    .catch(error => {
+      console.error(error);
+
+      _this.util.loadingHide(_this);
+    });
+}
+
 export default {
+  uploadFile2OSS,
   showInfoDialog,
   timeUTC2Local,
   randomWord,
   isEmpty,
   generateToken,
   awaitWrap,
-  makeImgUrl,
+  makeDownloadUrl,
   hash,
   getShortTime,
   loadingShow,

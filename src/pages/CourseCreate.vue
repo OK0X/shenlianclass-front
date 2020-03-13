@@ -252,61 +252,7 @@ export default {
             "%";
         }
       };
-      this.uploadFile2OSS(this.converimg, this.imgfile, true, progress, null);
-    },
-    uploadFile2OSS(filename, file, pubRead, progress, success) {
-      //aliyun oss
-      this.util.loadingShow(this);
-
-      var expireTime = new Date();
-      expireTime.setSeconds(expireTime.getSeconds() + 60 * 10); //10分钟
-
-      var policyText = {
-        expiration: expireTime.toISOString(), //设置该Policy的失效时间，超过这个失效时间之后，就没有办法通过这个policy上传文件了
-        conditions: [
-          ["content-length-range", 0, 1024 * 1024 * 50] // 设置上传文件的大小限制单位字节，当前50M
-        ]
-      };
-
-      var policyBase64 = Base64.encode(JSON.stringify(policyText));
-      var encrypted = CryptoJS.HmacSHA1(
-        policyBase64,
-        this.global.api.aliyunossaccesskey
-      );
-      var signature = CryptoJS.enc.Base64.stringify(encrypted);
-
-      let formData = new FormData();
-      formData.append("key", filename);
-      formData.append("policy", policyBase64);
-      formData.append("OSSAccessKeyId", this.global.api.aliyunossaccessid);
-      formData.append("success_action_status", "200");
-      formData.append("signature", signature);
-      formData.append("file", file, filename);
-
-      let url = pubRead
-        ? this.global.api.aliyunosshostpubread
-        : this.global.api.aliyunosshost;
-      this.$axios
-        .post(url, formData, {
-          headers: {
-            "Content-Type":
-              "application/x-www-form-urlencoded;boundary=----WebKitFormBoundarytkUbKWcxgeMi1fIr"
-          },
-          onUploadProgress: progress
-        })
-        .then(response => {
-          //console.log(response);
-          if (response.status === 200) {
-            toast("上传成功");
-            if (success !== null) success();
-          }
-          this.util.loadingHide(this);
-        })
-        .catch(error => {
-          console.error(error);
-
-          this.util.loadingHide(this);
-        });
+      this.util.uploadFile2OSS(this,this.converimg, this.imgfile, true, progress, null);
     },
     courseFileChange(e) {
       //上传
@@ -321,8 +267,7 @@ export default {
       this.coResUploadDisable = false;
       this.courseResUProgress = "0%";
 
-      //下载
-      // console.log(this.util.makeImgUrl(this,'70e44e78b9274a8aae9a8c5e9bc701b41583929262801.mp4')
+      
     },
     uploadCourseRes() {
       this.coResUploadDisable = true;
@@ -335,7 +280,8 @@ export default {
         }
       };
 
-      this.uploadFile2OSS(
+      this.util.uploadFile2OSS(
+        this,
         this.courseFileName,
         this.courseFile,
         false,
@@ -758,54 +704,10 @@ export default {
       }
     },
     handleImageAdded(file, Editor, cursorLocation, resetUploader) {
-      // var expireTime = new Date();
-      // expireTime.setSeconds(expireTime.getSeconds() + 600);
-
-      // var policyText = {
-      //   expiration: expireTime.toISOString(), //设置该Policy的失效时间，超过这个失效时间之后，就没有办法通过这个policy上传文件了
-      //   conditions: [
-      //     ["content-length-range", 0, 1048576000] // 设置上传文件的大小限制
-      //   ]
-      // };
-
-      // var policyBase64 = Base64.encode(JSON.stringify(policyText));
-      // var encrypted = CryptoJS.HmacSHA1(
-      //   policyBase64,
-      //   this.global.api.aliyunossaccesskey
-      // );
-      // var signature = CryptoJS.enc.Base64.stringify(encrypted);
-
-      // let filename = new Date().getTime() + ".jpg";
-      // let formData = new FormData();
-      // formData.append("key", filename);
-      // formData.append("policy", policyBase64);
-      // formData.append("OSSAccessKeyId", this.global.api.aliyunossaccessid);
-      // formData.append("success_action_status", "200");
-      // formData.append("signature", signature);
-      // formData.append("file", file, filename);
-
-      // this.$axios
-      //   .post(this.global.api.aliyunosshostpubread, formData, {
-      //     headers: {
-      //       "Content-Type":
-      //         "application/x-www-form-urlencoded;boundary=----WebKitFormBoundarytkUbKWcxgeMi1fIr"
-      //     }
-      //   })
-      //   .then(response => {
-      //     //console.log(response);
-
-      //     if (response.status === 200) {
-
-      //     }
-      //     // this.util.loadingHide(this)
-      //   })
-      //   .catch(error => {
-      //     console.error(error);
-      //   });
-
+      
       let filename =
         new Date().getTime() + file.name.substring(file.name.length - 4);
-      this.uploadFile2OSS(filename, file, true, null, () => {
+      this.util.uploadFile2OSS(this,filename, file, true, null, () => {
         Editor.insertEmbed(
           cursorLocation,
           "image",
