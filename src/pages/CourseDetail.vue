@@ -98,8 +98,7 @@
         </q-tab-panel>
         <q-tab-panel name="homework" class="flex-col">
           <div v-html="course.homework===''?'该课程无作业':course.homework"></div>
-          <q-separator />
-          <div class="flex-col" v-show="!isWorkFinished">
+          <div class="flex-col" v-show="!isWorkFinished&&course.homework!==''">
             <VueEditor
               v-model="homework"
               useCustomImageHandler
