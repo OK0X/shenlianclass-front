@@ -122,7 +122,68 @@
               >提交作业后可阅览他人作业</q-tooltip>
             </q-btn>
           </div>
-          <CommentReply :ask="homeworkAsk" :myanswer="myanswer" :option="CROption" v-show="isWorkFinished"/>
+          <CommentReply
+            :ask="homeworkAsk"
+            :myanswer="myanswer"
+            :option="CROption"
+            v-show="isWorkFinished"
+          />
+        </q-tab-panel>
+        <q-tab-panel name="appraise" class="flex-col">
+          <div class="flex-col" v-show="showAppraise">
+            <q-input v-model="appraiseText" filled type="textarea" counter maxlength="200" />
+            <q-rating
+              v-model="appraiseStar"
+              max="5"
+              size="2em"
+              color="orange"
+              icon="star_border"
+              icon-selected="star"
+              icon-half="star_half"
+              no-dimming
+            />
+            <q-btn
+              unelevated
+              color="primary"
+              label="提交评价"
+              style="width:150px;margin-top:20px;"
+              @click="submitAppraise"
+            />
+            <q-separator style="margin-top:20px;" v-show="allAppraises.length!==0" />
+          </div>
+          <div class="flex-col" v-for="(appraises,index) in allAppraises" :key="index">
+            <div style="display:flex;margin-top:10px;" v-show="user.uuid===appraises.user_id">
+              <img src="statics/mark.png" style="width:16px;height:16px;align-self: center;" />
+              <span class="mytx-primary">我的评价</span>
+            </div>
+            <div style="display:flex;margin-top:10px;">
+              <img
+                :src="getAvatar(appraises.user_id)"
+                onerror="src = 'statics/default.png'"
+                style="width:40px;height:40px;border-radius: 50%;margin-right:10px;"
+              />
+              <div class="flex-col">
+                <span style="font-size: 14px;color: #333;">{{appraises.nick}}</span>
+                <span
+                  style="font-size: 12px;color: #9eacb6;"
+                >{{util.getShortTime(appraises.create_at)}}</span>
+              </div>
+            </div>
+            <q-rating
+              v-model="appraises.star"
+              max="5"
+              size="2em"
+              color="orange"
+              icon="star_border"
+              icon-selected="star"
+              icon-half="star_half"
+              no-dimming
+              readonly
+              style="margin-top:10px;"
+            />
+            <span style="margin:10px 0 10px 0;">{{appraises.content}}</span>
+            <q-separator v-show="index!==allAppraises.length-1" />
+          </div>
         </q-tab-panel>
       </q-tab-panels>
     </div>
@@ -158,6 +219,10 @@ export default {
   },
   data() {
     return {
+      showAppraise: true,
+      allAppraises: [],
+      appraiseText: "",
+      appraiseStar: 3,
       CROption: {
         showCai: false
       },
@@ -180,8 +245,8 @@ export default {
       },
       homework: "",
       homeworkAsk: "",
-      isWorkFinished:false,
-      myanswer:''
+      isWorkFinished: false,
+      myanswer: ""
     };
   },
   computed: {
@@ -195,19 +260,21 @@ export default {
     }
   },
   mounted() {
-    console.log("课程信息", this.$route.query.arg);
-    this.homeworkAsk = {
-      hasaccept: 1,
-      reward: 0,
-      user_id: this.user.uuid,
-      uuid: this.$route.query.arg.uuid
-    };
+    // console.log("课程信息", this.$route.query.arg);
+
     if (typeof this.$route.query.out_trade_no !== "undefined") {
       //处理支付完成的跳转
       this.queryPayResult(this.$route.query.out_trade_no);
     } else {
       //非支付的情况
       this.course = this.$route.query.arg;
+
+      this.homeworkAsk = {
+        hasaccept: 1,
+        reward: 0,
+        user_id: this.user.uuid,
+        uuid: this.$route.query.arg.uuid
+      };
 
       if (this.$route.query.from === "myclass") {
         this.isPayed = true;
@@ -226,36 +293,133 @@ export default {
     bus.$on("loginok", () => {
       this.checkisPayed();
       this.isMyWorkFinish();
+      this.findMyAppraises();
     });
 
     bus.$on("logout", () => {
-      this.isWorkFinished=false
+      this.isWorkFinished = false;
+      this.showAppraise = true;
     });
-    
+
+    this.getAppraise();
   },
   methods: {
-    isMyWorkFinish() {
-      let timestamp = new Date().getTime() + 1000 * 60 * 1;
-      let params={
-        userid:this.user.uuid,
-        courseid:this.course.uuid
+    getAvatar(user_id) {
+      return this.global.api.aliyunosshostpubread + "/" + user_id + ".jpg";
+    },
+    submitAppraise() {
+      var _this = this;
+      if (typeof this.user.uuid === "undefined") {
+        toast("请先登陆后评论");
+        this.loginDialog.show = true;
+        return;
       }
+
+      if (!this.isPayed) {
+        toast("学习完课程后才可以评论");
+        return;
+      }
+
+      let params = {
+        user_id: this.user.uuid,
+        course_id: this.course.uuid,
+        star: this.appraiseStar + "",
+        content: this.appraiseText
+      };
+      let timestamp = new Date().getTime() + 1 * 60 * 1000;
       this.$axios
-        .get(this.global.api.backurl + "course/isHomeWorkFinish", {
-          params: params,
+        .post(this.global.api.backurl + "course/createAppraise", params, {
           headers: {
-            "access-token": this.util.generateToken(JSON.stringify(params), timestamp),
+            "access-token": this.util.generateToken(
+              JSON.stringify(params),
+              timestamp
+            ),
             timestamp2: timestamp
           }
         })
         .then(response => {
-          console.log(333,response);
+          console.log(444, response);
           if (response.status === 200 && response.data.code === 0) {
-            this.isWorkFinished=response.data.data
+            toast("评论成功");
+            this.showAppraise = false;
+            this.allAppraises.unshift({
+              user_id: this.user.uuid,
+              nick: this.user.nick,
+              create_at: new Date(),
+              star: this.appraiseStar,
+              content: this.appraiseText
+            });
           }
         })
         .catch(error => {
-
+          console.log(error);
+        });
+    },
+    getAppraise() {
+      let timestamp = new Date().getTime() + 1000 * 60 * 1;
+      let params = {
+        course_id: this.course.uuid
+      };
+      this.$axios
+        .get(this.global.api.backurl + "course/getAppraise", {
+          params: params,
+          headers: {
+            "access-token": this.util.generateToken(
+              JSON.stringify(params),
+              timestamp
+            ),
+            timestamp2: timestamp
+          }
+        })
+        .then(response => {
+          console.log(999, response);
+          if (response.status === 200 && response.data.code === 0) {
+            this.allAppraises = response.data.data;
+            this.findMyAppraises();
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    findMyAppraises() {
+      if (typeof this.user.uuid !== "undefined") {
+        let myappraise = null;
+        for (let i = 0; i < this.allAppraises.length; i++) {
+          if (this.allAppraises[i].user_id === this.user.uuid) {
+            this.showAppraise = false;
+            myappraise = this.allAppraises[i];
+            this.allAppraises.splice(i, 1);
+            this.allAppraises.unshift(myappraise);
+            break;
+          }
+        }
+      }
+    },
+    isMyWorkFinish() {
+      let timestamp = new Date().getTime() + 1000 * 60 * 1;
+      let params = {
+        userid: this.user.uuid,
+        courseid: this.course.uuid
+      };
+      this.$axios
+        .get(this.global.api.backurl + "course/isHomeWorkFinish", {
+          params: params,
+          headers: {
+            "access-token": this.util.generateToken(
+              JSON.stringify(params),
+              timestamp
+            ),
+            timestamp2: timestamp
+          }
+        })
+        .then(response => {
+          // console.log(333, response);
+          if (response.status === 200 && response.data.code === 0) {
+            this.isWorkFinished = response.data.data;
+          }
+        })
+        .catch(error => {
           //console.log(error);
         });
     },
@@ -278,11 +442,10 @@ export default {
         return;
       }
 
-      //todo 发布时放开
-      // if (!this.isPayed) {
-      //   toast("请先购买学习完课程后再完成作业");
-      //   return;
-      // }
+      if (!this.isPayed) {
+        toast("请先购买学习完课程后再完成作业");
+        return;
+      }
 
       if (this.textLength(this.homework) < 10) {
         toast("作业内容不能少于10个字哦");
@@ -299,7 +462,7 @@ export default {
         user_id: this.user.uuid,
         ask_id: this.course.uuid, //这里填course id
         content: this.homework,
-        from:'course'
+        from: "course"
       };
       let timestamp = new Date().getTime() + 1 * 60 * 1000;
       this.$axios
@@ -317,9 +480,13 @@ export default {
           //console.log(response);
           if (response.status === 200 && response.data.code === 0) {
             toast("提交成功");
-            this.isWorkFinished=true
+            this.isWorkFinished = true;
 
-            toast("回答成功,已到账奖励："+this.global.backendConfig.answerReward+'积分');
+            toast(
+              "回答成功,已到账奖励：" +
+                this.global.backendConfig.answerReward +
+                "积分"
+            );
             //123
             this.myanswer = {
               accept: 0,
@@ -474,6 +641,12 @@ export default {
           this.util.loadingHide(this);
           if (response.status === 200 && response.data.code === 0) {
             this.course = response.data.data.course;
+            this.homeworkAsk = {
+              hasaccept: 1,
+              reward: 0,
+              user_id: this.user.uuid,
+              uuid: this.course.uuid
+            };
             this.setVideos(response.data.data.videos);
             this.isPayed = true;
             this.tab = "chapters";

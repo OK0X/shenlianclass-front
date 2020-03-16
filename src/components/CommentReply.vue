@@ -3,7 +3,7 @@
     <div class="flex-col" v-show="myanswer!==''">
       <div style="display:flex;">
         <img src="statics/mark.png" style="width:16px;height:16px;align-self: center;" />
-        <span class="myanswer-tx">我的回答</span>
+        <span class="mytx-primary">我的回答</span>
       </div>
       <div style="display:flex;margin-top:10px;">
         <img
@@ -126,7 +126,7 @@
     <div class="flex-col" v-if="acceptanswer!==''&&acceptanswer.user_id!==user.uuid">
       <div style="display:flex;">
         <img src="statics/mark.png" style="width:16px;height:16px;align-self: center;" />
-        <span class="myanswer-tx">已采纳</span>
+        <span class="mytx-primary">已采纳</span>
       </div>
       <div style="display:flex;margin-top:10px;">
         <img
@@ -1017,9 +1017,6 @@ export default {
   margin-top: 10px;
   padding: 20px 50px 20px 50px;
 }
-.myanswer-tx {
-  // margin-left: 5px;
-  color: $primary;
-}
+
 
 </style>
