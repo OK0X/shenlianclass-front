@@ -66,7 +66,7 @@ export default {
         });
     },
     getConfig() {
-      let timestamp = new Date().getTime() + 1000 * 60 * 1;
+      let timestamp = new Date().getTime() + this.global.requestExpireT;
       this.$axios
         .get(this.global.api.backurl + "config/get", {
           params: null,

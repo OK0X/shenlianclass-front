@@ -119,7 +119,7 @@ export default {
   },
   methods: {
     getAnswer() {
-      let timestamp = new Date().getTime() + 1000 * 60 * 1;
+      let timestamp = new Date().getTime() + this.global.requestExpireT;
       let params = {
         ask_id: this.ask.uuid,
         limit: this.limit + "",
@@ -224,7 +224,7 @@ export default {
         ask_id: this.ask.uuid,
         content: this.myanswerInput
       };
-      let timestamp = new Date().getTime() + 1 * 60 * 1000;
+      let timestamp = new Date().getTime() + this.global.requestExpireT;
       this.$axios
         .post(this.global.api.backurl + "ask/createAnswer", params, {
           headers: {

@@ -449,7 +449,7 @@ export default {
       return uploader;
     },
     createUploadVideo(params, successCallback) {
-      let timestamp = new Date().getTime() + 1000 * 60 * 1;
+      let timestamp = new Date().getTime() + this.global.requestExpireT;
       this.$axios
         .get(this.global.api.backurl + "vod/CreateUploadVideo", {
           params: params,
@@ -467,7 +467,7 @@ export default {
         });
     },
     refreshUploadVideo(params, successCallback, failedCallBack) {
-      let timestamp = new Date().getTime() + 1000 * 60 * 1;
+      let timestamp = new Date().getTime() + this.global.requestExpireT;
       this.$axios
         .get(this.global.api.backurl + "vod/RefreshUploadVideo", {
           params: params,
@@ -676,7 +676,7 @@ export default {
           params.coin = this.scoin;
         }
 
-        let timestamp = new Date().getTime() + 1 * 60 * 1000;
+        let timestamp = new Date().getTime() + this.global.requestExpireT;
         this.$axios
           .post(this.global.api.backurl + "course/createCourse", params, {
             headers: {

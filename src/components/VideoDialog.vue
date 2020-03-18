@@ -111,7 +111,7 @@ export default {
       this.getPlayAuth();
     },
     getPlayAuth() {
-      let timestamp = new Date().getTime() + 1000 * 60 * 1;
+      let timestamp = new Date().getTime() + this.global.requestExpireT;
       let params = {
         VideoId: this.playVID
       };
@@ -135,7 +135,7 @@ export default {
         });
     },
     getPlayToken() {
-      let timestamp = new Date().getTime() + 1000 * 60 * 1;
+      let timestamp = new Date().getTime() + this.global.requestExpireT;
       let params = {
         videoid: this.playVID
       };
@@ -247,7 +247,7 @@ export default {
         progress: parseInt(this.player.getCurrentTime()) + "",
         total: parseInt(this.player.getDuration()) + ""
       };
-      let timestamp = new Date().getTime() + 1000 * 60 * 1;
+      let timestamp = new Date().getTime() + this.global.requestExpireT;
       this.$axios
         .put(this.global.api.backurl + "studyProgress/updateProgress", params, {
           headers: {

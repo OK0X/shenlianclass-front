@@ -119,7 +119,7 @@ export default {
       this.courseId=value.uuid
     },
     getCourseHasRes() {
-      let timestamp = new Date().getTime() + 1000 * 60 * 1;
+      let timestamp = new Date().getTime() + this.global.requestExpireT;
       let params = {
         author: this.user.uuid
       };
@@ -236,7 +236,7 @@ export default {
         course_name: this.courseName,
         course_id:this.courseId
       };
-      let timestamp = new Date().getTime() + 1 * 60 * 1000;
+      let timestamp = new Date().getTime() + this.global.requestExpireT;
       this.util.loadingShow(this);
       this.$axios
         .post(this.global.api.backurl + "resourcedown/creatRes", params, {

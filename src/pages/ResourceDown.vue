@@ -80,7 +80,7 @@ export default {
       this.getRes();
     },
     getRes() {
-      let timestamp = new Date().getTime() + 1000 * 60 * 1;
+      let timestamp = new Date().getTime() + this.global.requestExpireT;
       let params = {
         limit: this.limit + "",
         offset: this.offset + ""

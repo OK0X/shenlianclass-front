@@ -70,7 +70,7 @@ export default {
   },
   methods: {
     getCourses() {
-      let timestamp = new Date().getTime() + 1000 * 60 * 1;
+      let timestamp = new Date().getTime() + this.global.requestExpireT;
 
       let params = {
         status: 2 + "" //正式发布改成审核通过的课程

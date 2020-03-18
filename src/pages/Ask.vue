@@ -226,7 +226,7 @@ export default {
       });
     },
     getMyAsks() {
-      let timestamp = new Date().getTime() + 1000 * 60 * 1;
+      let timestamp = new Date().getTime() + this.global.requestExpireT;
       let params = {
         user_id: this.user.uuid,
         limit: this.limit + "",
@@ -256,7 +256,7 @@ export default {
         });
     },
     getAwardAsks() {
-      let timestamp = new Date().getTime() + 1000 * 60 * 1;
+      let timestamp = new Date().getTime() + this.global.requestExpireT;
       let params = {
         reward: 1 + "",
         limit: this.limit + "",
@@ -286,7 +286,7 @@ export default {
         });
     },
     getAsks() {
-      let timestamp = new Date().getTime() + 1000 * 60 * 1;
+      let timestamp = new Date().getTime() + this.global.requestExpireT;
       let params = {
         limit: this.limit + "",
         offset: this.offsetALL + ""
@@ -338,7 +338,7 @@ export default {
       };
       // console.log(111,this.user)
       // console.log(1111,this.rewardNum)
-      let timestamp = new Date().getTime() + 1 * 60 * 1000;
+      let timestamp = new Date().getTime() + this.global.requestExpireT;
       this.$axios
         .post(this.global.api.backurl + "ask/createAsk", params, {
           headers: {

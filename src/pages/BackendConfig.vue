@@ -57,7 +57,7 @@ export default {
   },
   methods: {
     getRedisRuntimeInfo() {
-      let timestamp = new Date().getTime() + 1000 * 60 * 1;
+      let timestamp = new Date().getTime() + this.global.requestExpireT;
       this.$axios
         .get(this.global.api.backurl + "config/getRedis", {
           params: null,
@@ -104,7 +104,7 @@ export default {
       let params = {
         phrase: this.util.hash(data)
       };
-      let timestamp = new Date().getTime() + 1 * 60 * 1000;
+      let timestamp = new Date().getTime() + this.global.requestExpireT;
       this.$axios
         .post(this.global.api.backurl + "config/clearCache", params, {
           headers: {
@@ -154,7 +154,7 @@ export default {
         defaultEx: this.defaultEx,
         answerReward:this.answerReward
       };
-      let timestamp = new Date().getTime() + 1 * 60 * 1000;
+      let timestamp = new Date().getTime() + this.global.requestExpireT;
       this.$axios
         .post(this.global.api.backurl + "config/set", params, {
           headers: {
@@ -172,7 +172,7 @@ export default {
         });
     },
     getConfig() {
-      let timestamp = new Date().getTime() + 1000 * 60 * 1;
+      let timestamp = new Date().getTime() + this.global.requestExpireT;
       this.$axios
         .get(this.global.api.backurl + "config/get", {
           params: null,

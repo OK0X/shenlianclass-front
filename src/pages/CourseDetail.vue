@@ -309,7 +309,7 @@ export default {
   },
   methods: {
     getCourseById(courseid) {
-      let timestamp = new Date().getTime() + 1000 * 60 * 1;
+      let timestamp = new Date().getTime() + this.global.requestExpireT;
       let params = {
         courseid: courseid,
         userid: this.user.uuid
@@ -385,7 +385,7 @@ export default {
         star: this.appraiseStar + "",
         content: this.appraiseText
       };
-      let timestamp = new Date().getTime() + 1 * 60 * 1000;
+      let timestamp = new Date().getTime() + this.global.requestExpireT;
       this.$axios
         .post(this.global.api.backurl + "course/createAppraise", params, {
           headers: {
@@ -415,7 +415,7 @@ export default {
         });
     },
     getAppraise() {
-      let timestamp = new Date().getTime() + 1000 * 60 * 1;
+      let timestamp = new Date().getTime() + this.global.requestExpireT;
       let params = {
         course_id: this.course.uuid
       };
@@ -459,7 +459,7 @@ export default {
         //未登录则返回
         return;
       }
-      let timestamp = new Date().getTime() + 1000 * 60 * 1;
+      let timestamp = new Date().getTime() + this.global.requestExpireT;
       let params = {
         userid: this.user.uuid,
         courseid: this.course.uuid
@@ -526,7 +526,7 @@ export default {
         content: this.homework,
         from: "course"
       };
-      let timestamp = new Date().getTime() + 1 * 60 * 1000;
+      let timestamp = new Date().getTime() + this.global.requestExpireT;
       this.$axios
         .post(this.global.api.backurl + "ask/createAnswer", params, {
           headers: {
@@ -598,7 +598,7 @@ export default {
         //未登录则返回
         return;
       }
-      let timestamp = new Date().getTime() + 1000 * 60 * 1;
+      let timestamp = new Date().getTime() + this.global.requestExpireT;
       let videoIds = [];
       for (let i = 0; i < this.videos.length; i++) {
         videoIds.push(this.videos[i].video_id);
@@ -655,7 +655,7 @@ export default {
         //已支付或者未登陆则无需查询
         return;
       }
-      let timestamp = new Date().getTime() + 1000 * 60 * 1;
+      let timestamp = new Date().getTime() + this.global.requestExpireT;
       let params = {
         user_id: this.user.uuid,
         course_id: this.course.uuid
@@ -686,7 +686,7 @@ export default {
     },
     queryPayResult(out_trade_no) {
       this.util.loadingShow(this);
-      let timestamp = new Date().getTime() + 1000 * 60 * 1;
+      let timestamp = new Date().getTime() + this.global.requestExpireT;
       let params = {
         out_trade_no: out_trade_no,
         subject_type: 1 + ""
@@ -768,7 +768,7 @@ export default {
         course_id: this.course.uuid,
         coin: this.course.coin
       };
-      let timestamp = new Date().getTime() + 1 * 60 * 1000;
+      let timestamp = new Date().getTime() + this.global.requestExpireT;
       this.$axios
         .post(this.global.api.backurl + "course/addPayedCourse", params, {
           headers: {
@@ -816,7 +816,7 @@ export default {
         total_amount: this.course.classprice,
         return_url: "https://www.shenlianclass.com/#/CourseDetail"
       };
-      let timestamp = new Date().getTime() + 1 * 60 * 1000;
+      let timestamp = new Date().getTime() + this.global.requestExpireT;
       this.$axios
         .post(this.global.api.backurl + "alipay/tradePagePay", params, {
           headers: {
@@ -854,7 +854,7 @@ export default {
       }
     },
     getVideos() {
-      let timestamp = new Date().getTime() + 1000 * 60 * 1;
+      let timestamp = new Date().getTime() + this.global.requestExpireT;
       let params = {
         course_id: this.course.uuid + ""
       };

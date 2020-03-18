@@ -129,7 +129,7 @@ export default {
       let params = {
         mobile: this.mobile + ""
       };
-      let timestamp = new Date().getTime() + 1 * 60 * 1000;
+      let timestamp = new Date().getTime() + this.global.requestExpireT;
       this.$axios
         .post(this.global.api.backurl + "user/loginORregiste", params, {
           headers: {

@@ -125,7 +125,7 @@ export default {
         status: status+'',
         author: this.course.author
       };
-      let timestamp = new Date().getTime() + 1000 * 60 * 1;
+      let timestamp = new Date().getTime() + this.global.requestExpireT;
       this.$axios
         .put(
           this.global.api.backurl + "course/updateStatus?uuid=" + this.course.uuid,
@@ -164,7 +164,7 @@ export default {
       }
     },
     getTranscodeTask(index) {
-      let timestamp = new Date().getTime() + 1000 * 60 * 1;
+      let timestamp = new Date().getTime() + this.global.requestExpireT;
       let params = {
         TranscodeTaskId: this.videos[index].transcode_task_id
       };
@@ -190,7 +190,7 @@ export default {
         });
     },
     videoMgr(video) {
-      let timestamp = new Date().getTime() + 1000 * 60 * 1;
+      let timestamp = new Date().getTime() + this.global.requestExpireT;
       let params = {
         videoid: video.video_id,
         course_id:this.course.uuid
@@ -227,7 +227,7 @@ export default {
       }
     },
     getVideos() {
-      let timestamp = new Date().getTime() + 1000 * 60 * 1;
+      let timestamp = new Date().getTime() + this.global.requestExpireT;
       let params = {
         course_id: this.course.uuid + ""
       };

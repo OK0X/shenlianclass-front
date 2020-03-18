@@ -468,7 +468,7 @@ export default {
       };
 
       this.util.loadingShow(this);
-      let timestamp = new Date().getTime() + 1000 * 60 * 1;
+      let timestamp = new Date().getTime() + this.global.requestExpireT;
       this.$axios
         .put(this.global.api.backurl + "ask/zanComments", params, {
           headers: {
@@ -530,7 +530,7 @@ export default {
       }
 
       this.util.loadingShow(this);
-      let timestamp = new Date().getTime() + 1000 * 60 * 1;
+      let timestamp = new Date().getTime() + this.global.requestExpireT;
       this.$axios
         .put(this.global.api.backurl + "ask/answerZanCai", params, {
           headers: {
@@ -573,7 +573,7 @@ export default {
         ask: encodeURIComponent(JSON.stringify(this.ask)),
         answer: encodeURIComponent(JSON.stringify(item))
       };
-      let timestamp = new Date().getTime() + 1000 * 60 * 1;
+      let timestamp = new Date().getTime() + this.global.requestExpireT;
       this.$axios
         .put(this.global.api.backurl + "ask/acceptAnswer", params, {
           headers: {
@@ -598,7 +598,7 @@ export default {
       return this.global.api.aliyunosshostpubread + "/" + user_id + ".jpg";
     },
     getAnswer() {
-      let timestamp = new Date().getTime() + 1000 * 60 * 1;
+      let timestamp = new Date().getTime() + this.global.requestExpireT;
       let params = {
         ask_id: this.ask.uuid,
         limit: this.limit + "",
@@ -720,7 +720,7 @@ export default {
         return;
       }
 
-      let timestamp = new Date().getTime() + 1000 * 60 * 1;
+      let timestamp = new Date().getTime() + this.global.requestExpireT;
       let params = {
         user_id: this.user.uuid,
         ask_id: this.ask.uuid,
@@ -834,7 +834,7 @@ export default {
         });
     },
     getNicknames() {
-      let timestamp = new Date().getTime() + 1000 * 60 * 1;
+      let timestamp = new Date().getTime() + this.global.requestExpireT;
 
       let userids = [];
       for (let i = 0; i < this.answers.length; i++) {
@@ -938,7 +938,7 @@ export default {
         answer_id: whichAnswer.uuid,
         content: whichItem.comment_new
       };
-      let timestamp = new Date().getTime() + 1 * 60 * 1000;
+      let timestamp = new Date().getTime() + this.global.requestExpireT;
       this.$axios
         .post(this.global.api.backurl + "ask/createComment", params, {
           headers: {

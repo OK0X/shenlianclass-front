@@ -86,7 +86,7 @@ export default {
         this.loginDialog.show = true;
         return;
       }
-      let timestamp = new Date().getTime() + 1000 * 60 * 1;
+      let timestamp = new Date().getTime() + this.global.requestExpireT;
 
       let params = {
         user_id: this.user.uuid

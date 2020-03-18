@@ -94,7 +94,7 @@ export default {
         //无课程信息或者未登陆则无需查询
         return;
       }
-      let timestamp = new Date().getTime() + 1000 * 60 * 1;
+      let timestamp = new Date().getTime() + this.global.requestExpireT;
       let params = {
         user_id: this.user.uuid,
         course_id: this.resDetail.course_id
@@ -150,7 +150,7 @@ export default {
       this.addDownNum();
     },
     addDownNum() {
-      let timestamp = new Date().getTime() + 1000 * 60 * 1;
+      let timestamp = new Date().getTime() + this.global.requestExpireT;
       this.$axios
         .put(
           this.global.api.backurl + "resourcedown/addDownNum?uuid=" + this.resDetail.uuid,
@@ -174,7 +174,7 @@ export default {
     },
     updateUserCoin() {
       let newCoin = this.user.coin - parseInt(this.resDetail.coin);
-      let timestamp = new Date().getTime() + 1000 * 60 * 1;
+      let timestamp = new Date().getTime() + this.global.requestExpireT;
       let params = {
         coin: newCoin
       };

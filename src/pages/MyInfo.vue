@@ -131,7 +131,7 @@ export default {
     },
     queryPayResult(out_trade_no) {
       this.util.loadingShow(this);
-      let timestamp = new Date().getTime() + 1000 * 60 * 1;
+      let timestamp = new Date().getTime() + this.global.requestExpireT;
       let params = {
         out_trade_no: out_trade_no,
         subject_type: 2 + ""
@@ -186,7 +186,7 @@ export default {
         total_amount: price + "",
         return_url: "https://www.shenlianclass.com/#/MyInfo"
       };
-      let timestamp = new Date().getTime() + 1 * 60 * 1000;
+      let timestamp = new Date().getTime() + this.global.requestExpireT;
       this.$axios
         .post(this.global.api.backurl + "alipay/tradePagePay", params, {
           headers: {
@@ -245,7 +245,7 @@ export default {
         });
     },
     updateUser(params) {
-      let timestamp = new Date().getTime() + 1000 * 60 * 1;
+      let timestamp = new Date().getTime() + this.global.requestExpireT;
       this.$axios
         .put(
           this.global.api.backurl + "user/updateUser?uuid=" + this.user.uuid,
@@ -269,7 +269,7 @@ export default {
         });
     },
     getUserInfo() {
-      let timestamp = new Date().getTime() + 1000 * 60 * 1;
+      let timestamp = new Date().getTime() + this.global.requestExpireT;
       let params = {
         uuid: this.user.uuid
       };
