@@ -38,7 +38,7 @@
           style="flex:1;height:1px;background: rgba(0, 0, 0, 0.06);align-self: center;margin-left:10px;"
         ></div>
       </div>
-      <CommentReply :ask="$route.query.arg" :myanswer="myanswer" :option="CROption"/>
+      <CommentReply :ask="$route.query.arg==='[object Object]'?global.routeCache.askDetail:$route.query.arg" :myanswer="myanswer" :option="CROption" />
     </div>
     <MyFooter />
     <LoginDialog :dialogData="loginDialog" />
@@ -65,8 +65,8 @@ export default {
   },
   data() {
     return {
-      CROption:{
-        showCai:true
+      CROption: {
+        showCai: true
       },
       ask: "",
       editorShow: false,
@@ -98,8 +98,16 @@ export default {
     }
   },
   mounted() {
-    // console.log(222,this.$route.query.arg)
-    this.ask = this.$route.query.arg;
+    // console.log(222, this.$route.query);
+    if (
+      this.$route.query.arg === "[object Object]"
+    ) {
+      this.ask = this.global.routeCache.askDetail;
+    } else {
+      this.ask = this.$route.query.arg;
+      this.global.routeCache.askDetail = this.ask;
+    }
+
     bus.$on("logout", () => {
       // toast("logout");
       this.getAnswer();
@@ -191,8 +199,6 @@ export default {
 
               this.acceptanswer = dataAccept;
             }
-
-            
           }
         })
         .catch(error => {
@@ -233,7 +239,11 @@ export default {
           this.util.loadingHide(this);
           //console.log(response);
           if (response.status === 200 && response.data.code === 0) {
-            toast("回答成功,已到账奖励："+this.global.backendConfig.answerReward+'积分');
+            toast(
+              "回答成功,已到账奖励：" +
+                this.global.backendConfig.answerReward +
+                "积分"
+            );
             //123
             this.myanswer = {
               accept: 0,
@@ -271,55 +281,16 @@ export default {
       }
     },
     handleImageAdded: function(file, Editor, cursorLocation, resetUploader) {
-      var expireTime = new Date();
-      expireTime.setSeconds(expireTime.getSeconds() + 600);
-
-      var policyText = {
-        expiration: expireTime.toISOString(), //设置该Policy的失效时间，超过这个失效时间之后，就没有办法通过这个policy上传文件了
-        conditions: [
-          ["content-length-range", 0, 1048576000] // 设置上传文件的大小限制
-        ]
-      };
-
-      var policyBase64 = Base64.encode(JSON.stringify(policyText));
-      var encrypted = CryptoJS.HmacSHA1(
-        policyBase64,
-        this.global.api.aliyunossaccesskey
-      );
-      var signature = CryptoJS.enc.Base64.stringify(encrypted);
-
-      let filename = new Date().getTime() + ".jpg";
-      let formData = new FormData();
-      formData.append("key", filename);
-      formData.append("policy", policyBase64);
-      formData.append("OSSAccessKeyId", this.global.api.aliyunossaccessid);
-      formData.append("success_action_status", "200");
-      formData.append("signature", signature);
-      formData.append("file", file, filename);
-
-      this.$axios
-        .post(this.global.api.aliyunosshostpubread, formData, {
-          headers: {
-            "Content-Type":
-              "application/x-www-form-urlencoded;boundary=----WebKitFormBoundarytkUbKWcxgeMi1fIr"
-          }
-        })
-        .then(response => {
-          //console.log(response);
-
-          if (response.status === 200) {
-            Editor.insertEmbed(
-              cursorLocation,
-              "image",
-              this.global.api.aliyunosshostpubread + "/" + filename
-            );
-            resetUploader();
-          }
-          // this.util.loadingHide(this)
-        })
-        .catch(error => {
-          console.error(error);
-        });
+      let filename =
+        new Date().getTime() + file.name.substring(file.name.length - 4);
+      this.util.uploadFile2OSS(this, filename, file, true, null, () => {
+        Editor.insertEmbed(
+          cursorLocation,
+          "image",
+          this.global.api.aliyunosshostpubread + "/" + filename
+        );
+        resetUploader();
+      });
     }
   }
 };

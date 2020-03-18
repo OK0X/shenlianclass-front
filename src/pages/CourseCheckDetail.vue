@@ -104,12 +104,19 @@ export default {
   data() {
     return {
       tab: "detail",
-      course: this.$route.query.arg,
+      course: {},
       videos: []
     };
   },
   mounted() {
-    //console.log(this.$route.query);
+    if (
+      this.$route.query.arg === "[object Object]"
+    ) {
+      this.course = this.global.routeCache.courseCheckDetail;
+    } else {
+      this.course = this.$route.query.arg;
+      this.global.routeCache.courseCheckDetail = this.course;
+    }
     this.getVideos();
   },
   methods: {
@@ -222,7 +229,7 @@ export default {
     getVideos() {
       let timestamp = new Date().getTime() + 1000 * 60 * 1;
       let params = {
-        course_id: this.$route.query.arg.uuid + ""
+        course_id: this.course.uuid + ""
       };
       this.$axios
         .get(this.global.api.backurl + "video/getVideos", {

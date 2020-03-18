@@ -1,6 +1,6 @@
 
 /* eslint-disable */
-const debug = false
+const debug = true
 const api = {
   backurl: debug?'http://localhost/api/v1/':'https://api.shenlianclass.com/api/v1/',
   aliyunosshost:'https://shenlianclass.oss-cn-shanghai.aliyuncs.com',
@@ -19,8 +19,19 @@ let backendConfig={
   answerReward:1
 }
 
+let routeCache={
+  courseDetail:null,
+  askDetail:null,
+  ressouceDetail:null,
+  courseCheckDetail:null
+}
+
+const requestExpireT=1000 * 60 * 1//一分钟
+
 export default {
   api,
-  backendConfig
+  backendConfig,
+  routeCache,
+  requestExpireT
 };
 

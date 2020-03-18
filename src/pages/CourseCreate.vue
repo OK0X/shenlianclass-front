@@ -100,6 +100,7 @@
       <span
         style="align-self: flex-end;color: rgba(0, 0, 0, 0.54);"
       >{{textLength(corResDiscribe)}} / 500</span>
+      <span style="color:red; margin-top: 10px;">文件需小于50M</span>
       <input type="file" accept="*/*" style="margin-top:10px;" @change="courseFileChange" />
       <div>
         <button

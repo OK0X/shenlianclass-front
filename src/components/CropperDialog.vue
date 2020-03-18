@@ -37,7 +37,7 @@ export default {
   data() {
     return {
       option: {
-        size:1
+        size: 1
       }
     };
   },
@@ -53,67 +53,23 @@ export default {
   },
   methods: {
     onOk() {
-      
-      this.$refs.cropper.getCropBlob(data=>{
-        this.uploadImg(data)
-      })
+      this.$refs.cropper.getCropBlob(data => {
+        this.uploadImg(data);
+      });
     },
-    uploadImg(imgfile){
-      this.util.loadingShow(this)
+    uploadImg(imgfile) {
 
-      var expireTime = new Date();
-      expireTime.setSeconds(expireTime.getSeconds() + 600);
-
-      var policyText = {
-        expiration: expireTime.toISOString(), //设置该Policy的失效时间，超过这个失效时间之后，就没有办法通过这个policy上传文件了
-        conditions: [
-          ["content-length-range", 0, 1048576000] // 设置上传文件的大小限制
-        ]
-      };
-
-      var policyBase64 = Base64.encode(JSON.stringify(policyText));
-      var encrypted = CryptoJS.HmacSHA1(
-        policyBase64,
-        this.global.api.aliyunossaccesskey
+      this.util.uploadFile2OSS(
+        this,
+        this.user.uuid + ".jpg",
+        imgfile,
+        true,
+        null,
+        () => {
+          this.data.show = false;
+          this.$emit("uploadImgOK");
+        }
       );
-      var signature = CryptoJS.enc.Base64.stringify(encrypted);
-
-      let filename = this.user.uuid+ ".jpg";
-      let formData = new FormData();
-      formData.append("key", filename);
-      formData.append("policy", policyBase64);
-      formData.append("OSSAccessKeyId", this.global.api.aliyunossaccessid);
-      formData.append("success_action_status", "200");
-      formData.append("signature", signature);
-      formData.append("file", imgfile, filename);
-
-      this.$axios
-        .post(this.global.api.aliyunosshostpubread, formData, {
-          headers: {
-            "Content-Type":
-              "application/x-www-form-urlencoded;boundary=----WebKitFormBoundarytkUbKWcxgeMi1fIr"
-          }
-        })
-        .then(response => {
-          //console.log(response);
-          if (response.status === 200) {
-            toast("上传成功");
-            // this.converimg = filename;
-            // this.imgbmobUrl = filename
-            // this.submit2bmob();
-            // this.getFile();
-            this.data.show=false
-            this.$emit('uploadImgOK')
-            // bus.$emit('uploadImgOK')
-            
-          }
-          this.util.loadingHide(this)
-        })
-        .catch(error => {
-          console.error(error);
-          // toast(_this.$t("smscodeerror"));
-          this.util.loadingHide(this)
-        });
     }
   }
 };

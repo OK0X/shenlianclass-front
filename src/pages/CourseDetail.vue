@@ -98,6 +98,7 @@
         </q-tab-panel>
         <q-tab-panel name="homework" class="flex-col">
           <div v-html="course.homework===''?'该课程无作业':course.homework"></div>
+          <q-separator v-show="isWorkFinished" />
           <div class="flex-col" v-show="!isWorkFinished&&course.homework!==''">
             <VueEditor
               v-model="homework"
@@ -259,34 +260,40 @@ export default {
     }
   },
   mounted() {
-    // console.log("课程信息", this.$route.query.arg);
+    // console.log("课程详情", this.$route.query);
 
     if (typeof this.$route.query.out_trade_no !== "undefined") {
-      //处理支付完成的跳转
+      //支付跳转
       this.queryPayResult(this.$route.query.out_trade_no);
+    } else if (typeof this.$route.query.courseid !== "undefined") {
+      //courseid跳转
+      this.getCourseById(this.$route.query.courseid);
     } else {
-      //非支付的情况
-      this.course = this.$route.query.arg;
+      //其它情况
+      if (this.$route.query.arg === "[object Object]") {
+        this.course = this.global.routeCache.courseDetail;
+      } else {
+        this.course = this.$route.query.arg;
+        this.global.routeCache.courseDetail = this.course;
+      }
+
 
       this.homeworkAsk = {
         hasaccept: 1,
         reward: 0,
-        user_id: this.user.uuid,
-        uuid: this.$route.query.arg.uuid
+        user_id: this.course.author,
+        uuid: this.course.uuid
       };
 
       if (this.$route.query.from === "myclass") {
         this.isPayed = true;
         this.tab = "chapters";
-      } else {
-        this.checkisPayed();
       }
 
       this.getVideos();
-
-      if (typeof this.user.uuid !== "undefined") {
-        this.isMyWorkFinish();
-      }
+      this.getAppraise();
+      this.isMyWorkFinish();
+      this.checkisPayed();
     }
 
     bus.$on("loginok", () => {
@@ -299,10 +306,63 @@ export default {
       this.isWorkFinished = false;
       this.showAppraise = true;
     });
-
-    this.getAppraise();
   },
   methods: {
+    getCourseById(courseid) {
+      let timestamp = new Date().getTime() + 1000 * 60 * 1;
+      let params = {
+        courseid: courseid,
+        userid: this.user.uuid
+      };
+      this.$axios
+        .get(this.global.api.backurl + "course/getCourseById", {
+          params: params,
+          headers: {
+            "access-token": this.util.generateToken(
+              JSON.stringify(params),
+              timestamp
+            ),
+            timestamp2: timestamp
+          }
+        })
+        .then(response => {
+          console.log(999, response);
+          if (response.status === 200 && response.data.code === 0) {
+            let data = response.data.data;
+            this.course = data.course[0];
+
+            this.isPayed = data.payedCourse.length > 0 ? true : false;
+            this.tab = this.isPayed ? "chapters" : this.tab;
+            this.setVideos(data.videos);
+
+            this.homeworkAsk = {
+              hasaccept: 1,
+              reward: 0,
+              user_id: this.course.author,
+              uuid: this.course.uuid
+            };
+
+            this.isWorkFinished = data.isFinishedHW;
+
+            this.allAppraises = data.appraise;
+            this.findMyAppraises();
+
+            if (data.studyProgress.length > 0) {
+              for (let i = 0; i < data.studyProgress.length; i++) {
+                this.studyProgress[data.studyProgress[i].video_id] = {
+                  progress: data.studyProgress[i].progress,
+                  total: data.studyProgress[i].total
+                };
+              }
+
+              this.setProgress();
+            }
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
     getAvatar(user_id) {
       return this.global.api.aliyunosshostpubread + "/" + user_id + ".jpg";
     },
@@ -371,7 +431,6 @@ export default {
           }
         })
         .then(response => {
-          console.log(999, response);
           if (response.status === 200 && response.data.code === 0) {
             this.allAppraises = response.data.data;
             this.findMyAppraises();
@@ -396,6 +455,10 @@ export default {
       }
     },
     isMyWorkFinish() {
+      if (typeof this.user.uuid === "undefined") {
+        //未登录则返回
+        return;
+      }
       let timestamp = new Date().getTime() + 1000 * 60 * 1;
       let params = {
         userid: this.user.uuid,
@@ -531,12 +594,16 @@ export default {
       }
     },
     getStudyProgress() {
+      if (typeof this.user.uuid === "undefined") {
+        //未登录则返回
+        return;
+      }
       let timestamp = new Date().getTime() + 1000 * 60 * 1;
       let videoIds = [];
       for (let i = 0; i < this.videos.length; i++) {
         videoIds.push(this.videos[i].video_id);
       }
-      //console.log(999,this.videos)
+
       let params = {
         user_id: this.user.uuid,
         course_id: this.course.uuid,
@@ -558,16 +625,16 @@ export default {
           //console.log(8889,this.videos);
           if (response.status === 200 && response.data.code === 0) {
             let data = response.data.data;
-            if (data.length === 0) return;
-            for (let i = 0; i < data.length; i++) {
-              this.studyProgress[data[i].video_id] = {
-                progress: data[i].progress,
-                total: data[i].total
-              };
+            if (data.length > 0) {
+              for (let i = 0; i < data.length; i++) {
+                this.studyProgress[data[i].video_id] = {
+                  progress: data[i].progress,
+                  total: data[i].total
+                };
+              }
+
+              this.setProgress();
             }
-
-            this.setProgress();
-
             //console.log(555,this.videos)
           }
         })
@@ -584,9 +651,8 @@ export default {
       }
     },
     checkisPayed() {
-      //console.log(this.course);
-      if (typeof this.user.uuid === "undefined") {
-        //未登陆
+      if (this.isPayed || typeof this.user.uuid === "undefined") {
+        //已支付或者未登陆则无需查询
         return;
       }
       let timestamp = new Date().getTime() + 1000 * 60 * 1;
@@ -639,17 +705,22 @@ export default {
         .then(response => {
           this.util.loadingHide(this);
           if (response.status === 200 && response.data.code === 0) {
+            toast("购买成功!");
             this.course = response.data.data.course;
+            this.isPayed = true;
+            this.tab = "chapters";
+            this.setVideos(response.data.data.videos);
+            this.getStudyProgress();
+
             this.homeworkAsk = {
               hasaccept: 1,
               reward: 0,
-              user_id: this.user.uuid,
+              user_id: this.course.author,
               uuid: this.course.uuid
             };
-            this.setVideos(response.data.data.videos);
-            this.isPayed = true;
-            this.tab = "chapters";
-            toast("购买成功!");
+
+            this.isMyWorkFinish();
+            this.getAppraise();
           } else {
             if (response.data.code === 6006) {
               toast("请完成支付后点击该操作");
@@ -802,9 +873,7 @@ export default {
           //console.log(111,response);
           if (response.status === 200 && response.data.code === 0) {
             this.setVideos(response.data.data);
-            // if (this.isPayed) {
             this.getStudyProgress();
-            // }
           }
         });
     }

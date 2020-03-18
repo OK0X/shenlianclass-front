@@ -19,14 +19,17 @@
               style="width:40px;height:40px;border-radius: 50%;cursor: pointer;"
               onerror="src = 'statics/default.png'"
             />
-            <span style="align-self: center;margin-left:10px;cursor: pointer;">
-              {{user.nick==null?'游客':user.nick}}
-            </span>
+            <span
+              style="align-self: center;margin-left:10px;cursor: pointer;"
+            >{{user.nick==null?'游客':user.nick}}</span>
           </div>
           <q-menu>
             <q-list style="min-width: 100px">
               <q-item clickable v-close-popup to="/MyInfo">
                 <q-item-section>个人中心</q-item-section>
+              </q-item>
+              <q-item clickable v-close-popup to="/ResourceCreate">
+                <q-item-section>发布资源</q-item-section>
               </q-item>
               <q-item clickable v-close-popup to="/MyCreate">
                 <q-item-section>我发布的课程</q-item-section>
@@ -152,7 +155,7 @@ export default {
           avatar: ""
         };
         this.user = data;
-        bus.$emit('logout')
+        bus.$emit("logout");
       });
     },
     showTab(index) {
@@ -173,7 +176,9 @@ export default {
         case 3:
           this.$router.push("/CourseCreate");
           break;
-
+        case 4:
+          this.$router.push("/ResourceDown");
+          break;
         default:
           break;
       }

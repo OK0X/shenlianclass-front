@@ -1,8 +1,7 @@
 <template>
   <q-page class="mypage">
     <GoBack />
-    <div class="page-content" style="margin-top:5px;">
-    </div>
+    <div class="page-content" style="margin-top:5px;"></div>
     <MyFooter />
   </q-page>
 </template>
@@ -18,18 +17,11 @@ export default {
     GoBack
   },
   data() {
-    return {
-      
-    };
+    return {};
   },
-  mounted() {
-       
-  },
-  methods: {
-    
-  }
+  mounted() {},
+  methods: {}
 };
 </script>
-<style scoped>
-
+<style lang="scss" scoped>
 </style>

@@ -305,9 +305,9 @@ export default {
         "/" +
         data.uuid +
         ".jpg?" +
-        Math.random();
+        Math.random();//加个随机数才会刷新
       this.user = data;
-
+      
       //console.log(9991, this.user);
     },
     onFileChange(e) {

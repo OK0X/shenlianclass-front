@@ -51,6 +51,18 @@ const routes = [
       {
         path: '/PageTemplate',
         component: () => import('pages/PageTemplate.vue')
+      },
+      {
+        path: '/ResourceDown',
+        component: () => import('pages/ResourceDown.vue')
+      },
+      {
+        path: '/ResourceDetail',
+        component: () => import('pages/ResourceDetail.vue')
+      },
+      {
+        path: '/ResourceCreate',
+        component: () => import('pages/ResourceCreate.vue')
       }
     ]
   }
