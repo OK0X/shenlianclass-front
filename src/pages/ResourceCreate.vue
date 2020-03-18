@@ -135,7 +135,7 @@ export default {
           }
         })
         .then(response => {
-          console.log(333, response);
+          // console.log(333, response);
           if (response.status === 200 && response.data.code === 0) {
             this.courseRes = response.data.data;
             if (this.courseRes.length === 0) {

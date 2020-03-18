@@ -326,7 +326,7 @@ export default {
           }
         })
         .then(response => {
-          console.log(999, response);
+          // console.log(999, response);
           if (response.status === 200 && response.data.code === 0) {
             let data = response.data.data;
             this.course = data.course[0];
@@ -397,7 +397,7 @@ export default {
           }
         })
         .then(response => {
-          console.log(444, response);
+          // console.log(444, response);
           if (response.status === 200 && response.data.code === 0) {
             toast("评论成功");
             this.showAppraise = false;
