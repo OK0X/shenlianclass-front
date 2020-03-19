@@ -496,7 +496,7 @@ export default {
         });
     },
     zancaiAnswer(answer, zc) {
-      // todo
+      
       if (typeof this.user.uuid === "undefined") {
         toast("请先登陆再操作");
         this.loginDialog.show = true;

@@ -63,6 +63,10 @@ const routes = [
       {
         path: '/ResourceCreate',
         component: () => import('pages/ResourceCreate.vue')
+      },
+      {
+        path: '/TeacherCheck',
+        component: () => import('pages/TeacherCheck.vue')
       }
     ]
   }

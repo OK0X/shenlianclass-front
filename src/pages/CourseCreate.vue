@@ -1,6 +1,51 @@
 <template>
   <q-page class="mypage">
-    <div class="white-block">
+    <div class="page-content" v-if="typeof user.uuid === 'undefined'"></div>
+    <div class="white-block" v-if="typeof user.uuid !== 'undefined'&&user.role===0">
+      <h2>讲师招募</h2>
+      <q-separator style="margin:20px 0 20px 0;background: rgba(0, 0, 0, 0.06);" />
+      <span style="font-size:15px;">我们希望你：</span>
+      <ol style="color:#60686B;">
+        <li>&nbsp;热衷分享；</li>
+        <li>&nbsp;有2年以上的实际项目开发经验；</li>
+        <li>&nbsp;精通任何一种编程语言或互联网相关开发技术；</li>
+      </ol>
+      <span style="font-size:15px;">你的收获：</span>
+      <ol style="color:#60686B;">
+        <li>&nbsp;完全属于你的收入；</li>
+        <li>&nbsp;技术的沉淀与分享；</li>
+      </ol>
+      <span v-show="teacherApply!==null">{{teacherApplyStatus}}</span>
+      <div class="flex-col" v-show="teacherApply===null">
+        <q-input
+          v-model="youselfsay"
+          filled
+          type="textarea"
+          placeholder="填写我的简介"
+          style="width:50%;"
+          counter
+          maxlength="500"
+        />
+        <q-input v-model="yourname" placeholder="我的真实姓名" style="width:25%;" counter maxlength="20" />
+        <q-input v-model="yourphone" placeholder="我的电话" style="width:25%;" counter maxlength="11" />
+        <q-input v-model="yourwechat" placeholder="我的微信" style="width:25%;" counter maxlength="20" />
+        <q-input
+          v-model="yourvideo"
+          placeholder="我的作品地址"
+          style="width:25%;"
+          counter
+          maxlength="100"
+        />
+        <q-btn
+          unelevated
+          color="primary"
+          label="立即加入"
+          style="width:150px;margin:30px 0 30px 0;"
+          @click="teacherRequire"
+        />
+      </div>
+    </div>
+    <div class="white-block" v-if="typeof user.uuid !== 'undefined'&&user.role!==0">
       <span class="tx-bold">课程名称：</span>
       <q-input v-model="classname" :dense="true" style="width:300px;" counter maxlength="20" />
       <span class="tx-bold" style="margin-top:10px;">课程封面：(请上传尺寸为530×320像素的jpg图片)</span>
@@ -62,7 +107,10 @@
             <label class="status">
               上传状态:
               <span>{{item.statusText}}</span>
-              <span style="color:green;" v-show="item.statusText === '文件上传完毕'">(已保存该节上传记录,相同视频无需再次上传)</span>
+              <span
+                style="color:green;"
+                v-show="item.statusText === '文件上传完毕'"
+              >(已保存该节上传记录,相同视频无需再次上传)</span>
             </label>
           </div>
           <div class="upload-type">
@@ -131,14 +179,14 @@
         <q-input v-model="scoin" :dense="true" style="width:50px;margin-left:5px;" />
         <span style="align-self: center;">个</span>
       </div>
+      <q-btn
+        unelevated
+        color="primary"
+        label="提交"
+        style="width:150px;margin:30px 0 30px 0;align-self:center;"
+        @click="submit"
+      />
     </div>
-    <q-btn
-      unelevated
-      color="primary"
-      label="提交"
-      style="width:150px;margin-bottom:30px;"
-      @click="submit"
-    />
     <MyFooter />
     <LoginDialog :dialogData="loginDialog" />
   </q-page>
@@ -161,6 +209,13 @@ export default {
   },
   data() {
     return {
+      teacherApplyStatus: "",
+      teacherApply: null,
+      youselfsay: "",
+      yourname: "",
+      yourphone: "",
+      yourwechat: "",
+      yourvideo: "",
       courseWork: "",
       coverUProgress: "0%",
       coverUploadDisable: true,
@@ -218,11 +273,113 @@ export default {
     }
     this.showDraft();
     this.saveDraft();
+    this.getTeacherApply();
   },
   beforeDestroy() {
     clearInterval(this.saveTxInterval);
   },
   methods: {
+    getTeacherApply() {
+      if (typeof this.user.uuid !== "undefined" || this.user.role === 0) {
+        let timestamp = new Date().getTime() + this.global.requestExpireT;
+        let params = {
+          user_id: this.user.uuid
+        };
+        this.$axios
+          .get(this.global.api.backurl + "user/getTeacherApply", {
+            params: params,
+            headers: {
+              "access-token": this.util.generateToken(
+                JSON.stringify(params),
+                timestamp
+              ),
+              timestamp2: timestamp
+            }
+          })
+          .then(response => {
+            console.log(333, response);
+            if (response.status === 200 && response.data.code === 0) {
+              if (response.data.data.length > 0) {
+                this.teacherApply = response.data.data[0];
+                switch (this.teacherApply.status) {
+                  case 0:
+                    this.teacherApplyStatus =
+                      "你已提交申请，当前正在审核中，请耐心等待！";
+                    break;
+                  case -1:
+                    this.teacherApplyStatus =
+                      "非常抱歉，审核未通过！原因：" +
+                      this.teacherApply.refuse_reason;
+                    break;
+                  case -2:
+                    this.teacherApplyStatus =
+                      "你的账号已违规，暂不可申请为讲师";
+                    break;
+                  default:
+                    break;
+                }
+              }
+            }
+          });
+      }
+    },
+    teacherRequire() {
+      if (this.youselfsay === "") {
+        toast("请输入你的简介");
+        return;
+      }
+      if (this.yourname === "") {
+        toast("请输入你的姓名");
+        return;
+      }
+      if (this.yourphone === "") {
+        toast("请输入你的电话");
+        return;
+      }
+      if (this.yourwechat === "") {
+        toast("请输入你的电话");
+        return;
+      }
+      if (this.yourvideo === "") {
+        toast("请输入你的电话");
+        return;
+      }
+
+      let params = {
+        user_id: this.user.uuid,
+        selfsay: this.youselfsay,
+        realy_name: this.yourname,
+        phone: this.yourphone,
+        wechat: this.yourwechat,
+        videourl: this.yourvideo
+      };
+      this.util.loadingShow(this);
+      let timestamp = new Date().getTime() + this.global.requestExpireT;
+      this.$axios
+        .post(this.global.api.backurl + "user/teacherApply", params, {
+          headers: {
+            "access-token": this.util.generateToken(
+              JSON.stringify(params),
+              timestamp
+            ),
+            timestamp2: timestamp
+          }
+        })
+        .then(response => {
+          //console.log(response);
+          this.util.loadingHide(this);
+          if (response.status === 200 && response.data.code === 0) {
+            toast("提交成功，我们将尽快与你联系");
+            params.status = 0;
+            this.teacherApply = params;
+            this.teacherApplyStatus='你已提交申请，当前正在审核中，请耐心等待！'
+          }
+        })
+        .catch(error => {
+          this.util.loadingHide(this);
+          console.log(error);
+        });
+    },
     converFileChange(e) {
       let _this = this;
       let files = e.target.files || e.dataTransfer.files;
@@ -253,7 +410,14 @@ export default {
             "%";
         }
       };
-      this.util.uploadFile2OSS(this,this.converimg, this.imgfile, true, progress, null);
+      this.util.uploadFile2OSS(
+        this,
+        this.converimg,
+        this.imgfile,
+        true,
+        progress,
+        null
+      );
     },
     courseFileChange(e) {
       //上传
@@ -267,8 +431,6 @@ export default {
         this.courseFile.name.substring(this.courseFile.name.length - 4);
       this.coResUploadDisable = false;
       this.courseResUProgress = "0%";
-
-      
     },
     uploadCourseRes() {
       this.coResUploadDisable = true;
@@ -557,14 +719,14 @@ export default {
           corResDiscribe: this.corResDiscribe
         };
 
-        if(this.coverUProgress === '100%'){
-          this.draft.coverUProgress=this.coverUProgress
-          this.draft.converimg=this.converimg
+        if (this.coverUProgress === "100%") {
+          this.draft.coverUProgress = this.coverUProgress;
+          this.draft.converimg = this.converimg;
         }
 
-        if(this.courseResUProgress === '100%'){
-          this.draft.courseResUProgress=this.courseResUProgress
-          this.draft.courseFileName=this.courseFileName
+        if (this.courseResUProgress === "100%") {
+          this.draft.courseResUProgress = this.courseResUProgress;
+          this.draft.courseFileName = this.courseFileName;
         }
 
         if (
@@ -649,7 +811,6 @@ export default {
       return true;
     },
     submit() {
-      
       if (typeof this.user.uuid === "undefined") {
         toast("当前未登陆，无法发布课程");
         return;
@@ -705,10 +866,9 @@ export default {
       }
     },
     handleImageAdded(file, Editor, cursorLocation, resetUploader) {
-      
       let filename =
         new Date().getTime() + file.name.substring(file.name.length - 4);
-      this.util.uploadFile2OSS(this,filename, file, true, null, () => {
+      this.util.uploadFile2OSS(this, filename, file, true, null, () => {
         Editor.insertEmbed(
           cursorLocation,
           "image",

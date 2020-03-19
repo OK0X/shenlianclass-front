@@ -24,7 +24,7 @@
             >{{user.nick==null?'游客':user.nick}}</span>
           </div>
           <q-menu>
-            <q-list style="min-width: 100px">
+            <q-list style="min-width: 100px" v-show="typeof user.uuid !== 'undefined'">
               <q-item clickable v-close-popup to="/MyInfo">
                 <q-item-section>个人中心</q-item-section>
               </q-item>
@@ -34,25 +34,23 @@
               <q-item clickable v-close-popup to="/MyCreate">
                 <q-item-section>我发布的课程</q-item-section>
               </q-item>
+              <q-item clickable v-close-popup v-show="user.role>=2" to="/TeacherCheck">
+                <q-item-section>讲师审核</q-item-section>
+              </q-item>
               <q-item clickable v-close-popup v-show="user.role>=2" to="/CourseCheck">
                 <q-item-section>课程审核</q-item-section>
               </q-item>
               <q-item clickable v-close-popup v-show="user.role>=3" to="/BackendConfig">
                 <q-item-section>系统配置</q-item-section>
               </q-item>
-              <q-separator v-show="typeof user.role !== 'undefined'" />
-              <q-item
-                clickable
-                v-close-popup
-                @click="logout"
-                v-show="typeof user.role !== 'undefined'"
-              >
+              <q-separator />
+              <q-item clickable v-close-popup @click="logout">
                 <q-item-section>安全退出</q-item-section>
               </q-item>
             </q-list>
           </q-menu>
         </div>
-        <span style="color:#ff7a00;align-self:center;" @click="login">{{role}}</span>
+        <span style="color:#ff7a00;align-self:center;cursor: pointer;" @click="login">{{role}}</span>
       </div>
       <div class="main-tabs">
         <div
@@ -155,6 +153,7 @@ export default {
           avatar: ""
         };
         this.user = data;
+        // console.log(999, this.user.uuid);
         bus.$emit("logout");
       });
     },
@@ -175,6 +174,7 @@ export default {
           break;
         case 3:
           this.$router.push("/CourseCreate");
+
           break;
         case 4:
           this.$router.push("/ResourceDown");
