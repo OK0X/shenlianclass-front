@@ -179,7 +179,11 @@ export default {
         case 4:
           this.$router.push("/ResourceDown");
           break;
+        case 5:
+          this.$router.push("/About");
+          break;
         default:
+          this.$router.push("/");
           break;
       }
     }
