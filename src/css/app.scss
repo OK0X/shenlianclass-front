@@ -63,3 +63,13 @@ h3 {
   display:flex;
   flex-direction: column;
 }
+.white-block {
+  width: 100%;
+  max-width: 1200px;
+  display: flex;
+  flex-direction: column;
+  background-color: white;
+  margin-top: 30px;
+  justify-content: flex-start;
+  padding: 20px;
+}

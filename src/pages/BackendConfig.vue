@@ -19,6 +19,7 @@
       />
       <q-input v-model="defaultEx" :dense="true" style="width:300px;" placeholder="defaultEx(秒)" />
       <q-input v-model="answerReward" :dense="true" style="width:300px;" placeholder="answerReward(回答默认奖励SC数量)" />
+      <q-input v-model="homeworkReward" :dense="true" style="width:300px;" placeholder="homeworkReward(提交作业奖励SC数量)" />
       <q-btn label="提交" color="primary" flat class="q-ml-sm" @click="submit" />
       <q-btn label="清空缓存" color="primary" flat class="q-ml-sm" @click="clearAll" />
     </div>
@@ -47,7 +48,8 @@ export default {
       alipayExpire: "",
       defaultEx: "",
       redisRuntime: "",
-      answerReward:''
+      answerReward:'',
+      homeworkReward:''
     };
   },
   mounted() {
@@ -152,7 +154,8 @@ export default {
         apiLimitNum: this.apiLimitNum,
         alipayExpire: this.alipayExpire,
         defaultEx: this.defaultEx,
-        answerReward:this.answerReward
+        answerReward:this.answerReward,
+        homeworkReward:this.homeworkReward
       };
       let timestamp = new Date().getTime() + this.global.requestExpireT;
       this.$axios
@@ -195,14 +198,5 @@ export default {
 };
 </script>
 <style scoped>
-.white-block {
-  width: 100%;
-  max-width: 1200px;
-  display: flex;
-  flex-direction: column;
-  background-color: white;
-  margin-top: 30px;
-  justify-content: flex-start;
-  padding: 20px;
-}
+
 </style>

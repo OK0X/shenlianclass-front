@@ -881,16 +881,6 @@ export default {
 };
 </script>
 <style scoped>
-.white-block {
-  width: 100%;
-  max-width: 1200px;
-  display: flex;
-  flex-direction: column;
-  background-color: white;
-  margin: 50px 0 30px 0;
-  justify-content: flex-start;
-  padding: 20px;
-}
 .chapters {
   width: 100%;
   display: flex;

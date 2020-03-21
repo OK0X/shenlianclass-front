@@ -1,7 +1,7 @@
 <template>
   <q-page class="mypage">
     <GoBack />
-    <div class="page-content" style="margin-top:5px;">
+    <div class="white-block" style="margin-top:5px;">
       <div style="display:flex;">
         <img
           :src="user.avatar"
@@ -38,6 +38,11 @@
         ref="imgpicker"
       />
     </div>
+    <div class="white-block" style="margin-bottom:50px;">
+      <span>积分明细</span>
+      <!-- <q-separator style="margin-top:10px;" /> -->
+      <q-table title :data="coinLogs" :columns="columns" row-key="name" flat bordered style="margin-top:10px;" :pagination.sync="pagination"/>
+    </div>
     <MyFooter />
     <CropperDialog :data="cropperDialog" @uploadImgOK="uploadImgOK" />
     <LoginDialog :dialogData="loginDialog" />
@@ -54,6 +59,7 @@ import LoginDialog from "../components/LoginDialog";
 import PayWaitDialog from "../components/PayWaitDialog";
 import { openURL } from "quasar";
 import localforage from "localforage";
+import { bus } from "../bus.js";
 
 export default {
   components: {
@@ -78,7 +84,25 @@ export default {
         show: false
       },
       out_trade_no: "",
-      chargeNum: 0
+      chargeNum: 0,
+      columns: [
+        { name: "event", label: "活动名称", field: "event", align: "left" },
+        { name: "change", label: "数量", field: "change", align: "center" },
+        {
+          name: "create_at",
+          label: "时间",
+          field: "create_at",
+          format: val => `${this.util.timeUTC2Local(val)}`
+        }
+      ],
+      coinLogs: [],
+      pagination: {
+        sortBy: 'desc',
+        descending: false,
+        page: 2,
+        rowsPerPage: 3,
+        rowsNumber: 0
+      }
     };
   },
   computed: {
@@ -97,8 +121,40 @@ export default {
       // console.log(111, this.$route.query);
       this.queryPayResult(this.$route.query.out_trade_no);
     }
+    bus.$on("loginok", () => {
+      this.getCoinLogs();
+    });
+    this.getCoinLogs();
   },
   methods: {
+    getCoinLogs() {
+      if (typeof this.user.uuid === "undefined") {
+        return;
+      }
+
+      let timestamp = new Date().getTime() + this.global.requestExpireT;
+      let params = {
+        user_id: this.user.uuid
+      };
+
+      this.$axios
+        .get(this.global.api.backurl + "user/getCoinChangeLog", {
+          params: params,
+          headers: {
+            "access-token": this.util.generateToken(
+              JSON.stringify(params),
+              timestamp
+            ),
+            timestamp2: timestamp
+          }
+        })
+        .then(response => {
+          if (response.status === 200 && response.data.code === 0) {
+            this.coinLogs = response.data.data;
+            this.pagination.rowsNumber=this.coinLogs.length
+          }
+        });
+    },
     showCharge() {
       this.$q
         .dialog({
@@ -113,11 +169,11 @@ export default {
           persistent: true
         })
         .onOk(data => {
-          if(data <=1){
+          if (data <= 1) {
             toast("充值金额需大于1元");
             return;
           }
-          if(data >= 5000){
+          if (data >= 5000) {
             toast("单次充值金额需小于5000元");
             return;
           }
@@ -165,11 +221,12 @@ export default {
             // localforage.getItem("user").then(value => {
             //   if (value !== null) {
             //     this.user = JSON.parse(value);
-            //   } 
+            //   }
             // });
           }
 
           this.getUserInfo();
+          this.getCoinLogs();
         })
         .catch(error => {
           console.log(error);
@@ -211,6 +268,7 @@ export default {
         });
     },
     editMobile() {
+      this.loginDialog.action='updateMobile'
       this.loginDialog.show = true;
     },
     editNickName() {
@@ -305,9 +363,9 @@ export default {
         "/" +
         data.uuid +
         ".jpg?" +
-        Math.random();//加个随机数才会刷新
+        Math.random(); //加个随机数才会刷新
       this.user = data;
-      
+
       //console.log(9991, this.user);
     },
     onFileChange(e) {

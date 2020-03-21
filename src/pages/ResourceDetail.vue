@@ -176,11 +176,12 @@ export default {
       let newCoin = this.user.coin - parseInt(this.resDetail.coin);
       let timestamp = new Date().getTime() + this.global.requestExpireT;
       let params = {
-        coin: newCoin
+        coin: newCoin,
+        coinChange:this.resDetail.coin
       };
       this.$axios
         .put(
-          this.global.api.backurl + "user/updateUser?uuid=" + this.user.uuid,
+          this.global.api.backurl + "user/dwonloadResource?uuid=" + this.user.uuid,
           params,
           {
             headers: {

@@ -42,12 +42,11 @@ export default {
     }
   },
   methods: {
-    placeholder(){
-
-      if(typeof this.dialogData.placeholder === 'undefined'){
-        return '请输入手机号'
-      } 
-      return this.dialogData.placeholder
+    placeholder() {
+      if (typeof this.dialogData.placeholder === "undefined") {
+        return "请输入手机号";
+      }
+      return this.dialogData.placeholder;
     },
     smsBtnCountdown() {
       var smstask = setInterval(() => {
@@ -85,8 +84,7 @@ export default {
           }
         )
         .then(function(response) {
-          //console.log('add');
-          //console.log(response);
+
           _this.smsBtnCountdown();
         });
     },
@@ -96,12 +94,11 @@ export default {
         toast(this.$t("smsnull"));
         return;
       }
-      this.util.loadingShow(this)
+
       this.smscodecheck();
-      
     },
     smscodecheck() {
-      var _this = this;
+      this.util.loadingShow(this);
       this.$axios
         .post(
           this.global.api.bombsmsurl + "verifySmsCode/" + this.smscode,
@@ -112,16 +109,78 @@ export default {
             headers: this.global.api.bombheader
           }
         )
-        .then(function(response) {
-          //console.log(response);
+        .then(response => {
+          // console.log(999, this.dialogData);
           if (response.data.msg === "ok") {
-            _this.login();
+            // console.log(999, this.dialogData);
+            if (this.dialogData.action === "updateMobile") {
+              this.updateMobile();
+            } else {
+              this.login();
+            }
+            this.dialogData.show = false;
           }
         })
         .catch(error => {
           console.error(error);
-          toast(_this.$t("smscodeerror"));
-          _this.util.loadingHide(this)
+          toast(this.$t("smscodeerror"));
+          this.util.loadingHide(this);
+        });
+    },
+    updateMobile() {
+      let timestamp = new Date().getTime() + this.global.requestExpireT;
+      let params = {
+        uuid: this.user.uuid,
+        mobile: this.mobile + ""
+      };
+      this.$axios
+        .put(this.global.api.backurl + "user/updateMobile", params, {
+          headers: {
+            "access-token": this.util.generateToken(
+              JSON.stringify(params),
+              timestamp
+            ),
+            timestamp2: timestamp
+          }
+        })
+        .then(response => {
+          this.util.loadingHide(this);
+          if (response.status === 200 && response.data.code === 0) {
+            if (response.data.data === "updateOK") {
+              toast("更新成功");
+              let newUser = this.user;
+              newUser.mobile = this.mobile;
+              this.user = JSON.parse(JSON.stringify(this.user));
+              localforage.setItem("user", JSON.stringify(this.user));
+            } else {
+              this.mobileExistTip(response.data.data);
+            }
+          } else {
+            toast("更新失败，请稍后重试");
+          }
+        })
+        .catch(error => {
+          console.log(error);
+          this.util.loadingHide(this);
+        });
+    },
+    mobileExistTip(user) {
+      // debugger
+      this.$q
+        .dialog({
+          message: "该手机号码已注册，是否要切换到该账号登陆？",
+          ok: "确定",
+          cancel: "取消"
+        })
+        .onOk(() => {
+          user.avatar =
+            this.global.api.aliyunosshostpubread + "/" + user.uuid + ".jpg";
+          this.user = user;
+          localforage.setItem("user", JSON.stringify(this.user));
+          bus.$emit("loginok");
+        })
+        .onCancel(() => {
+          //console.log('>>>> Cancel')
         });
     },
     login() {
@@ -140,30 +199,26 @@ export default {
             timestamp2: timestamp
           }
         })
-        .then((response)=> {
+        .then(response => {
           //console.log(response);
-          _this.util.loadingHide(this)
+          _this.util.loadingHide(this);
           if (response.status === 200 && response.data.code === 0) {
-
-            let data=response.data.data
+            let data = response.data.data;
             if (data.type === "login") {
-              delete data.type
-              
+              delete data.type;
             } else {
-              data.mobile=this.mobile + ""
-              data.role=0
-
+              data.mobile = this.mobile + "";
+              data.role = 0;
             }
 
-            data.avatar=this.global.api.aliyunosshostpubread+'/'+data.uuid+'.jpg'
-            this.user=data
+            data.avatar =
+              this.global.api.aliyunosshostpubread + "/" + data.uuid + ".jpg";
+            this.user = data;
             //console.log(this.user);
 
-            localforage.setItem("user",JSON.stringify(this.user))
-            toast('登陆成功')
-            bus.$emit('loginok')
-            this.dialogData.show = false;
-
+            localforage.setItem("user", JSON.stringify(this.user));
+            toast("登陆成功");
+            bus.$emit("loginok");
           }
         });
     }
