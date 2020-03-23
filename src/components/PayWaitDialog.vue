@@ -5,7 +5,7 @@
       <span class="tip-tx">等待您完成支付...</span>
       <span class="mytx-tip">请在新打开的支付页面完成支付</span>
       <q-btn unelevated rounded color="primary" label="已完成支付" style="margin-top:20px;width:150px;" @click="$emit('finishedPay')"/>
-      <q-btn outline rounded color="primary" label="支付遇到问题" style="margin-top:20px;width:150px;" @click="haveProblem"/>
+      <q-btn outline rounded color="primary" label="支付遇到问题" style="margin-top:20px;width:150px;" @click="$emit('paywithProblem')"/>
     </div>
   </q-dialog>
 </template>
@@ -19,10 +19,6 @@ export default {
     return {};
   },
   methods: {
-    haveProblem() {
-      this.data.show=false
-      toast('打开客服页面')
-    }
   }
 };
 </script>

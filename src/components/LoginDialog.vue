@@ -1,6 +1,6 @@
 <template>
   <q-dialog v-model="dialogData.show">
-    <div class="mydialog">
+    <div class="dialog">
       <div class="text-h6" style="margin-left:10px;margin-top:10px;">{{dialogData.title}}</div>
       <div style="margin-left:10px;margin-right:10px;">
         <q-input :dense="true" v-model="mobile" :placeholder="placeholder()" />
@@ -84,7 +84,6 @@ export default {
           }
         )
         .then(function(response) {
-
           _this.smsBtnCountdown();
         });
     },
@@ -226,4 +225,8 @@ export default {
 };
 </script>
 <style scoped>
+.dialog {
+  background: white;
+  min-width: 300px;
+}
 </style>

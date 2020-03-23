@@ -18,8 +18,12 @@
         </div>
         <div style="display:flex;">
           <div style="display: flex;flex-direction: column;">
+            <img src="statics/qiyeweixin.jpg" style="width:90px;height:90px;" />
+            <span class="wx-img-tx">添加我们的企业微信</span>
+          </div>
+          <div style="display: flex;flex-direction: column;margin-left:30px;">
             <img src="statics/wx-gh-qrcode.jpg" style="width:90px;height:90px;" />
-            <span class="wx-img-tx">关注深链网官方公众号</span>
+            <span class="wx-img-tx">关注深链课堂官方公众号</span>
           </div>
         </div>
       </div>

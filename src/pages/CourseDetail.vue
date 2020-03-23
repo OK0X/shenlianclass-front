@@ -190,7 +190,12 @@
     <MyFooter />
     <VideoDialog :videoDialog="videoDialog" />
     <LoginDialog :dialogData="loginDialog" />
-    <PayWaitDialog :data="payWaitDialog" @finishedPay="finishedPay" />
+    <PayWaitDialog
+      :data="payWaitDialog"
+      @finishedPay="finishedPay"
+      @paywithProblem="paywithProblem"
+    />
+    <FeedbackDialog :dialogData="feedbackDialog" />
   </q-page>
 </template>
 
@@ -206,6 +211,7 @@ import localforage from "localforage";
 import PayWaitDialog from "../components/PayWaitDialog";
 import { VueEditor } from "vue2-editor";
 import CommentReply from "../components/CommentReply";
+import FeedbackDialog from "../components/FeedbackDialog";
 
 export default {
   components: {
@@ -215,7 +221,8 @@ export default {
     GoBack,
     PayWaitDialog,
     VueEditor,
-    CommentReply
+    CommentReply,
+    FeedbackDialog
   },
   data() {
     return {
@@ -246,7 +253,11 @@ export default {
       homework: "",
       homeworkAsk: "",
       isWorkFinished: false,
-      myanswer: ""
+      myanswer: "",
+      feedbackDialog: {
+        show: false,
+        title: "支付问题反馈"
+      }
     };
   },
   computed: {
@@ -276,7 +287,6 @@ export default {
         this.course = this.$route.query.arg;
         this.global.routeCache.courseDetail = this.course;
       }
-
 
       this.homeworkAsk = {
         hasaccept: 1,
@@ -308,6 +318,16 @@ export default {
     });
   },
   methods: {
+    paywithProblem() {
+      this.payWaitDialog.show = false;
+      this.feedbackDialog.event = "支付问题-课程购买";
+      this.feedbackDialog.extras = {
+        out_trade_no: this.out_trade_no,
+        classname: this.course.classname,
+        classid: this.course.uuid
+      };
+      this.feedbackDialog.show = true;
+    },
     getCourseById(courseid) {
       let timestamp = new Date().getTime() + this.global.requestExpireT;
       let params = {

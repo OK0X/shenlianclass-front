@@ -40,8 +40,11 @@
               <q-item clickable v-close-popup v-show="user.role>=2" to="/CourseCheck">
                 <q-item-section>课程审核</q-item-section>
               </q-item>
+              <q-item clickable v-close-popup v-show="user.role>=3" to="/Feedback">
+                <q-item-section>用户反馈</q-item-section>
+              </q-item>
               <q-item clickable v-close-popup v-show="user.role>=3" to="/BackendConfig">
-                <q-item-section>系统配置</q-item-section>
+                <q-item-section>系统管理</q-item-section>
               </q-item>
               <q-separator />
               <q-item clickable v-close-popup @click="logout">

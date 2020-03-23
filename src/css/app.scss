@@ -15,12 +15,25 @@
   margin: 50px 0 50px 0;
   padding: 16px;
 }
+.white-block {
+  width: 100%;
+  max-width: 1200px;
+  display: flex;
+  flex-direction: column;
+  background-color: white;
+  margin-top: 30px;
+  justify-content: flex-start;
+  padding: 20px;
+}
 .mytx-tip{
     color: #96A0AB;
     font-size: 14px;
 }
 .mytx-primary {
   color: $primary;
+}
+.tx-bold {
+  font-weight: bold;
 }
 h1 {
   font-size: 25px;
@@ -33,10 +46,6 @@ h2 {
 h3 {
   font-size: 15px;
   line-height: 2rem;
-}
-.mydialog{
-  background:white;
-  min-width:300px;
 }
 .course-cover {
   width: 530px;
@@ -63,13 +72,4 @@ h3 {
   display:flex;
   flex-direction: column;
 }
-.white-block {
-  width: 100%;
-  max-width: 1200px;
-  display: flex;
-  flex-direction: column;
-  background-color: white;
-  margin-top: 30px;
-  justify-content: flex-start;
-  padding: 20px;
-}
+

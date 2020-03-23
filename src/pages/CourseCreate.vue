@@ -1,7 +1,7 @@
 <template>
   <q-page class="mypage">
     <div class="page-content" v-if="typeof user.uuid === 'undefined'"></div>
-    <div class="white-block" v-if="typeof user.uuid !== 'undefined'&&user.role===0">
+    <div class="page-content" v-if="typeof user.uuid !== 'undefined'&&user.role===0">
       <h2>讲师招募</h2>
       <q-separator style="margin:20px 0 20px 0;background: rgba(0, 0, 0, 0.06);" />
       <span style="font-size:15px;">我们希望你：</span>
@@ -43,9 +43,11 @@
           style="width:150px;margin:30px 0 30px 0;"
           @click="teacherRequire"
         />
+        <span>若有任何疑问，欢迎添加企业微信联系我们！</span>
+        <img src="statics/qiyeweixin.jpg" style="width:90px;height:90px;" />
       </div>
     </div>
-    <div class="white-block" v-if="typeof user.uuid !== 'undefined'&&user.role!==0">
+    <div class="page-content" v-if="typeof user.uuid !== 'undefined'&&user.role!==0">
       <span class="tx-bold">课程名称：</span>
       <q-input v-model="classname" :dense="true" style="width:300px;" counter maxlength="20" />
       <span class="tx-bold" style="margin-top:10px;">课程封面：(请上传尺寸为530×320像素的jpg图片)</span>
@@ -297,7 +299,7 @@ export default {
             }
           })
           .then(response => {
-            console.log(333, response);
+            // console.log(333, response);
             if (response.status === 200 && response.data.code === 0) {
               if (response.data.data.length > 0) {
                 this.teacherApply = response.data.data[0];
@@ -891,8 +893,5 @@ export default {
 }
 .upload-type {
   margin-top: 10px;
-}
-.tx-bold {
-  font-weight: bold;
 }
 </style>

@@ -12,8 +12,12 @@
       <span class="q-tx">我能加入深链课堂吗？</span>
       <span class="a-tx">我们欢迎在区块链技术领域有一技之长的你加入，具体可以点击课程发布申请成为讲师。</span>
       <span class="q-tx">如何联系我们？</span>
-      <span class="a-tx" style="margin-bottom: 0px;">电子邮箱：admin@shenlianclass.com</span>
-      <span class="a-tx">公司地址：深圳市龙华区龙华街道龙峰一路554号中顺商务大厦101</span>
+      <span class="contact-us">电子邮箱：admin@shenlianclass.com</span>
+      <span class="contact-us">公司地址：深圳市龙华区龙华街道龙峰一路554号中顺商务大厦101</span>
+      <div class="contact-us" style="display:flex;">
+        <span>企业微信：</span>
+        <img src="statics/qiyeweixin.jpg" style="width:90px;height:90px;" />
+      </div>
     </div>
     <MyFooter />
   </q-page>
@@ -43,6 +47,12 @@ export default {
 .a-tx {
   padding-left: 27px;
   margin-bottom: 28px;
+  font-size: 14px;
+  color: #60686b;
+  line-height: 32px;
+}
+.contact-us {
+  padding-left: 27px;
   font-size: 14px;
   color: #60686b;
 }

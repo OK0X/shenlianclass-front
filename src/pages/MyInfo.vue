@@ -46,7 +46,8 @@
     <MyFooter />
     <CropperDialog :data="cropperDialog" @uploadImgOK="uploadImgOK" />
     <LoginDialog :dialogData="loginDialog" />
-    <PayWaitDialog :data="payWaitDialog" @finishedPay="finishedPay" />
+    <PayWaitDialog :data="payWaitDialog" @finishedPay="finishedPay" @paywithProblem="paywithProblem"/>
+    <FeedbackDialog :dialogData="feedbackDialog" />
   </q-page>
 </template>
 
@@ -60,6 +61,7 @@ import PayWaitDialog from "../components/PayWaitDialog";
 import { openURL } from "quasar";
 import localforage from "localforage";
 import { bus } from "../bus.js";
+import FeedbackDialog from "../components/FeedbackDialog";
 
 export default {
   components: {
@@ -67,7 +69,8 @@ export default {
     GoBack,
     CropperDialog,
     LoginDialog,
-    PayWaitDialog
+    PayWaitDialog,
+    FeedbackDialog
   },
   data() {
     return {
@@ -86,7 +89,7 @@ export default {
       out_trade_no: "",
       chargeNum: 0,
       columns: [
-        { name: "event", label: "活动名称", field: "event", align: "left" },
+        { name: "event", label: "名称", field: "event", align: "left" },
         { name: "change", label: "数量", field: "change", align: "center" },
         {
           name: "create_at",
@@ -102,6 +105,10 @@ export default {
         page: 2,
         rowsPerPage: 3,
         rowsNumber: 0
+      },
+      feedbackDialog: {
+        show: false,
+        title: "支付问题反馈"
       }
     };
   },
@@ -127,6 +134,14 @@ export default {
     this.getCoinLogs();
   },
   methods: {
+    paywithProblem() {
+      this.payWaitDialog.show = false;
+      this.feedbackDialog.event = "支付问题-积分充值";
+      this.feedbackDialog.extras = {
+        out_trade_no: this.out_trade_no
+      };
+      this.feedbackDialog.show = true;
+    },
     getCoinLogs() {
       if (typeof this.user.uuid === "undefined") {
         return;
