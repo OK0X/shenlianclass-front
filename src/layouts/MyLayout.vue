@@ -110,8 +110,7 @@ export default {
       loginDialog: {
         show: false,
         title: "快捷登陆"
-      },
-      tabIndex: 0
+      }
     };
   },
   computed: {
@@ -140,6 +139,31 @@ export default {
         default:
           break;
       }
+    },
+    tabIndex: {
+      get: function() {
+        switch (this.$route.path) {
+          case "/MyCourses":
+            return 1;
+          case "/Ask":
+            return 2;
+          case "/CourseCreate":
+            return 3;
+          case "/ResourceDown":
+            return 4;
+          case "/About":
+            return 5;
+          case "":
+            return 0;
+          case "/":
+            return 0;
+          default:
+            return -1;
+        }
+      },
+      set: function(newValue) {
+        
+      }
     }
   },
   mounted() {},
@@ -161,9 +185,6 @@ export default {
       });
     },
     showTab(index) {
-      // if(this.tabIndex===index)
-      // return
-
       this.tabIndex = index;
       switch (index) {
         case 0:

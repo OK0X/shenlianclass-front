@@ -271,7 +271,7 @@ export default {
     }
   },
   mounted() {
-    // console.log("课程详情", this.$route.query);
+    // console.log(999,this.$route)
 
     if (typeof this.$route.query.out_trade_no !== "undefined") {
       //支付跳转
