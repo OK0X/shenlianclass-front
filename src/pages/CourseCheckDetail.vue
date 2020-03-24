@@ -1,7 +1,7 @@
 <template>
   <q-page class="mypage">
     <div class="buywatch">
-      <img :src="global.api.aliyunosshostpubread + '/' + course.converimg" class="course-cover" onerror="src = 'statics/default-conver.jpg'"/>
+      <img :src="global.api.aliyunosshostpubread + '/' + course.converimg" class="course-cover" onerror="src = 'statics/default-conver.png'"/>
       <div class="course-summary">
         <span style="font-size:24px;color:#1f2328;">{{course.classname}}</span>
         <span>{{course.classsummary}}</span>
