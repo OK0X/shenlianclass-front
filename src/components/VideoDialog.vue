@@ -70,7 +70,7 @@ export default {
       width: "1536px",
       height: "864px",
       cover:
-        "https://img.alicdn.com/tps/TB1EXIhOFXXXXcIaXXXXXXXXXXX-760-340.jpg"
+        "https://shenlianclasspubread.oss-cn-shanghai.aliyuncs.com/play-cover.jpg"
     };
   },
   computed: {

@@ -6,7 +6,7 @@
         <img
           :src="user.avatar"
           style="width:80px;height:80px;border-radius: 50%;"
-          onerror="src = 'statics/default.png'"
+          onerror="src = 'statics/default-avatar.gif'"
         />
         <div class="flex-col" style="margin-left: 16px;justify-content: space-around;">
           <div style="display:flex;">

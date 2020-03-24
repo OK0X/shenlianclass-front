@@ -8,7 +8,7 @@
       <div style="display:flex;margin-top:10px;">
         <img
           :src="getAvatar(user.uuid)"
-          onerror="src = 'statics/default.png'"
+          onerror="src = 'statics/default-avatar.gif'"
           style="width:40px;height:40px;border-radius: 50%;margin-right:10px;"
         />
         <div class="flex-col">
@@ -67,7 +67,7 @@
           <div style="display:flex;">
             <img
               :src="getAvatar(subitem.user_id)"
-              onerror="src = 'statics/default.png'"
+              onerror="src = 'statics/default-avatar.gif'"
               style="width:40px;height:40px;border-radius: 50%;margin-right:10px;"
             />
             <div class="flex-col">
@@ -131,7 +131,7 @@
       <div style="display:flex;margin-top:10px;">
         <img
           :src="getAvatar(acceptanswer.user_id)"
-          onerror="src = 'statics/default.png'"
+          onerror="src = 'statics/default-avatar.gif'"
           style="width:40px;height:40px;border-radius: 50%;margin-right:10px;"
         />
         <div class="flex-col">
@@ -188,7 +188,7 @@
           <div style="display:flex;">
             <img
               :src="getAvatar(subitem.user_id)"
-              onerror="src = 'statics/default.png'"
+              onerror="src = 'statics/default-avatar.gif'"
               style="width:40px;height:40px;border-radius: 50%;margin-right:10px;"
             />
             <div class="flex-col">
@@ -248,7 +248,7 @@
       <div style="display:flex;margin-top:10px;">
         <img
           :src="getAvatar(item.user_id)"
-          onerror="src = 'statics/default.png'"
+          onerror="src = 'statics/default-avatar.gif'"
           style="width:40px;height:40px;border-radius: 50%;margin-right:10px;"
         />
         <div class="flex-col">
@@ -317,7 +317,7 @@
           <div style="display:flex;">
             <img
               :src="getAvatar(subitem.user_id)"
-              onerror="src = 'statics/default.png'"
+              onerror="src = 'statics/default-avatar.gif'"
               style="width:40px;height:40px;border-radius: 50%;margin-right:10px;"
             />
             <div class="flex-col">

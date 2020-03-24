@@ -159,7 +159,7 @@
             <div style="display:flex;margin-top:10px;">
               <img
                 :src="getAvatar(appraises.user_id)"
-                onerror="src = 'statics/default.png'"
+                onerror="src = 'statics/default-avatar.gif'"
                 style="width:40px;height:40px;border-radius: 50%;margin-right:10px;"
               />
               <div class="flex-col">
@@ -621,7 +621,7 @@ export default {
         case "rar":
           return "statics/rar.png";
         default:
-          return "statics/file-default.png";
+          return "statics/file-default-avatar.gif";
       }
     },
     getStudyProgress() {

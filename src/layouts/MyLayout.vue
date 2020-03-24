@@ -17,7 +17,7 @@
             <img
               :src="user.avatar"
               style="width:40px;height:40px;border-radius: 50%;cursor: pointer;"
-              onerror="src = 'statics/default.png'"
+              onerror="src = 'statics/default-avatar.gif'"
             />
             <span
               style="align-self: center;margin-left:10px;cursor: pointer;"
