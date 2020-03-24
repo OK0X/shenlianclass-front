@@ -176,7 +176,7 @@ export default {
       offsetALL: 0,
       offsetHcoin: 0,
       offsetMy: 0,
-      limit: 6
+      limit: 20
     };
   },
   computed: {
