@@ -27,7 +27,11 @@
           v-for="(item,index) in courses"
           :key="index"
         >
-          <img :src="global.api.aliyunosshostpubread + '/' + item.converimg" class="card-img" onerror="src = 'statics/default-conver.png'"/>
+          <img
+            :src="global.api.aliyunosshostpubread + '/' + item.converimg"
+            class="card-img"
+            onerror="src = 'statics/default-conver.png'"
+          />
           <div class="card-info">
             <span class="card-title">{{item.classname}}</span>
             <div class="more-text">
@@ -48,6 +52,16 @@
         </div>
       </div>
     </div>
+    <div class="class-list">
+      <span style="color:#1f2328;font-size:24px;margin-top:30px;">热门问答</span>
+      <q-separator />
+      <AskItem :asks="hotasks" style="margin: 30px 0 30px 0;padding: 25px"/>
+    </div>
+    <div class="class-list" style="margin:30px 0 50px 0;">
+      <span style="color:#1f2328;font-size:24px;">热门资源</span>
+      <q-separator />
+      <ResourceItem :res="hotRes" style="margin: 30px 0 30px 0;padding: 20px"/>
+    </div>
     <MyFooter />
   </q-page>
 </template>
@@ -55,14 +69,20 @@
 <script>
 /* eslint-disable */
 import MyFooter from "../components/MyFooter";
+import AskItem from "../components/AskItem";
+import ResourceItem from "../components/ResourceItem";
 export default {
   components: {
-    MyFooter
+    MyFooter,
+    AskItem,
+    ResourceItem
   },
   data() {
     return {
       slide: "first",
-      courses: []
+      courses: [],
+      hotasks: [],
+      hotRes: []
     };
   },
   mounted() {
@@ -72,25 +92,24 @@ export default {
     getCourses() {
       let timestamp = new Date().getTime() + this.global.requestExpireT;
 
-      let params = {
-        status: 2 + "" //正式发布改成审核通过的课程
-      };
+      // let params = {
+      //   status: 2 + "" //正式发布改成审核通过的课程
+      // };
 
       this.$axios
-        .get(this.global.api.backurl + "course/getCourses", {
-          params: params,
+        .get(this.global.api.backurl + "course/getIndexData", {
+          params: null,
           headers: {
-            "access-token": this.util.generateToken(
-              JSON.stringify(params),
-              timestamp
-            ),
+            "access-token": this.util.generateToken(null, timestamp),
             timestamp2: timestamp
           }
         })
         .then(response => {
           //console.log(response);
           if (response.status === 200 && response.data.code === 0) {
-            this.courses = response.data.data;
+            this.courses = response.data.data.courses;
+            this.hotasks = response.data.data.asks;
+            this.hotRes = response.data.data.ress;
           }
         });
     },
@@ -105,7 +124,7 @@ export default {
   }
 };
 </script>
-<style scoped>
+<style lang="scss" scoped>
 .gallery {
   width: 100%;
   height: 400px;
@@ -128,7 +147,7 @@ export default {
   display: flex;
 }
 .card-list {
-  margin: 30px 0 30px 0;
+  margin: 30px 0 5px 0;
   display: flex;
   flex-wrap: wrap;
 }
@@ -145,11 +164,11 @@ export default {
   width: 100%;
   height: 130px;
 }
-.card-info{
+.card-info {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  flex: 1
+  flex: 1;
 }
 .card-title {
   color: #333333;

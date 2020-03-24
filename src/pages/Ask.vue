@@ -17,25 +17,7 @@
       </q-tabs>
       <q-tab-panels v-model="tab" animated>
         <q-tab-panel name="all" class="flex-col">
-          <div class="flex-col" v-for="(item,index) in asks" :key="index">
-            <div style="display:flex;justify-content: space-between;">
-              <div style="display:flex;">
-                <img src="statics/coin.png" class="reward-icon" v-if="item.reward" />
-                <span class="reward-num" v-if="item.reward">{{item.reward_num}}</span>
-                <span class="ask-tx" @click="toAskDetail(item)">{{item.title}}</span>
-              </div>
-              <!-- <div style="color: #999;margin-right:20px;line-height: 25px;" v-html="item.detail"></div> -->
-              <div style="display:flex;color:#bbb;margin-top:5px;">
-                <span>{{util.getShortTime(item.create_at)}}</span>
-                <!-- <span style="width:1px;background: rgba(0, 0, 0, 0.12);margin:2px 10px 2px 10px;"></span> -->
-                <!-- <span>{{item.answer_num}} 回答</span> -->
-              </div>
-            </div>
-            <q-separator
-              style="margin:5px 0 5px 0;background: rgba(0, 0, 0, 0.06);"
-              v-if="index!==asks.length-1"
-            />
-          </div>
+          <AskItem :asks="asks" style="padding:0 16px 0 16px;"/>
           <q-pagination
             v-if="pageMaxAll > 1"
             v-model="currentPageAll"
@@ -46,22 +28,7 @@
           ></q-pagination>
         </q-tab-panel>
         <q-tab-panel name="highcoin" class="flex-col">
-          <div class="flex-col" v-for="(item,index) in awardasks" :key="index">
-            <div style="display:flex;justify-content: space-between;">
-              <div style="display:flex;">
-                <img src="statics/coin.png" class="reward-icon" v-if="item.reward" />
-                <span class="reward-num" v-if="item.reward">{{item.reward_num}}</span>
-                <span class="ask-tx" @click="toAskDetail(item)">{{item.title}}</span>
-              </div>
-              <!-- <div style="color: #999;margin-right:20px;line-height: 25px;" v-html="item.detail"></div> -->
-              <div style="display:flex;color:#bbb;margin-top:5px;">
-                <span>{{util.getShortTime(item.create_at)}}</span>
-                <!-- <span style="width:1px;background: rgba(0, 0, 0, 0.12);margin:2px 10px 2px 10px;"></span> -->
-                <!-- <span>{{item.answer_num}} 回答</span> -->
-              </div>
-            </div>
-            <q-separator style="margin:5px 0 5px 0;" v-if="index!==awardasks.length-1" />
-          </div>
+          <AskItem :asks="awardasks" style="padding:0 16px 0 16px;"/>
           <q-pagination
             v-if="pageMaxHcoin > 1"
             v-model="currentPageHcoin"
@@ -72,22 +39,7 @@
           ></q-pagination>
         </q-tab-panel>
         <q-tab-panel name="myask" class="flex-col">
-          <div class="flex-col" v-for="(item,index) in myasks" :key="index">
-            <div style="display:flex;justify-content: space-between;">
-              <div style="display:flex;">
-                <img src="statics/coin.png" class="reward-icon" v-if="item.reward" />
-                <span class="reward-num" v-if="item.reward">{{item.reward_num}}</span>
-                <span class="ask-tx" @click="toAskDetail(item)">{{item.title}}</span>
-              </div>
-              <!-- <div style="color: #999;margin-right:20px;line-height: 25px;" v-html="item.detail"></div> -->
-              <div style="display:flex;color:#bbb;margin-top:5px;">
-                <span>{{util.getShortTime(item.create_at)}}</span>
-                <!-- <span style="width:1px;background: rgba(0, 0, 0, 0.12);margin:2px 10px 2px 10px;"></span> -->
-                <!-- <span>{{item.answer_num}} 回答</span> -->
-              </div>
-            </div>
-            <q-separator style="margin:5px 0 5px 0;" v-if="index!==myasks.length-1" />
-          </div>
+          <AskItem :asks="myasks" style="padding:0 16px 0 16px;"/>
           <q-pagination
             v-if="pageMaxMy > 1"
             v-model="currentPageMy"
@@ -143,12 +95,14 @@ import localforage from "localforage";
 import CryptoJS from "crypto-js";
 import { Base64 } from "js-base64";
 import LoginDialog from "../components/LoginDialog";
+import AskItem from "../components/AskItem";
 
 export default {
   components: {
     MyFooter,
     VueEditor,
-    LoginDialog
+    LoginDialog,
+    AskItem
   },
   data() {
     return {
@@ -203,9 +157,9 @@ export default {
       this.getMyAsks();
     },
     paginAllClick(pageIndex) {
-      // console.log('paginAllClick',11111111)
+
       if (this.lastPageAll === pageIndex) return;
-// debugger
+
       this.offsetALL += this.limit * (pageIndex - this.lastPageAll);
       this.lastPageAll = pageIndex;
       this.getAsks();
@@ -216,14 +170,6 @@ export default {
       this.offsetHcoin += this.limit * (pageIndex - this.lastPageHcoin);
       this.lastPageHcoin = pageIndex;
       this.getAwardAsks();
-    },
-    toAskDetail(item) {
-      this.$router.push({
-        path: "/AskDetail",
-        query: {
-          arg: item
-        }
-      });
     },
     getMyAsks() {
       let timestamp = new Date().getTime() + this.global.requestExpireT;
@@ -422,24 +368,4 @@ export default {
 };
 </script>
 <style scoped>
-.ask-tx {
-  color: #3066b3;
-  line-height: 35px;
-}
-.ask-tx:hover {
-  /* background-color:#f3f3f3; */
-  cursor: pointer;
-  text-decoration: underline;
-}
-.reward-icon {
-  width: 13px;
-  height: 12px;
-  margin: 5px;
-  align-self: center;
-}
-.reward-num {
-  color: #e7412b;
-  margin-right: 10px;
-  line-height: 35px;
-}
 </style>
