@@ -2,26 +2,6 @@
 import CryptoJS from "crypto-js";
 import { Base64 } from "js-base64";
 
-function showInfoDialog(_this, txhash, isBack) {
-  _this.$q
-    .dialog({
-      title: '',//_this.$t("submitted"),
-      message: _this.$t('submittips'),
-      // ok: _this.$t('viewresults'),
-      // cancel: _this.$t('close')
-    })
-    .then(() => {
-      // debugger
-      // openURL(_this.global.apiconfig.etherscanio + "tx/" + txhash);
-      if (isBack)
-        _this.$router.go(-1);
-
-    })
-    .catch(() => {
-      if (isBack)
-        _this.$router.go(-1);
-    });
-}
 
 
 
@@ -48,26 +28,7 @@ function timeUTC2Local(UTCDateString) {
 
 
 
-/*
-** randomWord 产生任意长度随机字母数字组合
-** randomFlag-是否任意长度 min-任意长度最小位[固定位数] max-任意长度最大位
-** xuanfeng 2014-08-28
-*/
 
-function randomWord(randomFlag, min, max) {
-  var str = "",
-    range = min,
-    arr = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
-
-  // 随机产生
-  if (randomFlag) {
-    range = Math.round(Math.random() * (max - min)) + min;
-  }
-  for (var i = 0; i < range; i++) {
-    str += arr[Math.round(Math.random() * (arr.length - 1))];
-  }
-  return str;
-}
 
 function isEmpty(e) {
 
@@ -77,6 +38,7 @@ function isEmpty(e) {
     return false
   }
 }
+
 function generateToken(str, timestamp) {
   str = str === null ? '{}' : str
   str = str + '900a06ca65a211e98eae00163e11f2fe' + timestamp
@@ -94,7 +56,7 @@ function awaitWrap(promise) {
 }
 
 function makeDownloadUrl(_this, filename) {
-  let Expires = parseInt(new Date().getTime() / 1000) + 60*10;//10分钟
+  let Expires = parseInt(new Date().getTime() / 1000) + 60 * 1;//1分钟
   let StringToSign =
     "GET\n\n\n" + Expires + "\n" + "/shenlianclass/" + filename;
 
@@ -200,7 +162,7 @@ function randomUUID() {
   return uuid.join('').replace(/-/g, "").toLowerCase();
 }
 
-function uploadFile2OSS(_this,filename, file, pubRead, progress, success) {
+function uploadFile2OSS(_this, filename, file, pubRead, progress, success) {
   //aliyun oss
   _this.util.loadingShow(_this);
 
@@ -255,11 +217,25 @@ function uploadFile2OSS(_this,filename, file, pubRead, progress, success) {
     });
 }
 
+function getFileIcon(filetype) {
+  switch (filetype) {
+    case "rar":
+      return "statics/rar.png";
+    case "pdf":
+      return "statics/pdf.png";
+    case "ppt":
+      return "statics/ppt.png";
+    case "apk":
+      return "statics/apk.png";
+    default:
+      return "statics/file-default.png";
+  }
+}
+
 export default {
+  getFileIcon,
   uploadFile2OSS,
-  showInfoDialog,
   timeUTC2Local,
-  randomWord,
   isEmpty,
   generateToken,
   awaitWrap,

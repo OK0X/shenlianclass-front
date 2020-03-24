@@ -4,7 +4,7 @@
       <div class="flex-col" v-for="(item,index) in resList" :key="index">
         <div class="res-item">
           <div style="display:flex;">
-            <img src="statics/rar.png" style="width:48px;height:48px;" />
+            <img :src="setFileIcon(item)" style="width:48px;height:48px;" />
             <div class="flex-col" style="margin-left:20px;align-self: center;">
               <span class="res-name" @click="toResDetail(item)">{{item.name}}</span>
               <div>
@@ -62,6 +62,13 @@ export default {
     this.getRes();
   },
   methods: {
+    setFileIcon(item){
+      // console.log(111,item)
+      let filetype = item.filename.substring(
+        item.filename.length - 3
+      );
+      return this.util.getFileIcon(filetype)
+    },
     gotoCourse(courseid){
 
       this.$router.push({

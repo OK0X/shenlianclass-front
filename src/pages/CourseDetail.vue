@@ -321,13 +321,15 @@ export default {
     bus.$on("logout", () => {
       this.isWorkFinished = false;
       this.showAppraise = true;
-      this.isPayed=false
+      this.isPayed = false;
     });
   },
   methods: {
-    courseShare(){
-      this.shareDialog.tx='https://www.shenlianclass.com/#/CourseDetail?courseid='+this.course.uuid
-      this.shareDialog.show=true
+    courseShare() {
+      this.shareDialog.tx =
+        "https://www.shenlianclass.com/#/CourseDetail?courseid=" +
+        this.course.uuid;
+      this.shareDialog.show = true;
     },
     paywithProblem() {
       this.payWaitDialog.show = false;
@@ -617,12 +619,7 @@ export default {
       let filetype = this.course.res_name.substring(
         this.course.res_name.length - 3
       );
-      switch (filetype) {
-        case "rar":
-          return "statics/rar.png";
-        default:
-          return "statics/file-default-avatar.gif";
-      }
+      return this.util.getFileIcon(filetype)
     },
     getStudyProgress() {
       if (typeof this.user.uuid === "undefined") {

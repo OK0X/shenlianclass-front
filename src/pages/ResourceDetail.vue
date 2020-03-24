@@ -4,7 +4,7 @@
     <div class="page-content" style="margin-top:5px;">
       <span class="res-name">{{resDetail.name}}</span>
       <div style="display:flex;">
-        <img src="statics/rar.png" style="margin-left: 20px;width:48px;height:48px;" />
+        <img :src="setFileIcon()" style="margin-left: 20px;width:48px;height:48px;" />
         <div style="margin-left: 20px;">
           <div v-html="resDetail.discribe"></div>
           <div style="margin-top:10px;">
@@ -86,6 +86,14 @@ export default {
     this.checkisPayed();
   },
   methods: {
+    setFileIcon(){
+      // console.log(111,this.resDetail)
+      if(this.resDetail==='')return ''
+      let filetype = this.resDetail.filename.substring(
+        this.resDetail.filename.length - 3
+      );
+      return this.util.getFileIcon(filetype)
+    },
     checkisPayed() {
       if (
         this.resDetail.course_id === "" ||
