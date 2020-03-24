@@ -185,6 +185,8 @@ export default {
       });
     },
     showTab(index) {
+      if(this.tabIndex === index)
+      return
       this.tabIndex = index;
       switch (index) {
         case 0:
