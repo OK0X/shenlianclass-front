@@ -18,13 +18,13 @@
             <div class="course-summary">
               <span style="font-size:24px;color:#1f2328;">{{item.classname}}</span>
               <span>{{item.classsummary}}</span>
-              <div class="price-share">
+              <div class="course-price">
                 <div style="align-self: center;margin-left:10px;font-size:24px;color: orange;">
                   <span v-show="item.classprice!==''">{{item.classprice}}元</span>
                   <span v-show="item.classprice!==''&&item.coin!==''">+</span>
                   <span v-show="item.coin!==''">{{item.coin}}积分</span>
                 </div>
-                <div style="display:flex;align-self: center;margin-right:10px;">
+                <div class="course-share" @click.stop="courseShare(item)">
                   <img src="statics/share.png" style="width:20px;height:20px;" />
                   <span style="margin-left:5px;">分享</span>
                 </div>
@@ -38,6 +38,7 @@
     </div>
     <MyFooter />
     <LoginDialog :dialogData="loginDialog" />
+    <ShareDialog :props="shareDialog" />
   </q-page>
 </template>
 
@@ -46,11 +47,13 @@
 import MyFooter from "../components/MyFooter";
 import LoginDialog from "../components/LoginDialog";
 import { bus } from "../bus.js";
+import ShareDialog from "../components/ShareDialog";
 
 export default {
   components: {
     MyFooter,
-    LoginDialog
+    LoginDialog,
+    ShareDialog
   },
   data() {
     return {
@@ -58,7 +61,10 @@ export default {
         show: false,
         title: "快捷登陆"
       },
-      payedCourses: []
+      payedCourses: [],
+      shareDialog: {
+        show: false
+      }
     };
   },
   computed: {
@@ -78,6 +84,10 @@ export default {
     this.getPayedCourse();
   },
   methods: {
+    courseShare(item){
+      this.shareDialog.tx='https://www.shenlianclass.com/#/CourseDetail?courseid='+item.uuid
+      this.shareDialog.show=true
+    },
     toCourseDetail(item) {
       this.$router.push({
         path: "/CourseDetail",

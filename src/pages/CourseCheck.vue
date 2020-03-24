@@ -17,7 +17,7 @@
         <div class="course-summary">
           <span style="font-size:24px;color:#1f2328;">{{item.classname}}</span>
           <span>{{item.classsummary}}</span>
-          <div class="price-share">
+          <div class="course-price">
             <div style="align-self: center;margin-left:10px;font-size:24px;color: orange;">
               <span v-show="item.classprice!==''">{{item.classprice}}元</span>
               <span v-show="item.classprice!==''&&item.coin!==''">+</span>

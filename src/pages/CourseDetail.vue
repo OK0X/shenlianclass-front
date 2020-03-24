@@ -10,13 +10,13 @@
       <div class="course-summary">
         <span style="font-size:24px;color:#1f2328;">{{course.classname}}</span>
         <span>{{course.classsummary}}</span>
-        <div class="price-share">
+        <div class="course-price">
           <div style="align-self: center;margin-left:10px;font-size:24px;color: orange;">
             <span v-show="course.classprice!==''">{{course.classprice}}元</span>
             <span v-show="course.classprice!==''&&course.coin!==''">+</span>
             <span v-show="course.coin!==''">{{course.coin}}积分</span>
           </div>
-          <div style="display:flex;align-self: center;margin-right:10px;">
+          <div class="course-share" @click="courseShare">
             <img src="statics/share.png" style="width:20px;height:20px;" />
             <span style="margin-left:5px;">分享</span>
           </div>
@@ -196,6 +196,7 @@
       @paywithProblem="paywithProblem"
     />
     <FeedbackDialog :dialogData="feedbackDialog" />
+    <ShareDialog :props="shareDialog" />
   </q-page>
 </template>
 
@@ -212,6 +213,7 @@ import PayWaitDialog from "../components/PayWaitDialog";
 import { VueEditor } from "vue2-editor";
 import CommentReply from "../components/CommentReply";
 import FeedbackDialog from "../components/FeedbackDialog";
+import ShareDialog from "../components/ShareDialog";
 
 export default {
   components: {
@@ -222,7 +224,8 @@ export default {
     PayWaitDialog,
     VueEditor,
     CommentReply,
-    FeedbackDialog
+    FeedbackDialog,
+    ShareDialog
   },
   data() {
     return {
@@ -257,6 +260,9 @@ export default {
       feedbackDialog: {
         show: false,
         title: "支付问题反馈"
+      },
+      shareDialog: {
+        show: false
       }
     };
   },
@@ -315,9 +321,14 @@ export default {
     bus.$on("logout", () => {
       this.isWorkFinished = false;
       this.showAppraise = true;
+      this.isPayed=false
     });
   },
   methods: {
+    courseShare(){
+      this.shareDialog.tx='https://www.shenlianclass.com/#/CourseDetail?courseid='+this.course.uuid
+      this.shareDialog.show=true
+    },
     paywithProblem() {
       this.payWaitDialog.show = false;
       this.feedbackDialog.event = "支付问题-课程购买";

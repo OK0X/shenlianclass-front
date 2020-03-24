@@ -70,7 +70,7 @@
         type="textarea"
         style="width:100%;height:100px;"
         counter
-        maxlength="300"
+        maxlength="150"
       />
       <span style="margin-top:30px;" class="tx-bold">课程详情：</span>
       <VueEditor

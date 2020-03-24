@@ -5,13 +5,13 @@
       <div class="course-summary">
         <span style="font-size:24px;color:#1f2328;">{{course.classname}}</span>
         <span>{{course.classsummary}}</span>
-        <div class="price-share">
+        <div class="course-price">
           <div style="align-self: center;margin-left:10px;font-size:24px;color: orange;">
             <span v-show="course.classprice!==''">{{course.classprice}}元</span>
             <span v-show="course.classprice!==''&&course.coin!==''">+</span>
             <span v-show="course.coin!==''">{{course.coin}}积分</span>
           </div>
-          <div style="display:flex;align-self: center;margin-right:10px;">
+          <div class="course-share" @click="courseShare">
             <img src="statics/share.png" style="width:20px;height:20px;" />
             <span style="margin-left:5px;">分享</span>
           </div>
@@ -81,15 +81,18 @@
       v-show="isCanPub()"
     />
     <MyFooter />
+    <ShareDialog :props="shareDialog" />
   </q-page>
 </template>
 
 <script>
 /* eslint-disable */
 import MyFooter from "../components/MyFooter";
+import ShareDialog from "../components/ShareDialog";
 export default {
   components: {
-    MyFooter
+    MyFooter,
+    ShareDialog
   },
   computed: {
     user: {
@@ -105,7 +108,10 @@ export default {
     return {
       tab: "detail",
       course: {},
-      videos: []
+      videos: [],
+      shareDialog: {
+        show: false
+      }
     };
   },
   mounted() {
@@ -120,6 +126,10 @@ export default {
     this.getVideos();
   },
   methods: {
+    courseShare(){
+      this.shareDialog.tx='https://www.shenlianclass.com/#/CourseDetail?courseid='+this.course.uuid
+      this.shareDialog.show=true
+    },
     changeCourseStatus(status) {
       let params = {
         status: status+'',

@@ -59,17 +59,26 @@ h3 {
   display: flex;
   flex-direction: column;
   flex: 1;
+  overflow-y: auto;
 }
-.price-share {
+.course-share {
+  display: flex;
+  align-self: center;
+  margin-right: 10px;
+  cursor: pointer;
+}
+.course-price {
   width: 100%;
   height: 55px;
   display: flex;
   background-color: #f3f3f3;
   margin-top: 10px;
   justify-content: space-between;
+  flex-shrink: 0;
 }
 .flex-col{
   display:flex;
   flex-direction: column;
 }
+
 
