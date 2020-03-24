@@ -3,6 +3,7 @@
     <div class="relate-link">
       <div class="relate-content">
         <span class="link-tx">友情链接</span>
+        <q-btn flat label="比特币" @click="openLink(4)" />
         <q-btn flat label="以太坊" @click="openLink(0)" />
         <q-btn flat label="cosmos" style="font-weight: 400;" @click="openLink(1)" />
         <q-btn flat label="quasar" style="font-weight: 400;" @click="openLink(2)" />
@@ -50,6 +51,9 @@ export default {
           break;
         case 3:
           openURL("https://cn.vuejs.org/v2/guide/");
+          break;
+        case 4:
+          openURL("https://bitcoin.org/zh_CN/");
           break;
         default:
           break;

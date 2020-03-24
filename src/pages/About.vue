@@ -1,7 +1,8 @@
 <template>
   <q-page class="mypage">
     <div class="page-content">
-      <span class="q-tx">我们是谁？</span>
+      <img src="statics/about-bg.jpg" style="width: 100%;height: 470px;"/>
+      <span class="q-tx" style="margin-top: 35px;">我们是谁？</span>
       <span
         class="a-tx"
       >我们是一群来自于华为，百度，腾讯的程序员，设计师和区块链行业的早期参与者。由于共同的兴趣爱好走到一起，我们每个人在各自的领域都深耕多年，有着丰富的行业经验。</span>
@@ -61,6 +62,7 @@ export default {
   padding-left: 27px;
   font-size: 14px;
   color: #60686b;
+  line-height: 32px;
 }
 .kcfb{
   color: $primary;
