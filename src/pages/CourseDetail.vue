@@ -122,12 +122,41 @@
               >提交作业后可阅览他人作业</q-tooltip>
             </q-btn>
           </div>
-          <CommentReply
-            :ask="homeworkAsk"
-            :myanswer="myanswer"
-            :option="CROption"
-            v-show="isWorkFinished"
-          />
+          <div class="flex-col" v-show="isWorkFinished" style="margin:30px;">
+            <CommentReply
+              v-show="myanswer!==''"
+              answerType="myanswer"
+              :answer="myanswer"
+              :ask="homeworkAsk"
+              :option="CROption"
+              @needLogin="needLogin"
+            />
+            <q-separator
+              style="margin:20px 0 20px 0;background: rgba(0, 0, 0, 0.06);"
+              v-show="myanswer!==''"
+            />
+            <div class="flex-col" v-for="(item,index) in answers" :key="index">
+              <CommentReply
+                answerType="other"
+                :answer="item"
+                :ask="homeworkAsk"
+                :option="CROption"
+                @needLogin="needLogin"
+              />
+              <q-separator
+                style="margin:20px 0 20px 0;background: rgba(0, 0, 0, 0.06);"
+                v-if="index!==answers.length-1"
+              />
+            </div>
+            <q-pagination
+              v-if="pageMax > 1"
+              v-model="currentPage"
+              :max="pageMax"
+              :direction-links="true"
+              style="margin-top:30px;align-self:center;"
+              @input="paginationClick"
+            ></q-pagination>
+          </div>
         </q-tab-panel>
         <q-tab-panel name="appraise" class="flex-col">
           <div class="flex-col" v-show="showAppraise">
@@ -263,7 +292,14 @@ export default {
       },
       shareDialog: {
         show: false
-      }
+      },
+      answers:[],
+      zcClickNum: {},
+      currentPage: 1,
+      lastPage: 1,
+      offset: 0,
+      limit: 20,
+      pageMax: 1
     };
   },
   computed: {
@@ -316,15 +352,282 @@ export default {
       this.checkisPayed();
       this.isMyWorkFinish();
       this.findMyAppraises();
+      this.getAnswer();
     });
 
     bus.$on("logout", () => {
       this.isWorkFinished = false;
       this.showAppraise = true;
       this.isPayed = false;
+      this.homework=''
+      this.getAnswer();
     });
+    this.getAnswer();
   },
   methods: {
+    paginationClick(pageIndex) {
+      // console.log(this.lastPage, pageIndex);
+      if (this.lastPage === pageIndex) return;
+
+      this.offset += this.limit * (pageIndex - this.lastPage);
+      this.lastPage = pageIndex;
+      this.getAnswer();
+    },
+    getAnswer() {
+      if (typeof this.user.uuid === "undefined")
+      return
+      let timestamp = new Date().getTime() + this.global.requestExpireT;
+      let params = {
+        ask_id: this.course.uuid,
+        limit: this.limit + "",
+        offset: this.offset + "",
+        user_id : this.user.uuid
+      };
+
+      this.$axios
+        .get(this.global.api.backurl + "ask/getAnswer", {
+          params: params,
+          headers: {
+            "access-token": this.util.generateToken(
+              JSON.stringify(params),
+              timestamp
+            ),
+            timestamp2: timestamp
+          }
+        })
+        .then(response => {
+
+          if (response.status === 200 && response.data.code === 0) {
+            const total = response.data.data.total[0].total;
+            this.pageMax = Math.ceil(total / this.limit);
+            let data = response.data.data.answers;
+            //其它回答
+            for (let i = 0; i < data.length; i++) {
+              data[i].comments_show = false;
+              data[i].comment_new = "";
+              data[i].nickname = "";
+              data[i].zan = false;
+              data[i].cai = false;
+              for (let j = 0; j < data[i].comments.length; j++) {
+                data[i].comments[j].comments_show = false;
+                data[i].comments[j].comment_new = "";
+                data[i].comments[j].nickname = "";
+                data[i].comments[j].zan = false;
+              }
+            }
+            this.answers = data;
+            this.totalAnswerNum = total;
+
+            //我的回答
+            let dataMyans = response.data.data.myanswer;
+            if (dataMyans !== "") {
+              dataMyans.comments_show = false;
+              dataMyans.comment_new = "";
+              dataMyans.nickname = this.user.nick;
+              dataMyans.zan = false;
+              dataMyans.cai = false;
+              for (let j = 0; j < dataMyans.comments.length; j++) {
+                dataMyans.comments[j].comments_show = false;
+                dataMyans.comments[j].comment_new = "";
+                dataMyans.comments[j].nickname = "";
+                dataMyans.comments[j].zan = false;
+              }
+
+              this.myanswer = dataMyans;
+            } else {
+              this.myanswer = ""; //以便退出后不显示我的回答
+            }
+
+            this.getNicknames();
+            this.getZanCai();
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    getZanCai() {
+
+      let ans_com_ids = [];
+
+      for (let i = 0; i < this.answers.length; i++) {
+        ans_com_ids.push(this.answers[i].uuid);
+        for (let j = 0; j < this.answers[i].comments.length; j++) {
+          ans_com_ids.push(this.answers[i].comments[j].uuid);
+        }
+      }
+
+      if (this.myanswer !== "") {
+        ans_com_ids.push(this.myanswer.uuid);
+        for (let j = 0; j < this.myanswer.comments.length; j++) {
+          ans_com_ids.push(this.myanswer.comments[j].uuid);
+        }
+      }
+
+      // console.log(999,ans_com_ids)
+      if (ans_com_ids.length === 0) {
+        return;
+      }
+
+      let timestamp = new Date().getTime() + this.global.requestExpireT;
+      let params = {
+        user_id: this.user.uuid,
+        ask_id: this.course.uuid,
+        ans_com_id: encodeURIComponent(JSON.stringify(ans_com_ids))
+      };
+      this.$axios
+        .get(this.global.api.backurl + "ask/getZanCai", {
+          params: params,
+          headers: {
+            "access-token": this.util.generateToken(
+              JSON.stringify(params),
+              timestamp
+            ),
+            timestamp2: timestamp
+          }
+        })
+        .then(response => {
+          if (response.status === 200 && response.data.code === 0) {
+            let data = response.data.data;
+
+            let cutZanCais = {};
+            for (let i = 0; i < data.length; i++) {
+              cutZanCais[data[i].ans_com_id] = {
+                zan: data[i].zan,
+                cai: data[i].cai
+              };
+            }
+
+            //我的回答-赞踩-赋值
+            if (this.myanswer !== "") {
+              if (typeof cutZanCais[this.myanswer.uuid] !== "undefined") {
+                this.myanswer.zan = cutZanCais[this.myanswer.uuid].zan;
+                this.myanswer.cai = cutZanCais[this.myanswer.uuid].cai;
+              } else {
+                this.myanswer.zan = false;
+                this.myanswer.cai = false;
+              }
+
+              // console.log(334,this.myanswer)
+
+              for (let j = 0; j < this.myanswer.comments.length; j++) {
+                if (
+                  typeof cutZanCais[this.myanswer.comments[j].uuid] !==
+                  "undefined"
+                ) {
+                  this.myanswer.comments[j].zan =
+                    cutZanCais[this.myanswer.comments[j].uuid].zan;
+                  // this.myanswer.comments[j].cai =
+                  // cutZanCais[this.myanswer.comments[j].uuid].cai;
+                } else {
+                  this.myanswer.comments[j].zan = false;
+                  // this.myanswer.comments[j].cai = false;
+                }
+              }
+            }
+
+
+            //其它回答--赞踩-赋值
+            for (let i = 0; i < this.answers.length; i++) {
+              if (typeof cutZanCais[this.answers[i].uuid] !== "undefined") {
+                this.answers[i].zan = cutZanCais[this.answers[i].uuid].zan;
+                this.answers[i].cai = cutZanCais[this.answers[i].uuid].cai;
+              } else {
+                this.answers[i].zan = false;
+                this.answers[i].cai = false;
+              }
+
+              for (let j = 0; j < this.answers[i].comments.length; j++) {
+                if (
+                  typeof cutZanCais[this.answers[i].comments[j].uuid] !==
+                  "undefined"
+                ) {
+                  this.answers[i].comments[j].zan =
+                    cutZanCais[this.answers[i].comments[j].uuid].zan;
+                  // this.answers[i].comments[j].cai = cutZanCais[this.answers[i].comments[j].uuid].cai;
+                } else {
+                  this.answers[i].comments[j].zan = false;
+                  // this.answers[i].comments[j].cai = false;
+                }
+              }
+            }
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    getNicknames() {
+      let timestamp = new Date().getTime() + this.global.requestExpireT;
+
+      let userids = [];
+      for (let i = 0; i < this.answers.length; i++) {
+        userids.push(this.answers[i].user_id);
+        for (let j = 0; j < this.answers[i].comments.length; j++) {
+          userids.push(this.answers[i].comments[j].user_id);
+        }
+      }
+
+      if (this.myanswer !== "") {
+        userids.push(this.myanswer.user_id);
+        for (let j = 0; j < this.myanswer.comments.length; j++) {
+          userids.push(this.myanswer.comments[j].user_id);
+        }
+      }
+
+
+      if (userids.length === 0) return;
+
+      let params = {
+        uuid: encodeURIComponent(JSON.stringify(userids))
+      };
+      this.$axios
+        .get(this.global.api.backurl + "user/getNames", {
+          params: params,
+          headers: {
+            "access-token": this.util.generateToken(
+              JSON.stringify(params),
+              timestamp
+            ),
+            timestamp2: timestamp
+          }
+        })
+        .then(response => {
+          if (response.status === 200 && response.data.code === 0) {
+            let data = response.data.data;
+
+            let nicks = {};
+            for (let i = 0; i < data.length; i++) {
+              nicks[data[i].uuid] = data[i].nick;
+            }
+
+            //其它回答+评论-昵称赋值
+            for (let i = 0; i < this.answers.length; i++) {
+              this.answers[i].nickname = nicks[this.answers[i].user_id];
+
+              for (let j = 0; j < this.answers[i].comments.length; j++) {
+                this.answers[i].comments[j].nickname =
+                  nicks[this.answers[i].comments[j].user_id];
+              }
+            }
+
+            //我的回答+评论-昵称-赋值
+            if (this.myanswer !== "") {
+              for (let j = 0; j < this.myanswer.comments.length; j++) {
+                this.myanswer.comments[j].nickname =
+                  nicks[this.myanswer.comments[j].user_id];
+              }
+            }
+
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    needLogin() {
+      this.loginDialog.show = true;
+    },
     courseShare() {
       this.shareDialog.tx =
         "https://www.shenlianclass.com/#/CourseDetail?courseid=" +
@@ -537,8 +840,9 @@ export default {
         return;
       }
 
+
       if (!this.isPayed) {
-        toast("请先购买学习完课程后再完成作业");
+        toast("你还未学习这门课程哦！");
         return;
       }
 
@@ -576,6 +880,7 @@ export default {
           if (response.status === 200 && response.data.code === 0) {
             // toast("提交成功");
             this.isWorkFinished = true;
+            
 
             toast(
               "回答成功,已到账奖励：" +
@@ -619,7 +924,7 @@ export default {
       let filetype = this.course.res_name.substring(
         this.course.res_name.length - 3
       );
-      return this.util.getFileIcon(filetype)
+      return this.util.getFileIcon(filetype);
     },
     getStudyProgress() {
       if (typeof this.user.uuid === "undefined") {
