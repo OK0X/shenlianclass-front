@@ -6,10 +6,67 @@
           src="statics/test-logo.png"
           style="width:131px;height:51px;align-self: center;margin-left:20px;"
         />
-        <q-input bottom-slots v-model="searchText" :dense="true" class="search-bar">
+        <q-input
+          bottom-slots
+          v-model="searchText"
+          :dense="true"
+          class="search-bar"
+          @input="getSearch"
+        >
           <template v-slot:append>
             <q-icon name="search" />
           </template>
+          <q-menu fit no-focus>
+            <div style="padding:16px;color:gray" v-show="searchText.length===0">你还未输入内容哦!</div>
+            <div
+              style="padding:16px;color:gray"
+              v-show="searchText.length>0&&searchText.length<3"
+            >输入内容太少哦!</div>
+            <q-list style="min-width: 100px" v-show="searchText.length>=3">
+              <q-linear-progress indeterminate style="height:2px;" v-show="searchProgressShow" />
+              <div style="padding:8px 16px;" class="flex-col">
+                <span style="color:gray">课程</span>
+                <span style="color:gray;padding-left:16px;" v-show="courseSearch.length===0">未找到相关课程</span>
+                <q-item
+                  clickable
+                  style="min-height:0;padding: 4px 16px;"
+                  v-for="(item,index) in courseSearch"
+                  :key="index"
+                  @click="searchGoto(1,item)"
+                >
+                  <q-item-section>{{item.tx}}</q-item-section>
+                </q-item>
+              </div>
+              <q-separator />
+              <div style="padding:8px 16px;" class="flex-col">
+                <span style="color:gray">问答</span>
+                <span style="color:gray;padding-left:16px;" v-show="askSearch.length===0">未找到相关问答</span>
+                <q-item
+                  clickable
+                  style="min-height:0;padding: 4px 16px;"
+                  v-for="(item,index) in askSearch"
+                  :key="index"
+                  @click="searchGoto(2,item)"
+                >
+                  <q-item-section>{{item.tx}}</q-item-section>
+                </q-item>
+              </div>
+              <q-separator />
+              <div style="padding:8px 16px;" class="flex-col">
+                <span style="color:gray">资源</span>
+                <span style="color:gray;padding-left:16px;" v-show="resSearch.length===0">未找到相关资源</span>
+                <q-item
+                  clickable
+                  style="min-height:0;padding: 4px 16px;"
+                  v-for="(item,index) in resSearch"
+                  :key="index"
+                  @click="searchGoto(3,item)"
+                >
+                  <q-item-section>{{item.tx}}</q-item-section>
+                </q-item>
+              </div>
+            </q-list>
+          </q-menu>
         </q-input>
         <img src="statics/wx-gh-qrcode.jpg" style="width:90px;height:90px;align-self: center;" />
         <div style="align-self: center;margin-left:50px;">
@@ -110,7 +167,11 @@ export default {
       loginDialog: {
         show: false,
         title: "快捷登陆"
-      }
+      },
+      courseSearch: [],
+      askSearch: [],
+      resSearch: [],
+      searchProgressShow: false
     };
   },
   computed: {
@@ -161,9 +222,7 @@ export default {
             return -1;
         }
       },
-      set: function(newValue) {
-        
-      }
+      set: function(newValue) {}
     }
   },
   mounted() {},
@@ -185,8 +244,7 @@ export default {
       });
     },
     showTab(index) {
-      if(this.tabIndex === index)
-      return
+      if (this.tabIndex === index) return;
       this.tabIndex = index;
       switch (index) {
         case 0:
@@ -212,6 +270,111 @@ export default {
           this.$router.push("/");
           break;
       }
+    },
+    getSearch(tx) {
+      if (tx.length >= 3) {
+        this.searchProgressShow = true;
+        let timestamp = new Date().getTime() + this.global.requestExpireT;
+        let params = {
+          tx: tx
+        };
+        this.$axios
+          .get(this.global.api.backurl + "other/search", {
+            params: params,
+            headers: {
+              "access-token": this.util.generateToken(
+                JSON.stringify(params),
+                timestamp
+              ),
+              timestamp2: timestamp
+            }
+          })
+          .then(response => {
+            this.searchProgressShow = false;
+            // console.log(333, response);
+            if (response.status === 200 && response.data.code === 0) {
+              let data = response.data.data;
+              this.courseSearch = [];
+              this.askSearch = [];
+              this.resSearch = [];
+              for (let i = 0; i < data.length; i++) {
+                switch (data[i].type) {
+                  case 1:
+                    this.courseSearch.push(data[i]);
+                    break;
+                  case 2:
+                    this.askSearch.push(data[i]);
+                    break;
+                  case 3:
+                    this.resSearch.push(data[i]);
+                    break;
+                  default:
+                    break;
+                }
+              }
+            }
+          })
+          .catch(error => {
+            //console.log(error);
+          });
+      }
+    },
+    searchGoto(type, item) {
+      switch (type) {
+        case 1:
+          this.$router.push({
+            path: "/CourseDetail",
+            query: {
+              courseid: item.uuid
+            }
+          });
+          break;
+        case 2:
+          this.getAskDetailById(item.uuid);
+          break;
+        case 3:
+          this.$router.push({
+            path: "/ResourceDetail",
+            query: {
+              uuid: item.uuid
+            }
+          });
+          break;
+        default:
+          break;
+      }
+    },
+    getAskDetailById(askid) {
+      let timestamp = new Date().getTime() + this.global.requestExpireT;
+      let params = {
+        uuid: askid
+      };
+      this.util.loadingShow(this)
+      this.$axios
+        .get(this.global.api.backurl + "ask/getAskById", {
+          params: params,
+          headers: {
+            "access-token": this.util.generateToken(
+              JSON.stringify(params),
+              timestamp
+            ),
+            timestamp2: timestamp
+          }
+        })
+        .then(response => {
+          this.util.loadingHide(this)
+          if (response.status === 200 && response.data.code === 0) {
+            this.$router.push({
+              path: "/AskDetail",
+              query: {
+                arg: response.data.data[0]
+              }
+            });
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
     }
   }
 };

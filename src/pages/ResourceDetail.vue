@@ -76,6 +76,11 @@ export default {
     }
   },
   mounted() {
+    if (typeof this.$route.query.uuid !== "undefined") {
+      this.getResById(this.$route.query.uuid);
+      return;
+    }
+
     if (this.$route.query.arg === "[object Object]") {
       this.resDetail = this.global.routeCache.ressouceDetail;
     } else {
@@ -86,13 +91,41 @@ export default {
     this.checkisPayed();
   },
   methods: {
-    setFileIcon(){
+    getResById(uuid) {
+      let timestamp = new Date().getTime() + this.global.requestExpireT;
+      let params = {
+        uuid: uuid
+      };
+      // this.util.loadingShow(this)
+      this.$axios
+        .get(this.global.api.backurl + "resourcedown/getResById", {
+          params: params,
+          headers: {
+            "access-token": this.util.generateToken(
+              JSON.stringify(params),
+              timestamp
+            ),
+            timestamp2: timestamp
+          }
+        })
+        .then(response => {
+          // this.util.loadingHide(this)
+          if (response.status === 200 && response.data.code === 0) {
+            this.resDetail = response.data.data[0];
+            this.checkisPayed();
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    setFileIcon() {
       // console.log(111,this.resDetail)
-      if(this.resDetail==='')return ''
+      if (this.resDetail === "") return "";
       let filetype = this.resDetail.filename.substring(
         this.resDetail.filename.length - 3
       );
-      return this.util.getFileIcon(filetype)
+      return this.util.getFileIcon(filetype);
     },
     checkisPayed() {
       if (
@@ -159,37 +192,37 @@ export default {
     },
     addDownNum() {
       let timestamp = new Date().getTime() + this.global.requestExpireT;
-      this.$axios
-        .put(
-          this.global.api.backurl + "resourcedown/addDownNum?uuid=" + this.resDetail.uuid,
-          null,
-          {
-            headers: {
-              "access-token": this.util.generateToken(
-                null,
-                timestamp
-              ),
-              timestamp2: timestamp
-            }
+      this.$axios.put(
+        this.global.api.backurl +
+          "resourcedown/addDownNum?uuid=" +
+          this.resDetail.uuid,
+        null,
+        {
+          headers: {
+            "access-token": this.util.generateToken(null, timestamp),
+            timestamp2: timestamp
           }
-        )
-        // .then(response => {
-        //   //console.log(response);
-        //   // if (response.status === 200 && response.data.code === 0) {
-            
-        //   // }
-        // });
+        }
+      );
+      // .then(response => {
+      //   //console.log(response);
+      //   // if (response.status === 200 && response.data.code === 0) {
+
+      //   // }
+      // });
     },
     updateUserCoin() {
       let newCoin = this.user.coin - parseInt(this.resDetail.coin);
       let timestamp = new Date().getTime() + this.global.requestExpireT;
       let params = {
         coin: newCoin,
-        coinChange:this.resDetail.coin
+        coinChange: this.resDetail.coin
       };
       this.$axios
         .put(
-          this.global.api.backurl + "user/dwonloadResource?uuid=" + this.user.uuid,
+          this.global.api.backurl +
+            "user/dwonloadResource?uuid=" +
+            this.user.uuid,
           params,
           {
             headers: {
