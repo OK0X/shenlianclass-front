@@ -21,7 +21,8 @@ export default {
   },
   mounted() {
     this.checkLogin();
-    this.getConfig()
+    this.getConfig();
+    
   },
   methods: {
     checkLogin() {
@@ -30,24 +31,27 @@ export default {
           this.user = JSON.parse(value);
 
           this.getUserInfo();
-        } else{
-          let data={
-            avatar:''
-          }
+        } else {
+          let data = {
+            avatar: ""
+          };
           this.user = data;
         }
       });
     },
     getUserInfo() {
       let timestamp = new Date().getTime() + this.global.requestExpireT;
-      let params={
-        uuid:this.user.uuid
-      }
+      let params = {
+        uuid: this.user.uuid
+      };
       this.$axios
         .get(this.global.api.backurl + "user/getinfo", {
           params: params,
           headers: {
-            "access-token": this.util.generateToken(JSON.stringify(params), timestamp),
+            "access-token": this.util.generateToken(
+              JSON.stringify(params),
+              timestamp
+            ),
             timestamp2: timestamp
           }
         })
@@ -55,13 +59,13 @@ export default {
           //console.log(333,response);
           if (response.status === 200 && response.data.code === 0) {
             let data = response.data.data;
-            data.avatar=this.global.api.aliyunosshostpubread+'/'+data.uuid+'.jpg'
-            this.user=data
-            localforage.setItem("user",JSON.stringify(this.user))
+            data.avatar =
+              this.global.api.aliyunosshostpubread + "/" + data.uuid + ".jpg";
+            this.user = data;
+            localforage.setItem("user", JSON.stringify(this.user));
           }
         })
         .catch(error => {
-
           //console.log(error);
         });
     },
@@ -76,14 +80,39 @@ export default {
           }
         })
         .then(response => {
-          //console.log(response);
+          // console.log(999,response);
           if (response.status === 200 && response.data.code === 0) {
             this.global.backendConfig = response.data.data;
+            if(!this.util.isEmpty(this.global.backendConfig.notify)){
+              this.showNotif(this.global.backendConfig.notify)
+            }
+            
           }
         })
         .catch(error => {
           //console.log(error);
         });
+    },
+    showNotif(tx) {
+      this.$q.notify({
+        color: "negative",
+        // textColor,
+        icon: "report_problem",
+        message: tx,
+        position: "bottom-right",
+        // avatar,
+        // multiLine,
+        actions: [
+          {
+            label: "我知道了",
+            color: "yellow",
+            handler: () => {
+              // console.log('wooow')
+            }
+          }
+        ],
+        timeout: 0
+      });
     }
   }
 };
