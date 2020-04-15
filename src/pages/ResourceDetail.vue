@@ -62,7 +62,8 @@ export default {
       loginDialog: {
         show: false,
         title: "快捷登陆"
-      }
+      },
+      isResPayed:false
     };
   },
   computed: {
@@ -89,6 +90,7 @@ export default {
     }
 
     this.checkisPayed();
+    this.checkResIsPayed()
   },
   methods: {
     getResById(uuid) {
@@ -113,6 +115,7 @@ export default {
           if (response.status === 200 && response.data.code === 0) {
             this.resDetail = response.data.data[0];
             this.checkisPayed();
+            this.checkResIsPayed()
           }
         })
         .catch(error => {
@@ -159,9 +162,36 @@ export default {
             }
           }
         })
-        .catch(error => {
-          //console.log(error);
-        });
+
+    },
+    checkResIsPayed(){
+      if (typeof this.user.uuid === "undefined") {
+        return;
+      }
+      let timestamp = new Date().getTime() + this.global.requestExpireT;
+      let params = {
+        user_id: this.user.uuid,
+        resource_id: this.resDetail.uuid
+      };
+      this.$axios
+        .get(this.global.api.backurl + "resourcedown/isPayed", {
+          params: params,
+          headers: {
+            "access-token": this.util.generateToken(
+              JSON.stringify(params),
+              timestamp
+            ),
+            timestamp2: timestamp
+          }
+        })
+        .then(response => {
+          // console.log(999,response)
+          if (response.status === 200 && response.data.code === 0) {
+            if (response.data.data.length > 0) {
+              this.isResPayed = true;
+            }
+          }
+        })
     },
     gotoCourse(courseid) {
       this.$router.push({
@@ -179,7 +209,9 @@ export default {
       }
       if (this.coursePayed) {
         toast("您已购买过该课程，已免积分下载");
-      } else {
+      }else if(this.isResPayed){
+        //已下载过再次下载无需积分
+      }else {
         if (this.user.coin - parseFloat(this.resDetail.coin) < 0) {
           toast("您的积分余额不足，请在个人中心充值后再进行下载");
           return;
@@ -216,7 +248,8 @@ export default {
       let timestamp = new Date().getTime() + this.global.requestExpireT;
       let params = {
         coin: newCoin,
-        coinChange: this.resDetail.coin
+        coinChange: this.resDetail.coin,
+        resource_id:this.resDetail.uuid
       };
       this.$axios
         .put(
@@ -237,6 +270,7 @@ export default {
         .then(response => {
           //console.log(response);
           if (response.status === 200 && response.data.code === 0) {
+            this.isResPayed = true;
             let userData = JSON.parse(JSON.stringify(this.user));
             userData.coin = newCoin;
             this.user = userData;

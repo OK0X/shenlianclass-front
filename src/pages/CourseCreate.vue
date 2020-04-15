@@ -49,7 +49,7 @@
     </div>
     <div class="page-content" v-if="typeof user.uuid !== 'undefined'&&user.role!==0">
       <span class="tx-bold">课程名称：</span>
-      <q-input v-model="classname" :dense="true" style="width:300px;" counter maxlength="20" />
+      <q-input v-model="classname" :dense="true" style="width:300px;" counter maxlength="25" />
       <span class="tx-bold" style="margin-top:10px;">课程封面：(请上传尺寸为530×320像素的jpg图片)</span>
       <input type="file" accept="image/*" style="margin-top:10px;" @change="converFileChange" />
       <img :src="imgsrc" style="margin-top:10px;width:530px;height:320px;" v-show="imgShow" />

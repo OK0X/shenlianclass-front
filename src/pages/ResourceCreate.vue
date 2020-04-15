@@ -23,7 +23,7 @@
         style="width:150px;"
         v-show="resType==='course'"
       />
-      <q-input v-model="resName" placeholder="资源名称" counter maxlength="20" />
+      <q-input v-model="resName" placeholder="资源名称" counter maxlength="50" />
       <VueEditor
         v-model="resDescribe"
         useCustomImageHandler

@@ -41,7 +41,7 @@
     <div class="white-block" style="margin-bottom:50px;">
       <span>积分明细</span>
       <!-- <q-separator style="margin-top:10px;" /> -->
-      <q-table title :data="coinLogs" :columns="columns" row-key="name" flat bordered style="margin-top:10px;" :pagination.sync="pagination"/>
+      <q-table title :data="coinLogs" :columns="columns" row-key="name" flat bordered style="margin-top:10px;" />
     </div>
     <MyFooter />
     <CropperDialog :data="cropperDialog" @uploadImgOK="uploadImgOK" />
@@ -89,7 +89,7 @@ export default {
       out_trade_no: "",
       chargeNum: 0,
       columns: [
-        { name: "event", label: "名称", field: "event", align: "left" },
+        { name: "event", label: "消费类型", field: "event", align: "left" },
         { name: "change", label: "数量", field: "change", align: "center" },
         {
           name: "create_at",
@@ -99,13 +99,13 @@ export default {
         }
       ],
       coinLogs: [],
-      pagination: {
-        sortBy: 'desc',
-        descending: false,
-        page: 2,
-        rowsPerPage: 3,
-        rowsNumber: 0
-      },
+      // pagination: {
+      //   sortBy: 'desc',
+      //   descending: false,
+      //   page: 2,
+      //   rowsPerPage: 3,
+      //   rowsNumber: 0
+      // },
       feedbackDialog: {
         show: false,
         title: "支付问题反馈"
@@ -166,7 +166,7 @@ export default {
         .then(response => {
           if (response.status === 200 && response.data.code === 0) {
             this.coinLogs = response.data.data;
-            this.pagination.rowsNumber=this.coinLogs.length
+            // this.pagination.rowsNumber=this.coinLogs.length
           }
         });
     },
