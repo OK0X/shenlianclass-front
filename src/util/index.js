@@ -116,7 +116,7 @@ function getShortTime(date) {
   } else {
     //超过3天
     var date = new Date(date)
-    return date.getFullYear() + "/" + (date.getMonth() + 1) + "/" + date.getDate();
+    return date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate();
   }
 }
 
