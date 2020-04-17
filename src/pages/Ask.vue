@@ -17,7 +17,7 @@
       </q-tabs>
       <q-tab-panels v-model="tab" animated>
         <q-tab-panel name="all" class="flex-col">
-          <AskItem :asks="asks" style="padding:0 16px 0 16px;"/>
+          <AskItem :asks="asks" />
           <q-pagination
             v-if="pageMaxAll > 1"
             v-model="currentPageAll"
@@ -28,7 +28,7 @@
           ></q-pagination>
         </q-tab-panel>
         <q-tab-panel name="highcoin" class="flex-col">
-          <AskItem :asks="awardasks" style="padding:0 16px 0 16px;"/>
+          <AskItem :asks="awardasks" />
           <q-pagination
             v-if="pageMaxHcoin > 1"
             v-model="currentPageHcoin"
@@ -39,7 +39,7 @@
           ></q-pagination>
         </q-tab-panel>
         <q-tab-panel name="myask" class="flex-col">
-          <AskItem :asks="myasks" style="padding:0 16px 0 16px;"/>
+          <AskItem :asks="myasks" />
           <q-pagination
             v-if="pageMaxMy > 1"
             v-model="currentPageMy"

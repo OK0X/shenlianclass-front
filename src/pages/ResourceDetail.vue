@@ -11,7 +11,7 @@
             <span class="mytx-tip">
               所需积分：
               <span style="font-size: 16px;color: orange;">{{resDetail.coin}}</span>
-              <span>（已购买课程可免积分下载）</span>
+              <span v-show="resDetail.course_id!==''">（已购买课程可免积分下载）</span>
             </span>
             <span class="mytx-tip" style="margin-left: 20px;" v-show="resDetail.course_id!==''">
               所属课程：

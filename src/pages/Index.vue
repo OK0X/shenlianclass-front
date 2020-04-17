@@ -18,8 +18,11 @@
       </q-carousel>
     </div>
     <div class="class-list">
-      <span style="color:#1f2328;font-size:24px;margin-top:60px;">精品课程</span>
-      <q-separator />
+      <div style="display:flex;margin-top:60px;">
+        <div class="myseperator"></div>
+        <span style="color:#1f2328;font-size:24px;">精品课程</span>
+        <div class="myseperator"></div>
+      </div>
       <div class="card-list">
         <div
           class="class-card"
@@ -53,14 +56,20 @@
       </div>
     </div>
     <div class="class-list">
-      <span style="color:#1f2328;font-size:24px;margin-top:30px;">热门问答</span>
-      <q-separator />
-      <AskItem :asks="hotasks" style="margin: 30px 0 30px 0;padding: 25px"/>
+      <div style="display:flex;margin-top:30px;">
+        <div class="myseperator"></div>
+        <span style="color:#1f2328;font-size:24px;">热门问答</span>
+        <div class="myseperator"></div>
+      </div>
+      <AskItem :asks="hotasks" style="margin: 30px 0 30px 0;" />
     </div>
     <div class="class-list" style="margin:30px 0 50px 0;">
-      <span style="color:#1f2328;font-size:24px;">热门资源</span>
-      <q-separator />
-      <ResourceItem :res="hotRes" style="margin: 30px 0 30px 0;padding: 20px"/>
+      <div style="display:flex;">
+        <div class="myseperator"></div>
+        <span style="color:#1f2328;font-size:24px;">热门资源</span>
+        <div class="myseperator"></div>
+      </div>
+      <ResourceItem :res="hotRes" style="margin: 30px 0 30px 0;padding: 20px" />
     </div>
     <MyFooter />
   </q-page>
@@ -92,15 +101,20 @@ export default {
     getCourses() {
       let timestamp = new Date().getTime() + this.global.requestExpireT;
 
-      // let params = {
-      //   status: 2 + "" //正式发布改成审核通过的课程
-      // };
+      let params = {
+        courseNum: "10",
+        askNum: "10",
+        resNum: "10"
+      };
 
       this.$axios
         .get(this.global.api.backurl + "course/getIndexData", {
-          params: null,
+          params: params,
           headers: {
-            "access-token": this.util.generateToken(null, timestamp),
+            "access-token": this.util.generateToken(
+              JSON.stringify(params),
+              timestamp
+            ),
             timestamp2: timestamp
           }
         })
@@ -129,6 +143,10 @@ export default {
   width: 100%;
   height: 400px;
   overflow: hidden;
+  max-width: 1200px;
+  // border-radius: 5px;
+  margin-top: 30px;
+  box-shadow: 0px 26px 24px 0 #d9dfe9;
 }
 .custom-caption {
   text-align: center;
@@ -156,7 +174,7 @@ export default {
   height: 215px;
   background: #fff;
   box-shadow: 0 2px 5px 0 #d9dfe9;
-  margin: 0 22px 25px 0;
+  margin: 0 18px 25px 0;
   display: flex;
   flex-direction: column;
 }
@@ -222,5 +240,12 @@ export default {
   color: #55595c;
   font-size: 12px;
   text-align: center;
+}
+.myseperator {
+  background: rgba(0, 0, 0, 0.06);
+  height: 1px;
+  flex: 1;
+  align-self: center;
+  margin: 10px;
 }
 </style>

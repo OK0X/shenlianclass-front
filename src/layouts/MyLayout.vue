@@ -382,6 +382,7 @@ export default {
 <style scoped>
 .myheader {
   background-color: white;
+  /* background: linear-gradient(#B2CCFF, #FFFFFF); */
   /* box-shadow: 0px 2px 9px 0px #1918184a; */
   color: black;
   height: 186px;

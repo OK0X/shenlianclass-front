@@ -45,6 +45,7 @@ export default {
   display: flex;
   flex-direction: column;
   background: white;
+  padding: 25px 35px;
 }
 .ask-tx {
   color: #3066b3;
