@@ -91,7 +91,7 @@ export default {
       let timestamp = new Date().getTime() + this.global.requestExpireT;
 
       let params = {
-        courseNum: "10",
+        courseNum: "50",
         askNum: "10",
         resNum: "10"
       };
