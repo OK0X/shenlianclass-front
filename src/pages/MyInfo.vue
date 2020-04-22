@@ -415,10 +415,5 @@ export default {
   margin-top: 10px;
   width: 72px;
 }
-.edit-icon {
-  width: 23px;
-  height: 23px;
-  margin-left: 10px;
-  cursor: pointer;
-}
+
 </style>

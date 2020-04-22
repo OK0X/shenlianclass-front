@@ -2,19 +2,7 @@
   <q-page class="mypage">
     <div class="gallery">
       <q-carousel arrows animated v-model="slide" height="400px" :autoplay="5000" :infinite="true">
-        <q-carousel-slide name="first" img-src="statics/test-gallery1.jpg"></q-carousel-slide>
-        <!-- <q-carousel-slide name="second" img-src="https://cdn.quasar.dev/img/parallax1.jpg">
-          <div class="absolute-bottom custom-caption">
-            <div class="text-h2">Second stop</div>
-            <div class="text-subtitle1">Famous City</div>
-          </div>
-        </q-carousel-slide>
-        <q-carousel-slide name="third" img-src="https://cdn.quasar.dev/img/parallax2.jpg">
-          <div class="absolute-bottom custom-caption">
-            <div class="text-h2">Third stop</div>
-            <div class="text-subtitle1">Famous Bridge</div>
-          </div>
-        </q-carousel-slide>-->
+        <q-carousel-slide :name="index" :img-src="global.api.aliyunosshostpubread + '/' + item.carouselimg" v-for="(item,index) in bannerCourses" :key="index" style="cursor: pointer;" @click="toDetail(item)"></q-carousel-slide>
       </q-carousel>
     </div>
     <div class="class-list">
@@ -88,10 +76,11 @@ export default {
   },
   data() {
     return {
-      slide: "first",
+      slide: 0,
       courses: [],
       hotasks: [],
-      hotRes: []
+      hotRes: [],
+      bannerCourses:[]
     };
   },
   mounted() {
@@ -121,11 +110,20 @@ export default {
         .then(response => {
           //console.log(response);
           if (response.status === 200 && response.data.code === 0) {
-            this.courses = response.data.data.courses;
+            this.setCourse(response.data.data.courses)
             this.hotasks = response.data.data.asks;
             this.hotRes = response.data.data.ress;
           }
         });
+    },
+    setCourse(allCourse){
+      for(const course of allCourse){
+        if(course.carousel!==0 && course.carousel > new Date().getTime()){
+          this.bannerCourses.push(course)
+        }else{
+          this.courses.push(course)
+        }
+      }
     },
     toDetail(item) {
       this.$router.push({

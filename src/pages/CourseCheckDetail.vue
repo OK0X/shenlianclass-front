@@ -1,13 +1,26 @@
 <template>
   <q-page class="mypage">
     <div class="buywatch">
-      <img :src="global.api.aliyunosshostpubread + '/' + course.converimg" class="course-cover" onerror="src = 'statics/default-conver.png'"/>
+      <img
+        :src="global.api.aliyunosshostpubread + '/' + course.converimg"
+        class="course-cover"
+        onerror="src = 'statics/default-conver.png'"
+      />
       <div class="course-summary">
-        <span style="font-size:24px;color:#1f2328;">{{course.classname}}</span>
-        <span>{{course.classsummary}}</span>
+        <div style="display:flex;">
+          <span style="font-size:24px;color:#1f2328;">{{course.classname}}</span>
+          <img src="statics/edit.png" class="edit-icon" @click="editCourseName" />
+        </div>
+        <div style="display:flex;">
+          <span>{{course.classsummary}}</span>
+          <img src="statics/edit.png" class="edit-icon" @click="editClasssummary" />
+        </div>
         <div class="course-price">
           <div style="align-self: center;margin-left:10px;font-size:24px;color: orange;">
-            <span v-show="course.classprice!==''">{{course.classprice}}元</span>
+            <div style="display:flex;">
+              <span v-show="course.classprice!==''">{{course.classprice}}元</span>
+              <img src="statics/edit.png" class="edit-icon" @click="editCoursePrice" />
+            </div>
             <span v-show="course.classprice!==''&&course.coin!==''">+</span>
             <span v-show="course.coin!==''">{{course.coin}}积分</span>
           </div>
@@ -17,7 +30,12 @@
           </div>
         </div>
         <span style="margin-top:20px;">学习人数：{{course.studynum}}人</span>
-        <q-btn unelevated :label="util.getCourseStatus(course.status)" class="study" color="primary" />
+        <q-btn
+          unelevated
+          :label="util.getCourseStatus(course.status)"
+          class="study"
+          color="primary"
+        />
       </div>
     </div>
     <div class="detail">
@@ -37,6 +55,22 @@
       <q-tab-panels v-model="tab" animated>
         <q-tab-panel name="detail">
           <div v-html="course.classdetail"></div>
+          <img src="statics/edit.png" class="edit-icon" @click="editDetailShow=!editDetailShow" />
+          <VueEditor
+            v-model="classdetail"
+            useCustomImageHandler
+            @image-added="handleImageAdded"
+            style="height: 580px;width:100%;margin-bottom:50px;"
+            v-show="editDetailShow"
+          />
+          <q-btn
+            unelevated
+            color="primary"
+            label="提交修改"
+            style="width:100px;margin:10px;align-self:center;"
+            @click="editClassdetail"
+            v-show="editDetailShow"
+          />
         </q-tab-panel>
         <q-tab-panel name="chapters">
           <q-timeline color="secondary">
@@ -64,6 +98,34 @@
         </q-tab-panel>
       </q-tab-panels>
     </div>
+    <div class="detail" style="padding:16px;">
+      <span style="font-weight:bold;">首页Banner设置</span>
+      <q-separator style="margin:10px 0 10px 0;" />
+      <span>Banner展示时间(单位:天 ,取消填: 0)：</span>
+      <q-input v-model="bannertime" dense style="width:300px" />
+      <span style="margin-top:20px;">副标题：</span>
+      <q-input v-model="subtitle" dense style="width:300px" counter maxlength="25" />
+      <span style="margin-top:10px;">课程封面：(请上传尺寸为1200×400像素的jpg图片)</span>
+      <input type="file" accept="image/*" style="margin-top:10px;" @change="converFileChange" />
+      <img :src="imgsrc" style="margin-top:10px;width:1168px;height:400px;" v-show="imgShow" />
+      <div>
+        <button
+          type="button"
+          style="width:72px;margin-top:10px;"
+          @click="uploadBannerImg"
+          :disabled="bannerUploadDisable"
+        >开始上传</button>
+        <span style="margin-left:10px;">上传进度：{{bannerUProgress}}</span>
+        <span style="color:green;" v-show="bannerUProgress === '100%'">(已保存上传记录,相同图片无需再次上传)</span>
+      </div>
+      <q-btn
+        unelevated
+        color="primary"
+        label="提交修改"
+        style="width:100px;margin:10px;align-self:center;"
+        @click="setBanner"
+      />
+    </div>
     <q-btn
       unelevated
       color="primary"
@@ -89,10 +151,12 @@
 /* eslint-disable */
 import MyFooter from "../components/MyFooter";
 import ShareDialog from "../components/ShareDialog";
+import { VueEditor } from "vue2-editor";
 export default {
   components: {
     MyFooter,
-    ShareDialog
+    ShareDialog,
+    VueEditor
   },
   computed: {
     user: {
@@ -111,34 +175,207 @@ export default {
       videos: [],
       shareDialog: {
         show: false
-      }
+      },
+      bannertime: "",
+      subtitle: "",
+      imgsrc: "",
+      imgShow: false,
+      bannerUProgress: "0%",
+      bannerUploadDisable: true,
+      bannerImgName: "",
+      bannerImgFile: null,
+      classdetail: "",
+      editDetailShow:false
     };
   },
   mounted() {
-    if (
-      this.$route.query.arg === "[object Object]"
-    ) {
+    if (this.$route.query.arg === "[object Object]") {
       this.course = this.global.routeCache.courseCheckDetail;
     } else {
       this.course = this.$route.query.arg;
       this.global.routeCache.courseCheckDetail = this.course;
     }
+
+    this.bannertime =
+      this.course.carousel === 0
+        ? "0"
+        : parseInt(
+            (this.course.carousel - new Date().getTime()) / 1000 / 60 / 60 / 24
+          );
+    this.subtitle = this.course.subtitle;
+    this.imgShow = this.course.carouselimg !== "" ? true : false;
+    this.imgsrc =
+      this.global.api.aliyunosshostpubread + "/" + this.course.carouselimg;
     this.getVideos();
   },
   methods: {
-    courseShare(){
-      this.shareDialog.tx='https://www.shenlianclass.com/#/CourseDetail?courseid='+this.course.uuid
-      this.shareDialog.show=true
+    editClassdetail(){
+      if(this.classdetail===''){
+        toast('请输入内容')
+        return
+      }
+
+      if(this.classdetail.length > 2000){
+        toast('内容不能超过2000个字符')
+        return
+      }
+      let params={
+        classdetail:this.classdetail
+      }
+      this.modifyCourse(params);
     },
-    changeCourseStatus(status) {
-      let params = {
-        status: status+'',
-        author: this.course.author
+    handleImageAdded(file, Editor, cursorLocation, resetUploader) {
+      let filename =
+        new Date().getTime() + file.name.substring(file.name.length - 4);
+      this.util.uploadFile2OSS(this, filename, file, true, null, () => {
+        Editor.insertEmbed(
+          cursorLocation,
+          "image",
+          this.global.api.aliyunosshostpubread + "/" + filename
+        );
+        resetUploader();
+      });
+    },
+    editCoursePrice() {
+      this.modifySimpleTx("修改课程售价", "coursePrice");
+    },
+    editClasssummary() {
+      this.modifySimpleTx("修改课程摘要", "courseSummary");
+    },
+    editCourseName() {
+      this.modifySimpleTx("修改课程名称", "courseName");
+    },
+    modifySimpleTx(title, type) {
+      this.$q
+        .dialog({
+          title: title,
+          message: "",
+          prompt: {
+            model: "",
+            type: "text" // optional
+          },
+          ok: "确定",
+          cancel: "取消",
+          persistent: false
+        })
+        .onOk(data => {
+          if (data === "") {
+            toast("输入不能为空");
+            return;
+          }
+
+          let params = null;
+
+          switch (type) {
+            case "courseName":
+              if (data.length > 25) {
+                toast("输入长度不能超过25个字符");
+                return;
+              }
+
+              params = {
+                classname: data
+              };
+              break;
+            case "courseSummary":
+              if (data.length > 150) {
+                toast("输入长度不能超过150个字符");
+                return;
+              }
+
+              params = {
+                classsummary: data
+              };
+              break;
+            case "coursePrice":
+              if (data.length > 10) {
+                toast("输入长度不能超过10个字符");
+                return;
+              }
+
+              params = {
+                classprice: data
+              };
+              break;
+            default:
+              break;
+          }
+
+          this.modifyCourse(params);
+        })
+        .onCancel(() => {
+          //console.log('>>>> Cancel')
+        })
+        .onDismiss(() => {
+          //console.log('I am triggered on both OK and Cancel')
+        });
+    },
+    converFileChange(e) {
+      let _this = this;
+      let files = e.target.files || e.dataTransfer.files;
+      if (!files.length) return;
+      this.bannerImgFile = files[0]; //File对象
+
+      this.bannerImgName =
+        new Date().getTime() +
+        this.bannerImgFile.name.substring(this.bannerImgFile.name.length - 4);
+      this.bannerUploadDisable = false;
+      this.bannerUProgress = "0%";
+
+      let reader = new FileReader(); //FileReader对象
+      reader.readAsDataURL(this.bannerImgFile); //该方法会读取指定的 Blob 或 File 对象。读取操作完成的时候，readyState 会变成已完成（DONE），并触发 loadend 事件，同时 result 属性将包含一个data:URL格式的字符串（base64编码）以表示所读取文件的内容。
+      reader.onload = function(e) {
+        _this.imgsrc = e.target.result; //图片内容的base64编码
+        _this.imgShow = true;
       };
+    },
+    uploadBannerImg() {
+      //
+      this.bannerUploadDisable = true;
+      let progress = progressEvent => {
+        // 使用本地 progress 事件
+        if (progressEvent.lengthComputable) {
+          this.bannerUProgress =
+            Math.round((progressEvent.loaded / progressEvent.total) * 100) +
+            "%";
+        }
+      };
+      this.util.uploadFile2OSS(
+        this,
+        this.bannerImgName,
+        this.bannerImgFile,
+        true,
+        progress,
+        null
+      );
+    },
+    setBanner() {
+      let params = null;
+      if (this.bannertime === "0" || this.bannertime === "") {
+        params = {
+          carousel: 0,
+          subtitle: "",
+          carouselimg: ""
+        };
+      } else {
+        params = {
+          carousel:
+            parseInt(this.bannertime) * 24 * 60 * 60 * 1000 +
+            new Date().getTime(),
+          subtitle: this.subtitle,
+          carouselimg: this.bannerImgName
+        };
+      }
+
+      this.modifyCourse(params);
+    },
+    modifyCourse(params) {
       let timestamp = new Date().getTime() + this.global.requestExpireT;
       this.$axios
         .put(
-          this.global.api.backurl + "course/updateStatus?uuid=" + this.course.uuid,
+          this.global.api.backurl +
+            "course/modifyCourse?course_id=" +
+            this.course.uuid,
           params,
           {
             headers: {
@@ -150,20 +387,56 @@ export default {
             }
           }
         )
-        .then((response) =>{
+        .then(response => {
+          // console.log(9999, response);
+          if (response.status === 200 && response.data.code === 0) {
+            toast("修改成功");
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    courseShare() {
+      this.shareDialog.tx =
+        "https://www.shenlianclass.com/#/CourseDetail?courseid=" +
+        this.course.uuid;
+      this.shareDialog.show = true;
+    },
+    changeCourseStatus(status) {
+      let params = {
+        status: status + "",
+        author: this.course.author
+      };
+      let timestamp = new Date().getTime() + this.global.requestExpireT;
+      this.$axios
+        .put(
+          this.global.api.backurl +
+            "course/updateStatus?uuid=" +
+            this.course.uuid,
+          params,
+          {
+            headers: {
+              "access-token": this.util.generateToken(
+                JSON.stringify(params),
+                timestamp
+              ),
+              timestamp2: timestamp
+            }
+          }
+        )
+        .then(response => {
           //console.log(response);
-          if (response.status === 200 && response.data.code === 0){
-            
-            this.course.status=status
-            toast('操作成功'+(status===2?',预计5分钟内生效':''))
+          if (response.status === 200 && response.data.code === 0) {
+            this.course.status = status;
+            toast("操作成功" + (status === 2 ? ",预计5分钟内生效" : ""));
           }
         });
     },
     isCanPub() {
-      if (this.user.uuid !== this.course.author||this.course.status!==1) {
+      if (this.user.uuid !== this.course.author || this.course.status !== 1) {
         return false;
       } else {
-
         for (let i = 0; i < this.videos.length; i++) {
           if (this.videos[i].status <= 1) {
             return false;
@@ -203,7 +476,7 @@ export default {
       let timestamp = new Date().getTime() + this.global.requestExpireT;
       let params = {
         videoid: video.video_id,
-        course_id:this.course.uuid
+        course_id: this.course.uuid
       };
       this.$axios
         .get(this.global.api.backurl + "vod/submitTranscodeJob", {
@@ -220,7 +493,7 @@ export default {
           //console.log(response);
           if (response.status === 200 && response.data.code === 0) {
             toast("提交转码成功,10分钟后可查看转码结果");
-            video.status=1
+            video.status = 1;
           }
         });
     },
@@ -289,7 +562,6 @@ export default {
   background-color: white;
   margin: 50px 0 30px 0;
 }
-
 
 .study {
   align-self: flex-start;
