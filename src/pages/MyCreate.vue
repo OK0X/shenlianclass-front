@@ -29,7 +29,7 @@
             </div>
           </div>
           <span style="margin-top:20px;">学习人数：{{item.studynum}}人</span>
-          <q-btn unelevated :label="util.getCourseStatus(item.status)" class="study" color="primary" />
+          <q-btn unelevated :label="util.getCourseStatus(item.status)" class="study" :color="item.status===-1?'negative':'primary'" />
         </div>
       </div>
     </div>

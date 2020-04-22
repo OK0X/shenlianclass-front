@@ -29,13 +29,27 @@
             <span style="margin-left:5px;">分享</span>
           </div>
         </div>
-        <span style="margin-top:20px;">学习人数：{{course.studynum}}人</span>
+        <div style="display:flex;margin-top:10px;">
+          <span>学习人数：{{course.studynum}}人</span>
+          <img src="statics/edit.png" class="edit-icon" @click="editStudynum" />
+        </div>
         <q-btn
           unelevated
           :label="util.getCourseStatus(course.status)"
           class="study"
-          color="primary"
+          :color="course.status===-1?'negative':'primary'"
         />
+        <input type="file" accept="image/*" style="margin-top:10px;" @change="converFileChange" />
+        <div>
+          <button
+            type="button"
+            style="width:72px;margin-top:10px;"
+            @click="uploadConverImg"
+            :disabled="converUploadDisable"
+          >开始上传</button>
+          <span style="margin-left:10px;">上传进度：{{converUProgress}}</span>
+          <span style="color:green;" v-show="converUProgress === '100%'">(已保存上传记录,相同图片无需再次上传)</span>
+        </div>
       </div>
     </div>
     <div class="detail">
@@ -106,7 +120,7 @@
       <span style="margin-top:20px;">副标题：</span>
       <q-input v-model="subtitle" dense style="width:300px" counter maxlength="25" />
       <span style="margin-top:10px;">课程封面：(请上传尺寸为1200×400像素的jpg图片)</span>
-      <input type="file" accept="image/*" style="margin-top:10px;" @change="converFileChange" />
+      <input type="file" accept="image/*" style="margin-top:10px;" @change="bannerFileChange" />
       <img :src="imgsrc" style="margin-top:10px;width:1168px;height:400px;" v-show="imgShow" />
       <div>
         <button
@@ -185,7 +199,11 @@ export default {
       bannerImgName: "",
       bannerImgFile: null,
       classdetail: "",
-      editDetailShow:false
+      editDetailShow: false,
+      converImgFile:null,
+      converImgName:'',
+      converUploadDisable:false,
+      converUProgress: "0%"
     };
   },
   mounted() {
@@ -209,19 +227,19 @@ export default {
     this.getVideos();
   },
   methods: {
-    editClassdetail(){
-      if(this.classdetail===''){
-        toast('请输入内容')
-        return
+    editClassdetail() {
+      if (this.classdetail === "") {
+        toast("请输入内容");
+        return;
       }
 
-      if(this.classdetail.length > 2000){
-        toast('内容不能超过2000个字符')
-        return
+      if (this.classdetail.length > 2000) {
+        toast("内容不能超过2000个字符");
+        return;
       }
-      let params={
-        classdetail:this.classdetail
-      }
+      let params = {
+        classdetail: this.classdetail
+      };
       this.modifyCourse(params);
     },
     handleImageAdded(file, Editor, cursorLocation, resetUploader) {
@@ -235,6 +253,9 @@ export default {
         );
         resetUploader();
       });
+    },
+    editStudynum() {
+      this.modifySimpleTx("修改人数", "studynum");
     },
     editCoursePrice() {
       this.modifySimpleTx("修改课程售价", "coursePrice");
@@ -297,6 +318,16 @@ export default {
                 classprice: data
               };
               break;
+            case "studynum":
+              if (data.length > 4) {
+                toast("输入长度不能超过4个字符");
+                return;
+              }
+
+              params = {
+                studynum: data
+              };
+              break;
             default:
               break;
           }
@@ -310,7 +341,44 @@ export default {
           //console.log('I am triggered on both OK and Cancel')
         });
     },
-    converFileChange(e) {
+    converFileChange(e){
+      let _this = this;
+      let files = e.target.files || e.dataTransfer.files;
+      if (!files.length) return;
+      this.converImgFile = files[0]; //File对象
+
+      this.converImgName =
+        new Date().getTime() +
+        this.converImgFile.name.substring(this.converImgFile.name.length - 4);
+      this.converUploadDisable = false;
+      this.converUProgress = "0%";   
+    },
+    uploadConverImg(){
+      this.converUploadDisable = true;
+      let progress = progressEvent => {
+        // 使用本地 progress 事件
+        if (progressEvent.lengthComputable) {
+          this.converUProgress =
+            Math.round((progressEvent.loaded / progressEvent.total) * 100) +
+            "%";
+        }
+      };
+      let success=()=>{
+        let params={
+          converimg:this.converImgName
+        }
+        this.modifyCourse(params)
+      }
+      this.util.uploadFile2OSS(
+        this,
+        this.converImgName,
+        this.converImgFile,
+        true,
+        progress,
+        success
+      );
+    },
+    bannerFileChange(e) {
       let _this = this;
       let files = e.target.files || e.dataTransfer.files;
       if (!files.length) return;
@@ -565,7 +633,7 @@ export default {
 
 .study {
   align-self: flex-start;
-  margin-top: 20px;
+  margin-top: 10px;
   width: 145px;
   height: 50px;
   font-size: 18px;
