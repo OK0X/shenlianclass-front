@@ -150,12 +150,11 @@
     </q-page-container>
     <LoginDialog :dialogData="loginDialog" />
     <FeedbackDialog :dialogData="feedbackDialog" />
-    <div class="flat-bar">
-      <img
-        src="statics/feedback.png"
-        style="width:32px;height:32px;cursor: pointer;"
-        @click="submitQuesion"
-      />
+    <div class="flat-bar" @click="submitQuesion">
+      <div>意</div>
+      <div>见</div>
+      <div>反</div>
+      <div>馈</div>
     </div>
   </q-layout>
 </template>
@@ -451,5 +450,6 @@ export default {
   z-index: 999;
   background-color: #fff;
   box-shadow: 0px 2px 6px 0px rgba(7, 17, 27, 0.1);
+  cursor: pointer;
 }
 </style>
