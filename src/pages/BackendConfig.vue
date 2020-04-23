@@ -21,6 +21,7 @@
       <q-input v-model="answerReward" :dense="true" style="width:300px;" placeholder="answerReward(回答默认奖励积分数量)" />
       <q-input v-model="homeworkReward" :dense="true" style="width:300px;" placeholder="homeworkReward(提交作业奖励积分数量)" />
       <q-input v-model="notify" :dense="true" style="width:300px;" placeholder="网站重要公告" />
+      <q-input v-model="autoAnswer" :dense="true" style="width:300px;" placeholder="百度AI自动回答" />
       <q-btn label="提交" color="primary" flat class="q-ml-sm" @click="submit" />
       <q-btn label="清空缓存" color="primary" flat class="q-ml-sm" @click="clearAll" />
     </div>
@@ -51,7 +52,8 @@ export default {
       redisRuntime: "",
       answerReward:'',
       homeworkReward:'',
-      notify:''
+      notify:'',
+      autoAnswer:''
     };
   },
   mounted() {
@@ -158,7 +160,8 @@ export default {
         defaultEx: this.defaultEx,
         answerReward:this.answerReward,
         homeworkReward:this.homeworkReward,
-        notify:this.notify
+        notify:this.notify,
+        autoAnswer:this.autoAnswer
       };
       let timestamp = new Date().getTime() + this.global.requestExpireT;
       this.$axios
