@@ -48,6 +48,7 @@
     <LoginDialog :dialogData="loginDialog" />
     <PayWaitDialog :data="payWaitDialog" @finishedPay="finishedPay" @paywithProblem="paywithProblem"/>
     <FeedbackDialog :dialogData="feedbackDialog" />
+    <CoinChargeDialog :dialogData="coinChargeDialog" @onCharge="onCharge"/>
   </q-page>
 </template>
 
@@ -62,6 +63,7 @@ import { openURL } from "quasar";
 import localforage from "localforage";
 import { bus } from "../bus.js";
 import FeedbackDialog from "../components/FeedbackDialog";
+import CoinChargeDialog from "../components/CoinChargeDialog";
 
 export default {
   components: {
@@ -70,10 +72,14 @@ export default {
     CropperDialog,
     LoginDialog,
     PayWaitDialog,
-    FeedbackDialog
+    FeedbackDialog,
+    CoinChargeDialog
   },
   data() {
     return {
+      coinChargeDialog:{
+        show: false
+      },
       cropperDialog: {
         title: "剪裁头像",
         show: false
@@ -87,7 +93,7 @@ export default {
         show: false
       },
       out_trade_no: "",
-      chargeNum: 0,
+      // chargeNum: 0,
       columns: [
         { name: "event", label: "消费类型", field: "event", align: "left" },
         { name: "change", label: "数量", field: "change", align: "center" },
@@ -99,13 +105,6 @@ export default {
         }
       ],
       coinLogs: [],
-      // pagination: {
-      //   sortBy: 'desc',
-      //   descending: false,
-      //   page: 2,
-      //   rowsPerPage: 3,
-      //   rowsNumber: 0
-      // },
       feedbackDialog: {
         show: false,
         title: "支付问题反馈"
@@ -171,30 +170,11 @@ export default {
         });
     },
     showCharge() {
-      this.$q
-        .dialog({
-          title: "积分充值",
-          message: "请输入充值金额（1元=10积分）: ",
-          prompt: {
-            model: "",
-            type: "number" // optional
-          },
-          ok: "确定",
-          cancel: "取消",
-          persistent: true
-        })
-        .onOk(data => {
-          if (data <= 1) {
-            toast("充值金额需大于1元");
-            return;
-          }
-          if (data >= 5000) {
-            toast("单次充值金额需小于5000元");
-            return;
-          }
-
-          this.gotoPay(data);
-        });
+      this.coinChargeDialog.show=true
+    },
+    onCharge(amount){
+      // console.log(999,amount)
+      this.gotoPay(amount);
     },
     finishedPay() {
       this.payWaitDialog.show = false;
@@ -248,7 +228,7 @@ export default {
         });
     },
     gotoPay(price) {
-      this.chargeNum = price * 10;
+      // this.chargeNum = parseInt(price) * 10;
       this.util.loadingShow(this);
       let params = {
         user_id: this.user.uuid,
