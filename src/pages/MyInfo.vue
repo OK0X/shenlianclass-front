@@ -107,7 +107,8 @@ export default {
       coinLogs: [],
       feedbackDialog: {
         show: false,
-        title: "支付问题反馈"
+        title: "支付问题反馈",
+        hint:'请描述您的问题'
       }
     };
   },

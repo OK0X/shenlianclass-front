@@ -149,6 +149,14 @@
       <router-view />
     </q-page-container>
     <LoginDialog :dialogData="loginDialog" />
+    <FeedbackDialog :dialogData="feedbackDialog" />
+    <div class="flat-bar">
+      <img
+        src="statics/feedback.png"
+        style="width:32px;height:32px;cursor: pointer;"
+        @click="submitQuesion"
+      />
+    </div>
   </q-layout>
 </template>
 <script>
@@ -156,10 +164,12 @@
 import localforage from "localforage";
 import LoginDialog from "../components/LoginDialog";
 import { bus } from "../bus.js";
+import FeedbackDialog from "../components/FeedbackDialog";
 
 export default {
   components: {
-    LoginDialog
+    LoginDialog,
+    FeedbackDialog
   },
   data() {
     return {
@@ -171,7 +181,12 @@ export default {
       courseSearch: [],
       askSearch: [],
       resSearch: [],
-      searchProgressShow: false
+      searchProgressShow: false,
+      feedbackDialog: {
+        show: false,
+        title: "意见反馈",
+        hint:'请描述您的建议'
+      }
     };
   },
   computed: {
@@ -227,6 +242,13 @@ export default {
   },
   mounted() {},
   methods: {
+    submitQuesion() {
+      this.feedbackDialog.show = false;
+      this.feedbackDialog.event = "意见反馈";
+      this.feedbackDialog.extras = {
+      };
+      this.feedbackDialog.show = true;
+    },
     login() {
       if (typeof this.user.role === "undefined") {
         this.loginDialog.show = true;
@@ -349,7 +371,7 @@ export default {
       let params = {
         uuid: askid
       };
-      this.util.loadingShow(this)
+      this.util.loadingShow(this);
       this.$axios
         .get(this.global.api.backurl + "ask/getAskById", {
           params: params,
@@ -362,7 +384,7 @@ export default {
           }
         })
         .then(response => {
-          this.util.loadingHide(this)
+          this.util.loadingHide(this);
           if (response.status === 200 && response.data.code === 0) {
             this.$router.push({
               path: "/AskDetail",
@@ -420,5 +442,14 @@ export default {
 .main-tab:hover {
   color: #027be3;
   cursor: pointer;
+}
+.flat-bar {
+  position: fixed;
+  padding: 5px;
+  top: 60%;
+  right: 0;
+  z-index: 999;
+  background-color: #fff;
+  box-shadow: 0px 2px 6px 0px rgba(7, 17, 27, 0.1);
 }
 </style>
