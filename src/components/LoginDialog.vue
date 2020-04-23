@@ -172,8 +172,6 @@ export default {
           cancel: "取消"
         })
         .onOk(() => {
-          user.avatar =
-            this.global.api.aliyunosshostpubread + "/" + user.uuid + ".jpg";
           this.user = user;
           localforage.setItem("user", JSON.stringify(this.user));
           bus.$emit("loginok");
@@ -210,8 +208,7 @@ export default {
               data.role = 0;
             }
 
-            data.avatar =
-              this.global.api.aliyunosshostpubread + "/" + data.uuid + ".jpg";
+
             this.user = data;
             //console.log(this.user);
 

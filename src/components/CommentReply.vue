@@ -10,7 +10,7 @@
     </div>
     <div style="display:flex;margin-top:10px;">
       <img
-        :src="getAvatar(answer.user_id)"
+        :src="answer.avatar"
         onerror="src = 'statics/default-avatar.gif'"
         style="width:40px;height:40px;border-radius: 50%;margin-right:10px;"
       />
@@ -75,7 +75,7 @@
       <div class="flex-col" v-for="(subitem,index) in answer.comments" :key="index">
         <div style="display:flex;">
           <img
-            :src="getAvatar(subitem.user_id)"
+            :src="subitem.avatar"
             onerror="src = 'statics/default-avatar.gif'"
             style="width:40px;height:40px;border-radius: 50%;margin-right:10px;"
           />
@@ -153,9 +153,6 @@ export default {
   },
   mounted() {},
   methods: {
-    getAvatar(user_id) {
-      return this.global.api.aliyunosshostpubread + "/" + user_id + ".jpg";
-    },
     acceptAnswer(answer) {
       if (answer.accept) return;
 
@@ -347,6 +344,7 @@ export default {
               comments_show: false,
               create_at: new Date().getTime(),
               nickname: this.user.nick,
+              avatar:this.user.avatar,
               user_id: this.user.uuid,
               uuid: response.data.data,
               zan:false

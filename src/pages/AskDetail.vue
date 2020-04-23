@@ -202,12 +202,14 @@ export default {
               data[i].comments_show = false;
               data[i].comment_new = "";
               data[i].nickname = "";
+              data[i].avatar = "";
               data[i].zan = false;
               data[i].cai = false;
               for (let j = 0; j < data[i].comments.length; j++) {
                 data[i].comments[j].comments_show = false;
                 data[i].comments[j].comment_new = "";
                 data[i].comments[j].nickname = "";
+                data[i].comments[j].avatar = "";
                 data[i].comments[j].zan = false;
               }
             }
@@ -221,12 +223,14 @@ export default {
               dataMyans.comments_show = false;
               dataMyans.comment_new = "";
               dataMyans.nickname = this.user.nick;
+              dataMyans.avatar = this.user.avatar;
               dataMyans.zan = false;
               dataMyans.cai = false;
               for (let j = 0; j < dataMyans.comments.length; j++) {
                 dataMyans.comments[j].comments_show = false;
                 dataMyans.comments[j].comment_new = "";
                 dataMyans.comments[j].nickname = "";
+                dataMyans.comments[j].avatar = "";
                 dataMyans.comments[j].zan = false;
               }
 
@@ -242,12 +246,14 @@ export default {
               dataAccept.comments_show = false;
               dataAccept.comment_new = "";
               dataAccept.nickname = "";
+              dataAccept.avatar = "";
               dataAccept.zan = false;
               dataAccept.cai = false;
               for (let j = 0; j < dataAccept.comments.length; j++) {
                 dataAccept.comments[j].comments_show = false;
                 dataAccept.comments[j].comment_new = "";
                 dataAccept.comments[j].nickname = "";
+                dataAccept.comments[j].avatar = "";
                 dataAccept.comments[j].zan = false;
               }
 
@@ -452,17 +458,21 @@ export default {
             let data = response.data.data;
 
             let nicks = {};
+            let avatars = {};
             for (let i = 0; i < data.length; i++) {
               nicks[data[i].uuid] = data[i].nick;
+              avatars[data[i].uuid] = data[i].avatar;
             }
 
             //其它回答+评论-昵称赋值
             for (let i = 0; i < this.answers.length; i++) {
               this.answers[i].nickname = nicks[this.answers[i].user_id];
-
+              this.answers[i].avatar = avatars[this.answers[i].user_id];
               for (let j = 0; j < this.answers[i].comments.length; j++) {
                 this.answers[i].comments[j].nickname =
                   nicks[this.answers[i].comments[j].user_id];
+                this.answers[i].comments[j].avatar =
+                  avatars[this.answers[i].comments[j].user_id];
               }
             }
 
@@ -471,15 +481,20 @@ export default {
               for (let j = 0; j < this.myanswer.comments.length; j++) {
                 this.myanswer.comments[j].nickname =
                   nicks[this.myanswer.comments[j].user_id];
+                this.myanswer.comments[j].avatar =
+                  avatars[this.myanswer.comments[j].user_id];
               }
             }
 
             //采纳的回答+评论-昵称-赋值
             if (this.acceptanswer !== "") {
               this.acceptanswer.nickname = nicks[this.acceptanswer.user_id];
+              this.acceptanswer.avatar = avatars[this.acceptanswer.user_id];
               for (let j = 0; j < this.acceptanswer.comments.length; j++) {
                 this.acceptanswer.comments[j].nickname =
                   nicks[this.acceptanswer.comments[j].user_id];
+                this.acceptanswer.comments[j].avatar =
+                  avatars[this.acceptanswer.comments[j].user_id];
               }
             }
           }
@@ -547,6 +562,7 @@ export default {
               create_at: new Date().getTime(),
               disagree: 0,
               nickname: this.user.nick,
+              avatar: this.user.avatar,
               user_id: this.user.uuid,
               uuid: response.data.data
             };

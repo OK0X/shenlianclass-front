@@ -7,7 +7,7 @@
       <span style="font-size:15px;">我们希望你：</span>
       <ol style="color:#60686B;">
         <li>&nbsp;热衷分享；</li>
-        <li>&nbsp;有2年以上的实际项目开发经验；</li>
+        <li>&nbsp;有3年以上的实际项目开发经验；</li>
         <li>&nbsp;精通任何一种编程语言或互联网相关开发技术；</li>
       </ol>
       <span style="font-size:15px;">你的收获：</span>

@@ -361,8 +361,6 @@ export default {
           //console.log(333,response);
           if (response.status === 200 && response.data.code === 0) {
             let data = response.data.data;
-            data.avatar =
-              this.global.api.aliyunosshostpubread + "/" + data.uuid + ".jpg";
             this.user = data;
             localforage.setItem("user", JSON.stringify(this.user));
           }
@@ -373,11 +371,7 @@ export default {
     },
     uploadImgOK() {
       let data = JSON.parse(JSON.stringify(this.user));
-      data.avatar =
-        this.global.api.aliyunosshostpubread +
-        "/" +
-        data.uuid +
-        ".jpg?" +
+      data.avatar =this.user.avatar + '?'
         Math.random(); //加个随机数才会刷新
       this.user = data;
 

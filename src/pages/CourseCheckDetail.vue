@@ -50,6 +50,10 @@
           <span style="margin-left:10px;">上传进度：{{converUProgress}}</span>
           <span style="color:green;" v-show="converUProgress === '100%'">(已保存上传记录,相同图片无需再次上传)</span>
         </div>
+        <div style="display:flex;margin-top:10px;">
+          <span>当前排序：{{course.sort}}</span>
+          <img src="statics/edit.png" class="edit-icon" @click="editIndexSort" />
+        </div>
       </div>
     </div>
     <div class="detail">
@@ -254,6 +258,9 @@ export default {
         resetUploader();
       });
     },
+    editIndexSort(){
+      this.modifySimpleTx("修改排序", "sort");
+    },
     editStudynum() {
       this.modifySimpleTx("修改人数", "studynum");
     },
@@ -318,7 +325,17 @@ export default {
                 classprice: data
               };
               break;
-            case "studynum":
+            case "sort":
+              if (data.length > 4) {
+                toast("输入长度不能超过4个字符");
+                return;
+              }
+
+              params = {
+                sort: data
+              };
+              break;
+              case "studynum":
               if (data.length > 4) {
                 toast("输入长度不能超过4个字符");
                 return;
