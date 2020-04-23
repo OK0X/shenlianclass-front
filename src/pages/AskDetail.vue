@@ -571,7 +571,7 @@ export default {
             this.editorShow = false;
             this.totalAnswerNum++;
 
-            //更新用户SC数量
+            //更新用户积分数量
             let userData = JSON.parse(JSON.stringify(this.user));
             userData.coin += parseInt(this.global.backendConfig.answerReward);
             this.user = userData;

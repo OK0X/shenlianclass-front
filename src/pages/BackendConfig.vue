@@ -18,8 +18,8 @@
         placeholder="alipayExpire(秒)"
       />
       <q-input v-model="defaultEx" :dense="true" style="width:300px;" placeholder="defaultEx(秒)" />
-      <q-input v-model="answerReward" :dense="true" style="width:300px;" placeholder="answerReward(回答默认奖励SC数量)" />
-      <q-input v-model="homeworkReward" :dense="true" style="width:300px;" placeholder="homeworkReward(提交作业奖励SC数量)" />
+      <q-input v-model="answerReward" :dense="true" style="width:300px;" placeholder="answerReward(回答默认奖励积分数量)" />
+      <q-input v-model="homeworkReward" :dense="true" style="width:300px;" placeholder="homeworkReward(提交作业奖励积分数量)" />
       <q-input v-model="notify" :dense="true" style="width:300px;" placeholder="网站重要公告" />
       <q-btn label="提交" color="primary" flat class="q-ml-sm" @click="submit" />
       <q-btn label="清空缓存" color="primary" flat class="q-ml-sm" @click="clearAll" />

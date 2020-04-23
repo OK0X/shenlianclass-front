@@ -293,7 +293,7 @@ export default {
       shareDialog: {
         show: false
       },
-      answers:[],
+      answers: [],
       zcClickNum: {},
       currentPage: 1,
       lastPage: 1,
@@ -359,7 +359,7 @@ export default {
       this.isWorkFinished = false;
       this.showAppraise = true;
       this.isPayed = false;
-      this.homework=''
+      this.homework = "";
       this.getAnswer();
     });
     this.getAnswer();
@@ -374,14 +374,13 @@ export default {
       this.getAnswer();
     },
     getAnswer() {
-      if (typeof this.user.uuid === "undefined")
-      return
+      if (typeof this.user.uuid === "undefined") return;
       let timestamp = new Date().getTime() + this.global.requestExpireT;
       let params = {
         ask_id: this.course.uuid,
         limit: this.limit + "",
         offset: this.offset + "",
-        user_id : this.user.uuid
+        user_id: this.user.uuid
       };
 
       this.$axios
@@ -396,7 +395,6 @@ export default {
           }
         })
         .then(response => {
-
           if (response.status === 200 && response.data.code === 0) {
             const total = response.data.data.total[0].total;
             this.pageMax = Math.ceil(total / this.limit);
@@ -451,7 +449,6 @@ export default {
         });
     },
     getZanCai() {
-
       let ans_com_ids = [];
 
       for (let i = 0; i < this.answers.length; i++) {
@@ -530,7 +527,6 @@ export default {
               }
             }
 
-
             //其它回答--赞踩-赋值
             for (let i = 0; i < this.answers.length; i++) {
               if (typeof cutZanCais[this.answers[i].uuid] !== "undefined") {
@@ -579,7 +575,6 @@ export default {
         }
       }
 
-
       if (userids.length === 0) return;
 
       let params = {
@@ -615,7 +610,7 @@ export default {
               for (let j = 0; j < this.answers[i].comments.length; j++) {
                 this.answers[i].comments[j].nickname =
                   nicks[this.answers[i].comments[j].user_id];
-                  this.answers[i].comments[j].avatar =
+                this.answers[i].comments[j].avatar =
                   avatars[this.answers[i].comments[j].user_id];
               }
             }
@@ -629,7 +624,6 @@ export default {
                   avatars[this.myanswer.comments[j].user_id];
               }
             }
-
           }
         })
         .catch(error => {
@@ -851,7 +845,6 @@ export default {
         return;
       }
 
-
       if (!this.isPayed) {
         toast("你还未学习这门课程哦！");
         return;
@@ -891,10 +884,9 @@ export default {
           if (response.status === 200 && response.data.code === 0) {
             // toast("提交成功");
             this.isWorkFinished = true;
-            
 
             toast(
-              "回答成功,已到账奖励：" +
+              "提交成功,已到账奖励：" +
                 this.global.backendConfig.answerReward +
                 "积分"
             );
@@ -1093,7 +1085,7 @@ export default {
 
       if (this.course.classprice !== "" && this.course.coin === "") {
         //只支持现金付款
-        this.buyUseAliPay();
+        this.buyUseAliPay(this.course.classprice);
       } else if (this.course.classprice === "" && this.course.coin !== "") {
         //只支持积分付款
         this.buyUseCoin();
@@ -1103,7 +1095,22 @@ export default {
     },
     buyUseCoin() {
       if (this.user.coin - parseFloat(this.course.coin) < 0) {
-        toast("您的SC余额不足，请充值后再进行购买");
+        let yuan=parseInt(parseInt(this.course.coin)/10)
+        this.$q
+          .dialog({
+            title: '积分余额不足<span style="color:#959595;font-size:14px;"> 当前余额:'+this.user.coin+'</span>',
+            message:
+              '用支付宝支付只需<span class="text-orange"> '+yuan+'元 </span>即可购买该课程',
+            html: true,
+            ok:'确定',
+            cancel:'取消'
+          })
+          .onOk(() => {
+            this.buyUseAliPay(yuan);
+          })
+          .onCancel(() => {
+            // console.log('Cancel')
+          });
         return;
       }
 
@@ -1143,7 +1150,7 @@ export default {
       this.payWaitDialog.show = false;
       this.queryPayResult(this.out_trade_no);
     },
-    buyUseAliPay() {
+    buyUseAliPay(price) {
       this.payWaitDialog.show = true;
 
       //已生成过支付链接直接打开
@@ -1158,7 +1165,7 @@ export default {
         subject_title: this.course.classname,
         subject_id: this.course.uuid,
         subject_type: 1 + "", //购买课程
-        total_amount: this.course.classprice,
+        total_amount: price,
         return_url: "https://www.shenlianclass.com/#/CourseDetail"
       };
       let timestamp = new Date().getTime() + this.global.requestExpireT;

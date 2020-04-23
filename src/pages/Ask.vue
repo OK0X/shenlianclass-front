@@ -269,7 +269,7 @@ export default {
       }
 
       if (this.reward && this.user.coin - this.rewardNum < 0) {
-        toast("您的SC余额不足");
+        toast("您的积分余额不足");
         return;
       }
 

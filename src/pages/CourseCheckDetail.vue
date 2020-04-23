@@ -17,12 +17,15 @@
         </div>
         <div class="course-price">
           <div style="align-self: center;margin-left:10px;font-size:24px;color: orange;">
-            <div style="display:flex;">
-              <span v-show="course.classprice!==''">{{course.classprice}}元</span>
+            <div style="display:flex;" v-show="course.classprice!==''">
+              <span>{{course.classprice}}元</span>
               <img src="statics/edit.png" class="edit-icon" @click="editCoursePrice" />
             </div>
             <span v-show="course.classprice!==''&&course.coin!==''">+</span>
-            <span v-show="course.coin!==''">{{course.coin}}积分</span>
+            <div style="display:flex;" v-show="course.coin!==''">
+              <span>{{course.coin}}积分</span>
+              <img src="statics/edit.png" class="edit-icon" @click="editCourseCoin" />
+            </div>
           </div>
           <div class="course-share" @click="courseShare">
             <img src="statics/share.png" style="width:20px;height:20px;" />
@@ -204,9 +207,9 @@ export default {
       bannerImgFile: null,
       classdetail: "",
       editDetailShow: false,
-      converImgFile:null,
-      converImgName:'',
-      converUploadDisable:false,
+      converImgFile: null,
+      converImgName: "",
+      converUploadDisable: false,
       converUProgress: "0%"
     };
   },
@@ -258,11 +261,14 @@ export default {
         resetUploader();
       });
     },
-    editIndexSort(){
+    editIndexSort() {
       this.modifySimpleTx("修改排序", "sort");
     },
     editStudynum() {
       this.modifySimpleTx("修改人数", "studynum");
+    },
+    editCourseCoin() {
+      this.modifySimpleTx("修改课程积分", "courseCoin");
     },
     editCoursePrice() {
       this.modifySimpleTx("修改课程售价", "coursePrice");
@@ -325,6 +331,16 @@ export default {
                 classprice: data
               };
               break;
+            case "courseCoin":
+              if (data.length > 10) {
+                toast("输入长度不能超过10个字符");
+                return;
+              }
+
+              params = {
+                coin: data
+              };
+              break;
             case "sort":
               if (data.length > 4) {
                 toast("输入长度不能超过4个字符");
@@ -335,7 +351,7 @@ export default {
                 sort: data
               };
               break;
-              case "studynum":
+            case "studynum":
               if (data.length > 4) {
                 toast("输入长度不能超过4个字符");
                 return;
@@ -358,7 +374,7 @@ export default {
           //console.log('I am triggered on both OK and Cancel')
         });
     },
-    converFileChange(e){
+    converFileChange(e) {
       let _this = this;
       let files = e.target.files || e.dataTransfer.files;
       if (!files.length) return;
@@ -368,9 +384,9 @@ export default {
         new Date().getTime() +
         this.converImgFile.name.substring(this.converImgFile.name.length - 4);
       this.converUploadDisable = false;
-      this.converUProgress = "0%";   
+      this.converUProgress = "0%";
     },
-    uploadConverImg(){
+    uploadConverImg() {
       this.converUploadDisable = true;
       let progress = progressEvent => {
         // 使用本地 progress 事件
@@ -380,12 +396,12 @@ export default {
             "%";
         }
       };
-      let success=()=>{
-        let params={
-          converimg:this.converImgName
-        }
-        this.modifyCourse(params)
-      }
+      let success = () => {
+        let params = {
+          converimg: this.converImgName
+        };
+        this.modifyCourse(params);
+      };
       this.util.uploadFile2OSS(
         this,
         this.converImgName,

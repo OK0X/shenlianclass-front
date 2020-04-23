@@ -177,7 +177,7 @@
         <q-checkbox v-model="usemoney" label="现金" />
         <q-input v-model="classprice" :dense="true" style="width:50px;margin-left:5px;" />
         <span style="align-self: center;">元</span>
-        <q-checkbox v-model="usecoin" label="SC积分" style="margin-left:20px;" />
+        <q-checkbox v-model="usecoin" label="积分" style="margin-left:20px;" />
         <q-input v-model="scoin" :dense="true" style="width:50px;margin-left:5px;" />
         <span style="align-self: center;">个</span>
       </div>
