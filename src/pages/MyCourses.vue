@@ -1,7 +1,7 @@
 <template>
   <q-page class="mypage">
     <div class="page-content">
-      <span v-if="this.payedCourses.length===0">你还未购买过课程，先去首页看看哦！</span>
+      <span v-show="noPayedCourses">你还未购买过课程，先去首页看看哦！</span>
       <div class="flex-col" v-if="typeof user.uuid !== 'undefined'">
         <div
           style=" height: 355px;display: flex;flex-direction: column;"
@@ -57,6 +57,7 @@ export default {
   },
   data() {
     return {
+      noPayedCourses:false,
       loginDialog: {
         show: false,
         title: "快捷登陆"
@@ -124,6 +125,9 @@ export default {
           // console.log(999, response);
           if (response.status === 200 && response.data.code === 0) {
             this.payedCourses = response.data.data;
+            if(this.payedCourses.length === 0){
+              this.noPayedCourses=true;
+            }
           }
         });
     }
