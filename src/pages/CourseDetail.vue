@@ -22,7 +22,7 @@
           </div>
         </div>
         <span style="margin-top:20px;">学习人数：{{course.studynum}}人</span>
-        <q-btn unelevated label="立即购买" class="orenge-btn" @click="buyCourse" v-show="!isPayed" />
+        <q-btn unelevated label="立即学习" class="orenge-btn" @click="buyCourse" v-show="!isPayed" />
       </div>
     </div>
     <div class="detail-part">
@@ -78,7 +78,7 @@
               <q-btn
                 unelevated
                 color="primary"
-                label="开始学习"
+                label="观看"
                 style="width:100px;margin-top:10px;"
                 v-if="!item.freesee"
               />
