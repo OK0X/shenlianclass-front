@@ -175,6 +175,7 @@ export default {
   margin: 0 18px 25px 0;
   display: flex;
   flex-direction: column;
+  cursor: pointer;
 }
 .card-img {
   width: 100%;
