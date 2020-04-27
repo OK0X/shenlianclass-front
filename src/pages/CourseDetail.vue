@@ -1,7 +1,7 @@
 <template>
   <q-page class="mypage">
-    <GoBack />
-    <div class="summary-part">
+    <GoBack v-show="showBack"/>
+    <div class="summary-part" :style="showBack?'margin-top:5px;':'margin-top:50px;'">
       <img
         :src="global.api.aliyunosshostpubread + '/' + course.converimg"
         class="course-cover"
@@ -258,6 +258,7 @@ export default {
   },
   data() {
     return {
+      showBack:true,
       showAppraise: true,
       allAppraises: [],
       appraiseText: "",
@@ -321,6 +322,7 @@ export default {
       this.queryPayResult(this.$route.query.out_trade_no);
     } else if (typeof this.$route.query.courseid !== "undefined") {
       //courseid跳转
+      this.showBack=false
       this.getCourseById(this.$route.query.courseid);
     } else {
       //其它情况
