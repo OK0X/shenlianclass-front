@@ -10,7 +10,7 @@
     <q-card class="bg-black text-white">
       <q-card-section style="display:flex;justify-content:space-between;">
         <div style="display:flex;">
-          <div  @click="close">
+          <div @click="close">
             <img src="statics/back-white.png" style="width: 35px;height: 35px;cursor: pointer;" />
             <q-tooltip content-class="bg-white text-primary">返回</q-tooltip>
           </div>
@@ -70,7 +70,8 @@ export default {
       width: "1536px",
       height: "864px",
       cover:
-        "https://shenlianclasspubread.oss-cn-shanghai.aliyuncs.com/play-cover.jpg"
+        "https://shenlianclasspubread.oss-cn-shanghai.aliyuncs.com/play-cover.jpg",
+      playVID: ""
     };
   },
   computed: {
@@ -184,16 +185,18 @@ export default {
                   //自动播放下一节
                   this.updateProgress();
 
-                  if (!this.videoDialog.course_payed) {
-                    toast("请购买后观看");
-                    this.videoDialog.show = false;
-                    return;
-                  }
-
                   this.playIndex++;
-                  this.currentVideo = this.videos[this.playIndex];
-                  this.playVID = this.currentVideo.video_id;
-                  this.getPlayAuth();
+                  if (this.playIndex < this.videos.length) {
+                    if (!this.videoDialog.course_payed) {
+                      toast("请购买后观看");
+                      this.videoDialog.show = false;
+                      return;
+                    }
+
+                    this.currentVideo = this.videos[this.playIndex];
+                    this.playVID = this.currentVideo.video_id;
+                    this.getPlayAuth();
+                  }
                 });
                 player.fullscreenService.requestFullScreen();
                 localforage.getItem(this.playVID).then(value => {
