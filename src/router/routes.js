@@ -25,16 +25,8 @@ const routes = [
         component: () => import('pages/MyCreate.vue')
       },
       {
-        path: '/CourseCheck',
-        component: () => import('pages/CourseCheck.vue')
-      },
-      {
         path: '/CourseCheckDetail',
         component: () => import('pages/CourseCheckDetail.vue')
-      },
-      {
-        path: '/BackendConfig',
-        component: () => import('pages/BackendConfig.vue')
       },
       {
         path: '/Ask',
@@ -65,16 +57,12 @@ const routes = [
         component: () => import('pages/ResourceCreate.vue')
       },
       {
-        path: '/TeacherCheck',
-        component: () => import('pages/TeacherCheck.vue')
-      },
-      {
         path: '/About',
         component: () => import('pages/About.vue')
       },
       {
-        path: '/Feedback',
-        component: () => import('pages/Feedback.vue')
+        path: '/Admin',
+        component: () => import('pages/Admin.vue')
       }
     ]
   }

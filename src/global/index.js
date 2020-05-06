@@ -23,7 +23,8 @@ let routeCache={
   courseDetail:null,
   askDetail:null,
   ressouceDetail:null,
-  courseCheckDetail:null
+  courseCheckDetail:null,
+  indexCache:null
 }
 
 const requestExpireT=1000 * 60 * 1//一分钟

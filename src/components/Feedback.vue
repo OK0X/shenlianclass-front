@@ -1,8 +1,10 @@
 <template>
-  <q-page class="mypage">
-    <div class="page-content">
+  <div class="flex-col">
+    <div class="flex-col">
       <div v-for="(item,index) in feedback" :key="index" @click="itemClick(item)">
-        <div :style="(item.status===0?'background: #f4433630;':'background:#4caf503d;')+'padding:10px;'">
+        <div
+          :style="(item.status===0?'background: #f4433630;':'background:#4caf503d;')+'padding:10px;'"
+        >
           <div>
             <span class="tx-bold">事件：</span>
             {{item.event}}
@@ -40,19 +42,16 @@
         />
       </div>
     </div>
-    <MyFooter />
     <OptionDialog :data="tDialog" />
-  </q-page>
+  </div>
 </template>
 
 <script>
 /* eslint-disable */
-import MyFooter from "../components/MyFooter";
 import OptionDialog from "../components/OptionDialog";
 
 export default {
   components: {
-    MyFooter,
     OptionDialog
   },
   data() {
@@ -65,7 +64,11 @@ export default {
     };
   },
   mounted() {
+    console.log('feedback mounted')
     this.getfeedback();
+  },
+  beforeDestroy() {
+    console.log('feedback beforeDestroy')
   },
   methods: {
     statusTx(status) {
@@ -97,19 +100,22 @@ export default {
         });
     },
     itemClick(item) {
-      this.tDialog.title='用户反馈处理'
+      this.tDialog.title = "用户反馈处理";
       this.tDialog.item = {
-        uuid:item.uuid,
-        status:item.status,
-        radios:[{
-          val:0,
-          label:'未解决'
-        },{
-          val:1,
-          label:'已解决'
-        }]
+        uuid: item.uuid,
+        status: item.status,
+        radios: [
+          {
+            val: 0,
+            label: "未解决"
+          },
+          {
+            val: 1,
+            label: "已解决"
+          }
+        ]
       };
-      this.tDialog.from='feedback'
+      this.tDialog.from = "feedback";
       this.tDialog.show = true;
     }
   }

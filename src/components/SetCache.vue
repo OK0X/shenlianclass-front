@@ -1,13 +1,13 @@
 <template>
-  <q-page class="mypage">
-    <div class="white-block">
+  <div class="flex-col">
+    <div class="white-block" style="margin-top:0px;">
       <span>后台配置信息</span>
       <q-separator />
       <pre>{{JSON.stringify(config, null,2)}}</pre>
       <q-btn label="刷新" color="primary" flat class="q-ml-sm" @click="refresh" />
     </div>
     <div class="white-block" style="margin-bottom:30px;">
-      <span>更改配置</span>
+      <span>更改配置<span style="color:red;">(除了网站公告外其余字段不能为空)</span></span>
       <q-separator />
       <q-input v-model="apilimitT" :dense="true" style="width:300px;" placeholder="apilimitT(分钟)" />
       <q-input v-model="apiLimitNum" :dense="true" style="width:300px;" placeholder="apiLimitNum(次)" />
@@ -20,8 +20,9 @@
       <q-input v-model="defaultEx" :dense="true" style="width:300px;" placeholder="defaultEx(秒)" />
       <q-input v-model="answerReward" :dense="true" style="width:300px;" placeholder="answerReward(回答默认奖励积分数量)" />
       <q-input v-model="homeworkReward" :dense="true" style="width:300px;" placeholder="homeworkReward(提交作业奖励积分数量)" />
-      <q-input v-model="notify" :dense="true" style="width:300px;" placeholder="网站重要公告" />
+      <q-input v-model="defaultCoin" :dense="true" style="width:300px;" placeholder="defaultCoin(注册默认积分数量)" />
       <q-input v-model="autoAnswer" :dense="true" style="width:300px;" placeholder="百度AI自动回答" />
+      <q-input v-model="notify" :dense="true" style="width:300px;" placeholder="网站重要公告" />
       <q-btn label="提交" color="primary" flat class="q-ml-sm" @click="submit" />
       <q-btn label="清空缓存" color="primary" flat class="q-ml-sm" @click="clearAll" />
     </div>
@@ -30,17 +31,16 @@
       <q-separator />
       <pre>{{JSON.stringify(redisRuntime, null,2)}}</pre>
     </div>-->
-    <MyFooter />
-  </q-page>
+  </div>
 </template>
 
 <script>
 /* eslint-disable */
-import MyFooter from "../components/MyFooter";
+
 
 export default {
   components: {
-    MyFooter
+    
   },
   data() {
     return {
@@ -52,6 +52,7 @@ export default {
       redisRuntime: "",
       answerReward:'',
       homeworkReward:'',
+      defaultCoin:'',
       notify:'',
       autoAnswer:''
     };
@@ -160,8 +161,9 @@ export default {
         defaultEx: this.defaultEx,
         answerReward:this.answerReward,
         homeworkReward:this.homeworkReward,
-        notify:this.notify,
-        autoAnswer:this.autoAnswer
+        defaultCoin:this.defaultCoin,//
+        autoAnswer:this.autoAnswer,
+        notify:this.notify
       };
       let timestamp = new Date().getTime() + this.global.requestExpireT;
       this.$axios

@@ -1,6 +1,6 @@
 <template>
-  <q-page class="mypage">
-    <div class="page-content">
+  <div class="flex-col">
+    <div class="flex-col">
       <div v-for="(item,index) in teachers" :key="index" @click="itemClick(item)">
         <div
           :style="(item.status===1?'background: #4caf503d;':'background:#f4433630;')+'padding:10px;'"
@@ -42,19 +42,16 @@
         />
       </div>
     </div>
-    <MyFooter />
     <OptionDialog :data="tDialog" />
-  </q-page>
+  </div>
 </template>
 
 <script>
 /* eslint-disable */
-import MyFooter from "../components/MyFooter";
 import OptionDialog from "../components/OptionDialog";
 
 export default {
   components: {
-    MyFooter,
     OptionDialog
   },
   data() {

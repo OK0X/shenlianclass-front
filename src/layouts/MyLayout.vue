@@ -91,17 +91,8 @@
               <q-item clickable v-close-popup to="/MyCreate">
                 <q-item-section>我发布的课程</q-item-section>
               </q-item>
-              <q-item clickable v-close-popup v-show="user.role>=2" to="/TeacherCheck">
-                <q-item-section>讲师审核</q-item-section>
-              </q-item>
-              <q-item clickable v-close-popup v-show="user.role>=2" to="/CourseCheck">
-                <q-item-section>课程审核</q-item-section>
-              </q-item>
-              <q-item clickable v-close-popup v-show="user.role>=3" to="/Feedback">
-                <q-item-section>用户反馈</q-item-section>
-              </q-item>
-              <q-item clickable v-close-popup v-show="user.role>=3" to="/BackendConfig">
-                <q-item-section>系统管理</q-item-section>
+              <q-item clickable v-close-popup v-show="user.role>=2" to="/Admin">
+                <q-item-section>管理员</q-item-section>
               </q-item>
               <q-separator />
               <q-item clickable v-close-popup @click="logout">
@@ -184,7 +175,7 @@ export default {
       feedbackDialog: {
         show: false,
         title: "意见反馈",
-        hint:'请描述您的建议'
+        hint: "请描述您的建议"
       }
     };
   },
@@ -244,8 +235,7 @@ export default {
     submitQuesion() {
       this.feedbackDialog.show = false;
       this.feedbackDialog.event = "意见反馈";
-      this.feedbackDialog.extras = {
-      };
+      this.feedbackDialog.extras = {};
       this.feedbackDialog.show = true;
     },
     login() {
@@ -262,6 +252,7 @@ export default {
         this.user = data;
         // console.log(999, this.user.uuid);
         bus.$emit("logout");
+        this.$router.push('/')
       });
     },
     showTab(index) {

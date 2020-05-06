@@ -2,7 +2,14 @@
   <q-page class="mypage">
     <div class="gallery">
       <q-carousel arrows animated v-model="slide" height="400px" :autoplay="5000" :infinite="true">
-        <q-carousel-slide :name="index" :img-src="global.api.aliyunosshostpubread + '/' + item.carouselimg" v-for="(item,index) in bannerCourses" :key="index" style="cursor: pointer;" @click="toDetail(item)"></q-carousel-slide>
+        <q-carousel-slide
+          :name="index"
+          :img-src="global.api.aliyunosshostpubread + '/' + item.carouselimg"
+          v-for="(item,index) in bannerCourses"
+          :key="index"
+          style="cursor: pointer;"
+          @click="toDetail(item)"
+        ></q-carousel-slide>
       </q-carousel>
     </div>
     <div class="class-list">
@@ -80,10 +87,15 @@ export default {
       courses: [],
       hotasks: [],
       hotRes: [],
-      bannerCourses:[]
+      bannerCourses: []
     };
   },
   mounted() {
+    if (this.global.routeCache.indexCache !== null) {
+      this.setCourse(this.global.routeCache.indexCache.courses);
+      this.hotasks = this.global.routeCache.indexCache.asks;
+      this.hotRes = this.global.routeCache.indexCache.ress;
+    }
     this.getCourses();
   },
   methods: {
@@ -110,18 +122,19 @@ export default {
         .then(response => {
           //console.log(response);
           if (response.status === 200 && response.data.code === 0) {
-            this.setCourse(response.data.data.courses)
+            this.global.routeCache.indexCache=response.data.data
+            this.setCourse(response.data.data.courses);
             this.hotasks = response.data.data.asks;
             this.hotRes = response.data.data.ress;
           }
         });
     },
-    setCourse(allCourse){
-      for(const course of allCourse){
-        if(course.carousel!==0 && course.carousel > new Date().getTime()){
-          this.bannerCourses.push(course)
-        }else{
-          this.courses.push(course)
+    setCourse(allCourse) {
+      for (const course of allCourse) {
+        if (course.carousel !== 0 && course.carousel > new Date().getTime()) {
+          this.bannerCourses.push(course);
+        } else {
+          this.courses.push(course);
         }
       }
     },

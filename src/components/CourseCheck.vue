@@ -1,8 +1,6 @@
 <template>
-  <q-page class="mypage">
-    <div class="page-content">
-      <!-- <span style="color:#1f2328;font-size:24px;">我发布的课程</span> -->
-      <!-- <q-separator /> -->
+    <div class="flex-col">
+      <span v-show="myCourses.length===0" class="mytx-tip">当前没有要审核的课程</span>
       <div
         style=" height: 355px;display: flex;"
         v-for="(item,index) in myCourses"
@@ -33,16 +31,12 @@
         </div>
       </div>
     </div>
-    <MyFooter />
-  </q-page>
 </template>
 
 <script>
 /* eslint-disable */
-import MyFooter from "../components/MyFooter";
 export default {
   components: {
-    MyFooter
   },
   data() {
     return {
