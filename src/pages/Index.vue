@@ -130,6 +130,8 @@ export default {
         });
     },
     setCourse(allCourse) {
+      this.bannerCourses=[]
+      this.courses=[]
       for (const course of allCourse) {
         if (course.carousel !== 0 && course.carousel > new Date().getTime()) {
           this.bannerCourses.push(course);
