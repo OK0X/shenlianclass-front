@@ -75,6 +75,7 @@
 import MyFooter from "../components/MyFooter";
 import AskItem from "../components/AskItem";
 import ResourceItem from "../components/ResourceItem";
+import localforage from "localforage";
 export default {
   components: {
     MyFooter,
@@ -97,6 +98,10 @@ export default {
       this.hotRes = this.global.routeCache.indexCache.ress;
     }
     this.getCourses();
+
+    if (this.$route.query.u !== "undefined") {
+      localforage.setItem("uin", this.$route.query.u);
+    }
   },
   methods: {
     getCourses() {
@@ -122,7 +127,7 @@ export default {
         .then(response => {
           //console.log(response);
           if (response.status === 200 && response.data.code === 0) {
-            this.global.routeCache.indexCache=response.data.data
+            this.global.routeCache.indexCache = response.data.data;
             this.setCourse(response.data.data.courses);
             this.hotasks = response.data.data.asks;
             this.hotRes = response.data.data.ress;
@@ -130,8 +135,8 @@ export default {
         });
     },
     setCourse(allCourse) {
-      this.bannerCourses=[]
-      this.courses=[]
+      this.bannerCourses = [];
+      this.courses = [];
       for (const course of allCourse) {
         if (course.carousel !== 0 && course.carousel > new Date().getTime()) {
           this.bannerCourses.push(course);

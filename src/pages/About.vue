@@ -4,9 +4,9 @@
       <span class="title-tx" style="margin-top: 35px;">关于我们</span>
       <span
         class="content-tx"
-      >我们是一群来自于华为，百度，腾讯的程序员，设计师和区块链行业的早期参与者。我们每个人在各自的领域都深耕多年，有着丰富的行业经验。由于对区块链有着共同的爱好和认同感走到了一起，我们认为它是21世纪最伟大的发明之一，坚信它能改变未来的世界。但是当前的区块链发展得并不完善，大规模行业应用也尚未到来，其中有很大原因是人们对它缺乏了解，而我们创办深链课堂就是为了给大家提供一个更加专业的区块链学习平台。降低大家进入区块链领域的门槛，同时也为行业积累和培养技术人才，为行业的发展贡献我们的力量。</span>
+      >深链课堂是深链网络科技旗下IT技能学习，知识问答和资源下载平台，我们拥有区块链，前端，后端等领域的资深工程师为大家讲解授课，解疑答惑。为用户提供高质量的内容和服务是我们的第一宗旨。</span>
       <span class="content-tx">
-        同时我们也欢迎更多的小伙伴加入我们，一起做我们自己最喜欢的事情，一起在区块链的变革浪潮中贡献自己的力量。如果你精通区块链某个领域的技术，并且希望通过传授知识来获取额外的收入，可以直接点击
+        同时我们也欢迎更多的小伙伴加入我们，一起做我们自己最喜欢的事情，一起在技术的变革浪潮中贡献自己的力量。如果你精通区块链，前端或者后端某个领域的技术，希望通过传授知识来获取额外的收入，可以直接点击
         <span class="click-tx" @click="toCourseCreate">课程发布</span> 申请成为讲师，发布自己的课程；也可以应聘我们团队的讲师职位， 除了讲师职位还有更多职位正在招聘中：
       </span>
       <span class="content-tx">
@@ -22,13 +22,12 @@
         <li>全员配备 MacBook Pro</li>
         <li>免费午餐供应</li>
         <li>不限量的零食水果下午茶及其他隐性福利</li>
-        <li>老司机带路进入区块链领域</li>
         <li>股权/期权激励</li>
         <li>年底双薪</li>
       </ul>
     </div>
     <div class="page-content" style="margin: 10px 0 0 0;">
-      <span class="title-tx">区块链讲师 5 ~ 10名</span>
+      <span class="title-tx">讲师 x3</span>
       <span class="title-tx">【我们希望你】</span>
       <ul>
         <li>有3年以上实际项目开发经验</li>
@@ -43,7 +42,7 @@
       </ul>
     </div>
     <div class="page-content" style="margin: 10px 0 0 0;">
-      <span class="title-tx">前端工程师 x1</span>
+      <span class="title-tx">前端工程师 x2</span>
       <span class="title-tx">【我们希望你】</span>
       <ul>
         <li>3年以上前端开发经验；有良好的编码风格</li>
@@ -56,6 +55,22 @@
       <ul>
         <li>熟悉nodejs，阿里的eggjs框架</li>
         <li>熟悉solidity语言</li>
+      </ul>
+    </div>
+    <div class="page-content" style="margin: 10px 0 0 0;">
+      <span class="title-tx">UI设计师 x1</span>
+      <span class="title-tx">【我们希望你】</span>
+      <ul>
+        <li>2年以上的互联网或移动互联网设计经验，熟悉Web、iOS、Android设计规则；</li>
+        <li>能高效理解产品和交互设计思路，敏锐判断视觉设计的可行性；</li>
+        <li>对前沿设计探索感兴趣，自我驱动力强，能用设计效果准确表达想法；</li>
+        <li>精通 Photoshop、AI 、sketch等视觉设计软件；</li>
+        <li>良好的口头和书面表达能力，沟通协作、项目推动能力强，工作有激情，能承受较大工作压力；</li>
+      </ul>
+      <span class="title-tx">【加分项】</span>
+      <ul>
+        <li>视觉传达、工业设计、动画、美术等艺术类相关专业优先</li>
+        <li>有GDC获奖作品优先</li>
       </ul>
     </div>
     <div class="page-content" style="margin: 10px 0 50px 0;">

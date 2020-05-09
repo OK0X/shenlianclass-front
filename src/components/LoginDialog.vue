@@ -180,11 +180,16 @@ export default {
           //console.log('>>>> Cancel')
         });
     },
-    login() {
+    async login() {
       var _this = this;
       let params = {
         mobile: this.mobile + ""
       };
+
+      let [err,data] = await this.util.awaitWrap(localforage.getItem("uin"))
+      if(err===null&&data!==null){
+        params.qq=data
+      }
       let timestamp = new Date().getTime() + this.global.requestExpireT;
       this.$axios
         .post(this.global.api.backurl + "user/loginORregiste", params, {
@@ -201,20 +206,15 @@ export default {
           _this.util.loadingHide(this);
           if (response.status === 200 && response.data.code === 0) {
             let data = response.data.data;
-            if (data.type === "login") {
-              delete data.type;
-            } else {
-              data.mobile = this.mobile + "";
-              data.role = 0;
-            }
-
+            
+            delete data.type;
 
             this.user = data;
-            //console.log(this.user);
-
             localforage.setItem("user", JSON.stringify(this.user));
             toast("登陆成功");
             bus.$emit("loginok");
+          }else{
+            toast("注册失败，请稍后重试！");
           }
         });
     }

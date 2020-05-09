@@ -19,6 +19,12 @@
         >讲师审核</span>
         <span
           class="menu-tx"
+          :style="currentMenu===6?'color:#1976D2;':'color:black;'"
+          @click="menuClick(6)"
+          v-show="user.role>=3"
+        >用户数据</span>
+        <span
+          class="menu-tx"
           :style="currentMenu===5?'color:#1976D2;':'color:black;'"
           @click="menuClick(5)"
           v-show="user.role>=3"
@@ -36,6 +42,7 @@
         <TeacherCheck v-show="currentMenu===3" />
         <SetCache v-show="currentMenu===4" />
         <SystemMgr v-show="currentMenu===5" />
+        <UserData v-show="currentMenu===6" />
       </div>
     </div>
     <MyFooter />
@@ -49,6 +56,7 @@ import CourseCheck from "../components/CourseCheck";
 import TeacherCheck from "../components/TeacherCheck";
 import SetCache from "../components/SetCache";
 import SystemMgr from "../components/SystemMgr";
+import UserData from "../components/UserData";
 
 export default {
   components: {
@@ -57,7 +65,8 @@ export default {
     CourseCheck,
     TeacherCheck,
     SetCache,
-    SystemMgr
+    SystemMgr,
+    UserData
   },
   data() {
     return {
