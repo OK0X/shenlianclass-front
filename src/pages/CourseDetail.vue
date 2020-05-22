@@ -66,7 +66,7 @@
               ></div>
             </div>
             <div class="chapter-summary">
-              <h1 style="margin:0 0 10px 0;">{{'第'+(index+1)+'节：'+item.title}}</h1>
+              <h1 style="margin:0 0 10px 0;">{{'第'+(index+1)+'课：'+item.title}}</h1>
               <div>{{item.summary}}</div>
               <q-btn
                 unelevated

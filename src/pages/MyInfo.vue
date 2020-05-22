@@ -302,7 +302,7 @@ export default {
       let timestamp = new Date().getTime() + this.global.requestExpireT;
       this.$axios
         .put(
-          this.global.api.backurl + "user/updateUser?uuid=" + this.user.uuid,
+          this.global.api.backurl + "user/updateUserGeneral?uuid=" + this.user.uuid,
           params,
           {
             headers: {

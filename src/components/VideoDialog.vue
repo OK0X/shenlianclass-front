@@ -17,7 +17,7 @@
           <div
             class="text-h6"
             style="margin-left:15px"
-          >{{'第'+(playIndex+1)+'节：'+currentVideo.title}}</div>
+          >{{'第'+(playIndex+1)+'课：'+currentVideo.title}}</div>
         </div>
         <div @click="close">
           <img src="statics/close.png" style="width: 35px;height: 35px;cursor: pointer;" />
@@ -31,7 +31,7 @@
             <q-expansion-item
               switch-toggle-side
               expand-separator
-              :label="'第'+(index+1)+'节：'+item.title"
+              :label="'第'+(index+1)+'课：'+item.title"
               :style="index===playIndex?'color:#ff9800':'color:white'"
             >
               <q-card>

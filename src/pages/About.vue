@@ -27,7 +27,7 @@
       </ul>
     </div>
     <div class="page-content" style="margin: 10px 0 0 0;">
-      <span class="title-tx">讲师 x3</span>
+      <span class="title-tx">讲师</span>
       <span class="title-tx">【我们希望你】</span>
       <ul>
         <li>有3年以上实际项目开发经验</li>
@@ -42,7 +42,7 @@
       </ul>
     </div>
     <div class="page-content" style="margin: 10px 0 0 0;">
-      <span class="title-tx">前端工程师 x2</span>
+      <span class="title-tx">前端工程师</span>
       <span class="title-tx">【我们希望你】</span>
       <ul>
         <li>3年以上前端开发经验；有良好的编码风格</li>
@@ -58,10 +58,10 @@
       </ul>
     </div>
     <div class="page-content" style="margin: 10px 0 0 0;">
-      <span class="title-tx">UI设计师 x1</span>
+      <span class="title-tx">UI设计师</span>
       <span class="title-tx">【我们希望你】</span>
       <ul>
-        <li>2年以上的互联网或移动互联网设计经验，熟悉Web、iOS、Android设计规则；</li>
+        <li>3年以上的互联网或移动互联网设计经验，熟悉Web、iOS、Android设计规则；</li>
         <li>能高效理解产品和交互设计思路，敏锐判断视觉设计的可行性；</li>
         <li>对前沿设计探索感兴趣，自我驱动力强，能用设计效果准确表达想法；</li>
         <li>精通 Photoshop、AI 、sketch等视觉设计软件；</li>
@@ -74,10 +74,10 @@
       </ul>
     </div>
     <div class="page-content" style="margin: 10px 0 50px 0;">
-      <span class="title-tx">测试工程师 x2</span>
+      <span class="title-tx">测试工程师</span>
       <span class="title-tx">【我们希望你】</span>
       <ul>
-        <li>计算机相关专业本科及以上学历，2年以上web测试经验</li>
+        <li>计算机相关专业本科及以上学历，3年以上web测试经验</li>
         <li>熟悉自动化测试领域业界最新技术，熟悉自动化测试在CI和DevOps中的应用</li>
         <li>熟练使用chrome或者fire fox控制台测试页面</li>
         <li>掌握postman等web测试工具</li>

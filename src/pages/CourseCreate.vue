@@ -84,7 +84,7 @@
       >{{textLength(classdetail)}} / 1500</span>
       <span style="margin-top:30px;" class="tx-bold">章节信息：</span>
       <div class="chapters" v-for="(item,index) in chpters" v-bind:key="index">
-        <span>第{{index+1}}节</span>
+        <span>第{{index+1}}课</span>
         <q-input
           v-model.trim="item.title"
           :dense="true"

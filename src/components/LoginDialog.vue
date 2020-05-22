@@ -180,16 +180,16 @@ export default {
           //console.log('>>>> Cancel')
         });
     },
-    async login() {
+    login() {
       var _this = this;
       let params = {
         mobile: this.mobile + ""
       };
 
-      let [err,data] = await this.util.awaitWrap(localforage.getItem("uin"))
-      if(err===null&&data!==null){
-        params.qq=data
-      }
+      // let [err,data] = await this.util.awaitWrap(localforage.getItem("uin"))
+      // if(err===null&&data!==null){
+      //   params.qq=data
+      // }
       let timestamp = new Date().getTime() + this.global.requestExpireT;
       this.$axios
         .post(this.global.api.backurl + "user/loginORregiste", params, {
@@ -206,17 +206,51 @@ export default {
           _this.util.loadingHide(this);
           if (response.status === 200 && response.data.code === 0) {
             let data = response.data.data;
-            
+
             delete data.type;
 
             this.user = data;
             localforage.setItem("user", JSON.stringify(this.user));
             toast("登陆成功");
             bus.$emit("loginok");
-          }else{
+            this.updateQQ();
+          } else {
             toast("注册失败，请稍后重试！");
           }
         });
+    },
+    updateQQ() {
+      localforage.getItem("uin").then(value => {
+        if (value !== null) {
+          let timestamp = new Date().getTime() + this.global.requestExpireT;
+          let params={
+            qq:value
+          }
+          this.$axios
+            .put(
+              this.global.api.backurl +
+                "user/updateUserGeneral?uuid=" +
+                this.user.uuid,
+              params,
+              {
+                headers: {
+                  "access-token": this.util.generateToken(
+                    JSON.stringify(params),
+                    timestamp
+                  ),
+                  timestamp2: timestamp
+                }
+              }
+            )
+            .then(response => {
+              //
+              if (response.status === 200 && response.data.code === 0) {
+                console.log('ok');
+                localforage.removeItem("uin")
+              }
+            });
+        }
+      });
     }
   }
 };
