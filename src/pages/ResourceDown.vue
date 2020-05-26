@@ -1,7 +1,7 @@
 <template>
   <q-page class="mypage">
     <div class="page-content" style="margin-top:50px;">
-      <ResourceItem :res="resList"/>
+      <ResourceItem :res="resList" />
       <q-pagination
         v-if="pageMax > 1"
         v-model="currentPage"
@@ -36,6 +36,11 @@ export default {
     };
   },
   mounted() {
+    if (typeof this.global.routeCache.Res !== "undefined") {
+      const total = this.global.routeCache.Res.total[0].total;
+      this.pageMax = Math.ceil(total / this.limit);
+      this.resList = this.global.routeCache.Res.res;
+    }
     this.getRes();
   },
   methods: {
@@ -67,9 +72,10 @@ export default {
         .then(response => {
           // console.log(666,response);
           if (response.status === 200 && response.data.code === 0) {
-            const total = response.data.data.total[0].total;
+            this.global.routeCache.Res = response.data.data;
+            const total = this.global.routeCache.Res.total[0].total;
             this.pageMax = Math.ceil(total / this.limit);
-            this.resList = response.data.data.res;
+            this.resList = this.global.routeCache.Res.res;
           }
         })
         .catch(error => {

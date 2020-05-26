@@ -144,6 +144,16 @@ export default {
     }
   },
   mounted() {
+
+    if (typeof this.global.routeCache.AskAll !== 'undefined') {
+      //all
+      this.asks = this.global.routeCache.AskAll.asks;
+      const total1 = this.global.routeCache.AskAll.total[0].total;
+      this.pageMaxAll = Math.ceil(total1 / this.limit);
+     
+    }
+
+
     this.getAsks();
     this.getAwardAsks();
     this.getMyAsks();
@@ -157,7 +167,6 @@ export default {
       this.getMyAsks();
     },
     paginAllClick(pageIndex) {
-
       if (this.lastPageAll === pageIndex) return;
 
       this.offsetALL += this.limit * (pageIndex - this.lastPageAll);
@@ -165,7 +174,7 @@ export default {
       this.getAsks();
     },
     paginHcoinClick(pageIndex) {
-       if (this.lastPageHcoin === pageIndex) return;
+      if (this.lastPageHcoin === pageIndex) return;
 
       this.offsetHcoin += this.limit * (pageIndex - this.lastPageHcoin);
       this.lastPageHcoin = pageIndex;
@@ -241,15 +250,20 @@ export default {
         .get(this.global.api.backurl + "ask/getAsk", {
           params: params,
           headers: {
-            "access-token": this.util.generateToken(JSON.stringify(params), timestamp),
+            "access-token": this.util.generateToken(
+              JSON.stringify(params),
+              timestamp
+            ),
             timestamp2: timestamp
           }
         })
         .then(response => {
-          // console.log('getAsks------------',response); 
+          // console.log('getAsks------------',response);
           if (response.status === 200 && response.data.code === 0) {
-            this.asks = response.data.data.asks;
-            const total = response.data.data.total[0].total;
+
+            this.global.routeCache.AskAll = response.data.data;
+            this.asks = this.global.routeCache.AskAll.asks;
+            const total = this.global.routeCache.AskAll.total[0].total;
             this.pageMaxAll = Math.ceil(total / this.limit);
           }
         })
@@ -355,7 +369,7 @@ export default {
     handleImageAdded: function(file, Editor, cursorLocation, resetUploader) {
       let filename =
         new Date().getTime() + file.name.substring(file.name.length - 4);
-      this.util.uploadFile2OSS(this,filename, file, true, null, () => {
+      this.util.uploadFile2OSS(this, filename, file, true, null, () => {
         Editor.insertEmbed(
           cursorLocation,
           "image",

@@ -57,7 +57,7 @@ export default {
   },
   data() {
     return {
-      noPayedCourses:false,
+      noPayedCourses: false,
       loginDialog: {
         show: false,
         title: "快捷登陆"
@@ -85,9 +85,10 @@ export default {
     this.getPayedCourse();
   },
   methods: {
-    courseShare(item){
-      this.shareDialog.tx='https://www.shenlianclass.com/#/CourseDetail?courseid='+item.uuid
-      this.shareDialog.show=true
+    courseShare(item) {
+      this.shareDialog.tx =
+        "https://www.shenlianclass.com/#/CourseDetail?courseid=" + item.uuid;
+      this.shareDialog.show = true;
     },
     toCourseDetail(item) {
       this.$router.push({
@@ -104,12 +105,18 @@ export default {
         this.loginDialog.show = true;
         return;
       }
-      let timestamp = new Date().getTime() + this.global.requestExpireT;
 
+      if (typeof this.global.routeCache.MyCourses !== "undefined") {
+        this.payedCourses = this.global.routeCache.MyCourses;
+        if (this.payedCourses.length === 0) {
+          this.noPayedCourses = true;
+        }
+      }
+
+      let timestamp = new Date().getTime() + this.global.requestExpireT;
       let params = {
         user_id: this.user.uuid
       };
-
       this.$axios
         .get(this.global.api.backurl + "course/getPayedCourse", {
           params: params,
@@ -124,9 +131,10 @@ export default {
         .then(response => {
           // console.log(999, response);
           if (response.status === 200 && response.data.code === 0) {
-            this.payedCourses = response.data.data;
-            if(this.payedCourses.length === 0){
-              this.noPayedCourses=true;
+            this.global.routeCache.MyCourses = response.data.data;
+            this.payedCourses = this.global.routeCache.MyCourses;
+            if (this.payedCourses.length === 0) {
+              this.noPayedCourses = true;
             }
           }
         });

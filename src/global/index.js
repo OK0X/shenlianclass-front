@@ -20,11 +20,16 @@ let backendConfig={
 }
 
 let routeCache={
-  courseDetail:null,
-  askDetail:null,
-  ressouceDetail:null,
-  courseCheckDetail:null,
-  indexCache:null
+  //缓存了以下内容
+  // courseDetail:null,
+  // askDetail:null,
+  // ressouceDetail:null,
+  // courseCheckDetail:null,
+  // indexCache:null,
+  // allCourse:null
+  //知识问答-全部问答
+  //资源下载
+  //我的课程
 }
 
 const requestExpireT=1000 * 60 * 1//一分钟

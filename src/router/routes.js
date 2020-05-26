@@ -63,6 +63,10 @@ const routes = [
       {
         path: '/Admin',
         component: () => import('pages/Admin.vue')
+      },
+      {
+        path: '/AllCourse',
+        component: () => import('pages/AllCourse.vue')
       }
     ]
   }

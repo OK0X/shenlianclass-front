@@ -68,8 +68,8 @@
             </q-list>
           </q-menu>
         </q-input>
-        <img src="statics/wx-gh-qrcode.jpg" style="width:90px;height:90px;align-self: center;" />
-        <div style="align-self: center;margin-left:50px;">
+        <!-- <img src="statics/wx-gh-qrcode.jpg" style="width:90px;height:90px;align-self: center;" /> -->
+        <div style="align-self: center;margin-left:30px;">
           <div style="display:flex;">
             <img
               :src="user.avatar"
@@ -101,7 +101,7 @@
             </q-list>
           </q-menu>
         </div>
-        <span style="color:#ff7a00;align-self:center;cursor: pointer;" @click="login">{{role}}</span>
+        <span style="color:#ff7a00;align-self:center;cursor: pointer;margin-right:20px;" @click="login">{{role}}</span>
       </div>
       <div class="main-tabs">
         <div
@@ -111,9 +111,9 @@
         >首页</div>
         <div
           class="main-tab"
-          @click="showTab(1)"
-          :style="tabIndex===1?'color: #027be3;':'color: black;'"
-        >我的课程</div>
+          @click="showTab(6)"
+          :style="tabIndex===6?'color: #027be3;':'color: black;'"
+        >全部课程</div>
         <div
           class="main-tab"
           @click="showTab(2)"
@@ -124,6 +124,11 @@
           @click="showTab(4)"
           :style="tabIndex===4?'color: #027be3;':'color: black;'"
         >资源下载</div>
+        <div
+          class="main-tab"
+          @click="showTab(1)"
+          :style="tabIndex===1?'color: #027be3;':'color: black;'"
+        >我的课程</div>
         <div
           class="main-tab"
           @click="showTab(3)"
@@ -219,6 +224,8 @@ export default {
             return 4;
           case "/About":
             return 5;
+          case "/AllCourse":
+            return 6;
           case "":
             return 0;
           case "/":
@@ -252,7 +259,7 @@ export default {
         this.user = data;
         // console.log(999, this.user.uuid);
         bus.$emit("logout");
-        this.$router.push('/')
+        this.$router.push("/");
       });
     },
     showTab(index) {
@@ -277,6 +284,9 @@ export default {
           break;
         case 5:
           this.$router.push("/About");
+          break;
+        case 6:
+          this.$router.push("/AllCourse");
           break;
         default:
           this.$router.push("/");

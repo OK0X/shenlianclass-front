@@ -92,7 +92,7 @@ export default {
     };
   },
   mounted() {
-    if (this.global.routeCache.indexCache !== null) {
+    if (typeof this.global.routeCache.indexCache !== 'undefined') {
       this.setCourse(this.global.routeCache.indexCache.courses);
       this.hotasks = this.global.routeCache.indexCache.asks;
       this.hotRes = this.global.routeCache.indexCache.ress;
@@ -108,7 +108,7 @@ export default {
       let timestamp = new Date().getTime() + this.global.requestExpireT;
 
       let params = {
-        courseNum: "50",
+        courseNum: "12",
         askNum: "10",
         resNum: "10"
       };
