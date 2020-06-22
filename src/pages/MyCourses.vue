@@ -22,7 +22,7 @@
                 <div style="align-self: center;margin-left:10px;font-size:24px;color: orange;">
                   <span v-show="item.classprice!==''">{{item.classprice}}元</span>
                   <span v-show="item.classprice!==''&&item.coin!==''">+</span>
-                  <span v-show="item.coin!==''">{{item.coin}}积分</span>
+                  <span v-show="item.coin!==''">{{(item.coin+'积分'==='0积分')?'免费':(item.coin+'积分')}}</span>
                 </div>
                 <div class="course-share" @click.stop="courseShare(item)">
                   <img src="statics/share.png" style="width:20px;height:20px;" />

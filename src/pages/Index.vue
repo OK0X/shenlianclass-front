@@ -42,7 +42,7 @@
                 <span style="color: orange;">
                   <span v-show="item.classprice!==''">{{item.classprice}}元</span>
                   <span v-show="item.classprice!==''&&item.coin!==''">+</span>
-                  <span v-show="item.coin!==''">{{item.coin}}积分</span>
+                  <span v-show="item.coin!==''">{{(item.coin+'积分'==='0积分')?'免费':(item.coin+'积分')}}</span>
                 </span>
               </span>
             </div>
