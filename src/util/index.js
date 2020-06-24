@@ -232,6 +232,15 @@ function getFileIcon(filetype) {
   }
 }
 
+function isMolbile() {
+  let u = navigator.userAgent;
+  return {
+    mobile: !!u.match(/AppleWebKit.*Mobile.*/), //是否为移动终端
+    ios: !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/), //ios终端
+    android: u.indexOf("Android") > -1 || u.indexOf("Adr") > -1 //android终端
+  };
+}
+
 export default {
   getFileIcon,
   uploadFile2OSS,
@@ -245,5 +254,6 @@ export default {
   loadingShow,
   loadingHide,
   getCourseStatus,
-  randomUUID
+  randomUUID,
+  isMolbile
 };

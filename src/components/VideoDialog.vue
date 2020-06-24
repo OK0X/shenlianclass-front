@@ -198,7 +198,13 @@ export default {
                     this.getPlayAuth();
                   }
                 });
-                player.fullscreenService.requestFullScreen();
+                let browserVersions = this.util.isMolbile();
+                if (browserVersions.mobile || browserVersions.android || browserVersions.ios) {
+                  //手机端不全屏
+                }else{
+                  player.fullscreenService.requestFullScreen();
+                }
+                
                 localforage.getItem(this.playVID).then(value => {
                   let seek = 0;
                   if (value !== null) {
