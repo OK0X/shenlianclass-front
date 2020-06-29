@@ -17,12 +17,12 @@
         </div>
         <div class="course-price">
           <div style="align-self: center;margin-left:10px;font-size:24px;color: orange;">
-            <div style="display:flex;" v-show="course.classprice!==''">
+            <div style="display:flex;" v-show="course.classprice!==''&&course.classprice!==null">
               <span>{{course.classprice}}元</span>
               <img src="statics/edit.png" class="edit-icon" @click="editCoursePrice" />
             </div>
-            <span v-show="course.classprice!==''&&course.coin!==''">+</span>
-            <div style="display:flex;" v-show="course.coin!==''">
+            <span v-show="course.classprice!==''&&course.classprice!==null&&course.coin!==''&&course.coin!==null">+</span>
+            <div style="display:flex;" v-show="course.coin!==''&&course.coin!==null">
               <span>{{course.coin}}积分</span>
               <img src="statics/edit.png" class="edit-icon" @click="editCourseCoin" />
             </div>
@@ -56,6 +56,10 @@
         <div style="display:flex;margin-top:10px;">
           <span>当前排序：{{course.sort}}</span>
           <img src="statics/edit.png" class="edit-icon" @click="editIndexSort" />
+        </div>
+        <div style="display:flex;margin-top:10px;">
+          <span>是否在手机端显示：{{course.mobile_show===0?'否':'是'}}</span>
+          <img src="statics/edit.png" class="edit-icon" @click="editMobileShow" />
         </div>
       </div>
     </div>
@@ -279,6 +283,12 @@ export default {
     editCourseName() {
       this.modifySimpleTx("修改课程名称", "courseName");
     },
+    editMobileShow() {
+      this.modifySimpleTx(
+        "修改课程是否在手机端显示(0:不显示，1:显示)",
+        "mobileShow"
+      );
+    },
     modifySimpleTx(title, type) {
       this.$q
         .dialog({
@@ -359,6 +369,11 @@ export default {
 
               params = {
                 studynum: data
+              };
+              break;
+            case "mobileShow":
+              params = {
+                mobile_show: data
               };
               break;
             default:
@@ -491,7 +506,7 @@ export default {
         .then(response => {
           // console.log(9999, response);
           if (response.status === 200 && response.data.code === 0) {
-            toast("修改成功");
+            toast("修改成功,5分钟后生效");
           }
         })
         .catch(error => {
