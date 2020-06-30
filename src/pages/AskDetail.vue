@@ -7,12 +7,21 @@
         <img src="statics/coin.png" class="reward-icon" v-if="ask.reward" />
         <span v-if="ask.reward" class="reward-tx">{{ask.reward_num}}</span>
       </div>
-      <div v-html="ask.detail" v-highlight></div>
+      <div class="post-info" v-if="ask.type===1">
+        <img :src="author.avatar" class="author-img" onerror="src = 'statics/default-avatar.gif'" />
+        <span class="ad-vr-tx">{{author.nick}}</span>
+        <span class="ad-vr-tx">{{util.timeUTC2Local(ask.create_at)}}</span>
+        <img src="statics/reply-num.png" class="ad-vr-ic" />
+        <span class="ad-vr-tx">{{totalAnswerNum}}</span>
+        <img src="statics/eye.png" class="ad-vr-ic" />
+        <span class="ad-vr-tx">{{ask.view_num}}</span>
+      </div>
+      <div v-html="ask.detail" v-highlight style="margin-top: 30px;"></div>
       <div class="flex-col" v-if="ask.user_id!==user.uuid&&myanswer===''">
         <q-btn
           unelevated
           color="primary"
-          label="我来回答"
+          :label="ask.type===0?'我来回答':'发表评论'"
           style="width: 90px;margin-top:15px;"
           @click="ianswer"
         />
@@ -26,14 +35,16 @@
         <q-btn
           unelevated
           color="primary"
-          label="提交回答"
+          :label="ask.type===0?'提交回答':'提交评论'"
           style="width: 100px;align-self: flex-end;margin-top:10px;"
           @click="submitAnswer"
           v-show="editorShow"
         />
       </div>
       <div style="display:flex;margin:20px 0 20px 0;">
-        <span style="font-size:18px;color: #7a8f9a;font-weight: 700;">{{totalAnswerNum}}个回答</span>
+        <span
+          style="font-size:18px;color: #7a8f9a;font-weight: 700;"
+        >{{ask.type===0?(totalAnswerNum+'个回答'):''}}</span>
         <div
           style="flex:1;height:1px;background: rgba(0, 0, 0, 0.06);align-self: center;margin-left:10px;"
         ></div>
@@ -130,7 +141,11 @@ export default {
       lastPage: 1,
       offset: 0,
       limit: 20,
-      pageMax: 1
+      pageMax: 1,
+      author: {
+        avatar: "",
+        nick: ""
+      }
     };
   },
   computed: {
@@ -144,14 +159,13 @@ export default {
     }
   },
   mounted() {
-
     if (this.$route.query.arg === "[object Object]") {
       this.ask = this.global.routeCache.askDetail;
     } else {
       this.ask = this.$route.query.arg;
       this.global.routeCache.askDetail = this.ask;
     }
-
+    // console.log(999, this.ask);
     bus.$on("logout", () => {
       // toast("logout");
       this.getAnswer();
@@ -160,8 +174,57 @@ export default {
       this.getAnswer();
     });
     this.getAnswer();
+    this.getAuthorInfo();
+    this.viewnumAdd();
   },
   methods: {
+    viewnumAdd() {
+      let params = {
+        uuid: this.ask.uuid
+      };
+      let timestamp = new Date().getTime() + this.global.requestExpireT;
+      this.$axios
+        .post(this.global.api.backurl + "ask/viewnumAdd", params, {
+          headers: {
+            "access-token": this.util.generateToken(
+              JSON.stringify(params),
+              timestamp
+            ),
+            timestamp2: timestamp
+          }
+        })
+        .then(response => {});
+    },
+    getAuthorInfo() {
+      let userids = [];
+      userids.push(this.ask.user_id);
+      let params = {
+        uuid: encodeURIComponent(JSON.stringify(userids))
+      };
+      let timestamp = new Date().getTime() + this.global.requestExpireT;
+      this.$axios
+        .get(this.global.api.backurl + "user/getNames", {
+          params: params,
+          headers: {
+            "access-token": this.util.generateToken(
+              JSON.stringify(params),
+              timestamp
+            ),
+            timestamp2: timestamp
+          }
+        })
+        .then(response => {
+          // console.log(999,response.data.data)
+          if (
+            response.status === 200 &&
+            response.data.code === 0 &&
+            response.data.data.length === 1
+          ) {
+            this.author.avatar = response.data.data[0].avatar;
+            this.author.nick = response.data.data[0].nick;
+          }
+        });
+    },
     paginationClick(pageIndex) {
       // console.log(this.lastPage, pageIndex);
       if (this.lastPage === pageIndex) return;
@@ -219,7 +282,7 @@ export default {
             //我的回答
             let dataMyans = response.data.data.myanswer;
             if (dataMyans !== "") {
-              this.totalAnswerNum++
+              this.totalAnswerNum++;
               dataMyans.comments_show = false;
               dataMyans.comment_new = "";
               dataMyans.nickname = this.user.nick;
@@ -242,7 +305,7 @@ export default {
             //采纳的回答
             let dataAccept = response.data.data.acceptanswer;
             if (dataAccept !== "") {
-              this.totalAnswerNum++
+              this.totalAnswerNum++;
               dataAccept.comments_show = false;
               dataAccept.comment_new = "";
               dataAccept.nickname = "";
@@ -269,8 +332,6 @@ export default {
         });
     },
     getZanCai() {
- 
-
       let ans_com_ids = [];
 
       for (let i = 0; i < this.answers.length; i++) {
@@ -503,22 +564,22 @@ export default {
           console.log(error);
         });
     },
-    needLogin(){
+    needLogin() {
       this.loginDialog.show = true;
     },
-    acceptAnswerOK(){
+    acceptAnswerOK() {
       this.getAnswer();
       this.ask.hasaccept = true;
     },
     submitAnswer() {
       if (typeof this.user.uuid === "undefined") {
-        toast("请先登陆后再回答");
+        toast("请先登陆后再操作");
         this.loginDialog.show = true;
         return;
       }
 
       if (this.myanswerInput === "") {
-        toast("请输入你的回答");
+        toast("请输入内容");
         return;
       }
 
@@ -545,7 +606,7 @@ export default {
           //console.log(response);
           if (response.status === 200 && response.data.code === 0) {
             toast(
-              "回答成功,已到账奖励：" +
+              "提交成功,已到账奖励：" +
                 this.global.backendConfig.answerReward +
                 "积分"
             );
@@ -618,5 +679,24 @@ export default {
   font-size: 18px;
   color: red;
   margin-left: 5px;
+}
+.ad-vr-tx {
+  color: #888888;
+  margin-left: 5px;
+}
+.post-info {
+  display: flex;
+  align-items: center;
+  margin-top: 10px;
+}
+.author-img {
+  width: 29px;
+  height: 29px;
+  border-radius: 50%;
+}
+.ad-vr-ic {
+  width: 20px;
+  height: 20px;
+  margin-left: 20px;
 }
 </style>

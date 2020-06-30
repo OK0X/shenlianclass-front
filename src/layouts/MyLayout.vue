@@ -39,8 +39,8 @@
               </div>
               <q-separator />
               <div style="padding:8px 16px;" class="flex-col">
-                <span style="color:gray">问答</span>
-                <span style="color:gray;padding-left:16px;" v-show="askSearch.length===0">未找到相关问答</span>
+                <span style="color:gray">帖子</span>
+                <span style="color:gray;padding-left:16px;" v-show="askSearch.length===0">未找到相关帖子</span>
                 <q-item
                   clickable
                   style="min-height:0;padding: 4px 16px;"
@@ -118,7 +118,7 @@
           class="main-tab"
           @click="showTab(2)"
           :style="tabIndex===2?'color: #027be3;':'color: black;'"
-        >知识问答</div>
+        >交流园地</div>
         <div
           class="main-tab"
           @click="showTab(4)"

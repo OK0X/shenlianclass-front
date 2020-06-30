@@ -66,7 +66,7 @@ export default {
         },
         {
           val: 2,
-          label: "知识问答"
+          label: "交流园地"
         },
         {
           val: 3,

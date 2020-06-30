@@ -2,7 +2,7 @@
   <div class="flex-col">
     <div style="display:flex;" v-show="answerType==='myanswer'">
       <img src="statics/mark.png" style="width:16px;height:16px;align-self: center;" />
-      <span class="mytx-primary">我的回答</span>
+      <span class="mytx-primary">{{ask.type===0?'我的回答':'我的评论'}}</span>
     </div>
     <div style="display:flex;" v-show="answerType==='acceptanswer'">
       <img src="statics/mark.png" style="width:16px;height:16px;align-self: center;" />
@@ -28,13 +28,13 @@
       <div
         style="display:flex;"
         @click="acceptAnswer(answer)"
-        v-show="user.uuid===ask.user_id&&!ask.hasaccept"
+        v-show="user.uuid===ask.user_id&&!ask.hasaccept&&ask.type===0"
       >
         <img src="statics/accept.png" class="zan-cai" />
         <span class="zan-cai-num">采纳</span>
         <q-tooltip content-class="bg-white text-black shadow-4">每个问题只能采纳一个答案哦！</q-tooltip>
       </div>
-      <div style="display:flex;" v-show="ask.hasaccept||user.uuid!==ask.user_id">
+      <div style="display:flex;" v-show="(ask.hasaccept||user.uuid!==ask.user_id)||(ask.type===1)">
         <img
           :src="answer.zan?'statics/zan-click.png':'statics/zan-black.png'"
           class="zan-cai"

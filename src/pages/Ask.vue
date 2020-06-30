@@ -10,10 +10,10 @@
         align="left"
         style="background-color:#ebecec;color:black;"
       >
-        <q-tab name="all" label="全部问答" />
-        <q-tab name="highcoin" label="悬赏问答" />
-        <q-tab name="myask" label="我的提问" />
-        <q-tab name="creatask" label="新建提问" />
+        <q-tab name="all" label="全部帖子" />
+        <q-tab name="highcoin" label="悬赏贴" />
+        <q-tab name="myask" label="我的帖子" />
+        <q-tab name="creatask" label="新建帖子" />
       </q-tabs>
       <q-tab-panels v-model="tab" animated>
         <q-tab-panel name="all" class="flex-col">
@@ -50,22 +50,27 @@
           ></q-pagination>
         </q-tab-panel>
         <q-tab-panel name="creatask" class="flex-col">
-          <q-input
-            v-model="asktitle"
-            :dense="true"
-            counter
-            maxlength="50"
-            placeholder="一句话完整描述你的问题"
-          />
+          <q-input v-model="asktitle" :dense="true" counter maxlength="50" placeholder="标题" />
           <VueEditor
-            placeholder="详细说明你的问题，以便获得更好的回答（选填）"
+            placeholder="内容"
             v-model="askDetail"
             useCustomImageHandler
             @image-added="handleImageAdded"
             style="height: 300px;width:100%;margin:10px 0 50px 0;"
           />
-          <span style="align-self: flex-end;color: rgba(0, 0, 0, 0.54);">{{detailLength()}} / 1000</span>
-          <div style="display:flex;">
+          <span style="align-self: flex-end;color: rgba(0, 0, 0, 0.54);">{{detailLength()}} / 3000</span>
+          <div style="display:flex;margin-top:20px;">
+            <span>帖子类别：</span>
+            <div>
+            <img src="statics/question.png" style="width:18px;height:18px;cursor: pointer;" />
+            <q-tooltip content-class="bg-white text-black shadow-4">问答贴可以发布悬赏，不显示发布者，时间和阅读量；普通贴不能发布悬赏，显示发布者，时间和阅读量。</q-tooltip>
+            </div>
+          </div>
+          <div class="q-gutter-sm">
+            <q-radio v-model="postType" val="ask" label="问答贴" />
+            <q-radio v-model="postType" val="general" label="普通贴" />
+          </div>
+          <div style="display:flex;" v-show="postType==='ask'">
             <q-checkbox v-model="reward" label="悬赏" />
             <img
               src="statics/coin.png"
@@ -78,7 +83,7 @@
               style="width: 50px;height:20px;"
             />
           </div>
-          <q-btn unelevated color="primary" label="提交" style="width:100px;" @click="createAsk" />
+          <q-btn unelevated color="primary" label="提交" style="width:100px;margin-top:20px;" @click="createAsk" />
         </q-tab-panel>
       </q-tab-panels>
     </div>
@@ -130,7 +135,8 @@ export default {
       offsetALL: 0,
       offsetHcoin: 0,
       offsetMy: 0,
-      limit: 20
+      limit: 20,
+      postType: "ask"
     };
   },
   computed: {
@@ -144,15 +150,12 @@ export default {
     }
   },
   mounted() {
-
-    if (typeof this.global.routeCache.AskAll !== 'undefined') {
+    if (typeof this.global.routeCache.AskAll !== "undefined") {
       //all
       this.asks = this.global.routeCache.AskAll.asks;
       const total1 = this.global.routeCache.AskAll.total[0].total;
       this.pageMaxAll = Math.ceil(total1 / this.limit);
-     
     }
-
 
     this.getAsks();
     this.getAwardAsks();
@@ -260,7 +263,6 @@ export default {
         .then(response => {
           // console.log('getAsks------------',response);
           if (response.status === 200 && response.data.code === 0) {
-
             this.global.routeCache.AskAll = response.data.data;
             this.asks = this.global.routeCache.AskAll.asks;
             const total = this.global.routeCache.AskAll.total[0].total;
@@ -287,6 +289,11 @@ export default {
         return;
       }
 
+      if(this.postType!=='ask'&&this.askDetail.length < 20){
+        toast('帖子内容太少哦')
+        return
+      }
+
       this.util.loadingShow(this);
 
       let params = {
@@ -294,7 +301,8 @@ export default {
         title: this.asktitle,
         detail: this.askDetail,
         reward: this.reward,
-        reward_num: this.rewardNum
+        reward_num: this.rewardNum,
+        type:this.postType==='ask'?0:1
       };
       // console.log(111,this.user)
       // console.log(1111,this.rewardNum)

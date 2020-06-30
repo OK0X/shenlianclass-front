@@ -53,7 +53,7 @@
     <div class="class-list">
       <div style="display:flex;margin-top:30px;">
         <div class="myseperator"></div>
-        <span style="color:#1f2328;font-size:24px;">热门问答</span>
+        <span style="color:#1f2328;font-size:24px;">热门帖子</span>
         <div class="myseperator"></div>
       </div>
       <AskItem :asks="hotasks" style="margin: 30px 0 30px 0;" />
