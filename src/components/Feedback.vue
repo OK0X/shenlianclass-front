@@ -26,7 +26,7 @@
           <div class="tx-bold">问题描述：</div>
           <div>{{item.describe}}</div>
           <div class="tx-bold">附加信息：</div>
-          <pre>{{JSON.stringify(JSON.parse(item.extras), null,2)}}</pre>
+          <pre>{{item.extras!==''?JSON.stringify(JSON.parse(item.extras), null,2):''}}</pre>
           <span>
             <span class="tx-bold">提交日期：</span>
             {{util.timeUTC2Local(item.create_at)}}

@@ -49,6 +49,10 @@ export default {
       this.dialogData.show=false
 
       this.util.loadingShow(this);
+      if(typeof this.user.uuid==='undefined'){
+        this.user.uuid='0000'
+        this.user.mobile='0000'
+      }
       let params = {
         user_id: this.user.uuid,
         mobile:this.user.mobile,
