@@ -53,7 +53,7 @@
         v-show="myanswer!==''"
         answerType="myanswer"
         :answer="myanswer"
-        :ask="$route.query.arg==='[object Object]'?global.routeCache.askDetail:$route.query.arg"
+        :ask="ask"
         :option="CROption"
         @acceptAnswerOK="acceptAnswerOK"
         @needLogin="needLogin"
@@ -66,7 +66,7 @@
         v-show="acceptanswer!==''&&acceptanswer.user_id!==user.uuid"
         answerType="acceptanswer"
         :answer="acceptanswer"
-        :ask="$route.query.arg==='[object Object]'?global.routeCache.askDetail:$route.query.arg"
+        :ask="ask"
         :option="CROption"
         @needLogin="needLogin"
       />
@@ -78,7 +78,7 @@
         <CommentReply
           answerType="other"
           :answer="item"
-          :ask="$route.query.arg==='[object Object]'?global.routeCache.askDetail:$route.query.arg"
+          :ask="ask"
           :option="CROption"
           @acceptAnswerOK="acceptAnswerOK"
           @needLogin="needLogin"
@@ -125,7 +125,7 @@ export default {
       CROption: {
         showCai: true
       },
-      ask: "",
+      ask: {},
       editorShow: false,
       myanswerInput: "",
       answers: [],
@@ -159,11 +159,17 @@ export default {
     }
   },
   mounted() {
-    if (this.$route.query.arg === "[object Object]") {
-      this.ask = this.global.routeCache.askDetail;
+    if (typeof this.$route.query.uuid !== "undefined") {
+      // console.log(888, this.$route.query.uuid);
+      this.ask.uuid=this.$route.query.uuid
+      this.getAskDetailById(this.ask.uuid)
     } else {
-      this.ask = this.$route.query.arg;
-      this.global.routeCache.askDetail = this.ask;
+      if (this.$route.query.arg === "[object Object]") {
+        this.ask = this.global.routeCache.askDetail;
+      } else {
+        this.ask = this.$route.query.arg;
+        this.global.routeCache.askDetail = this.ask;
+      }
     }
     // console.log(999, this.ask);
     bus.$on("logout", () => {
@@ -178,6 +184,34 @@ export default {
     this.viewnumAdd();
   },
   methods: {
+    getAskDetailById(askid) {
+      let timestamp = new Date().getTime() + this.global.requestExpireT;
+      let params = {
+        uuid: askid
+      };
+      this.util.loadingShow(this);
+      this.$axios
+        .get(this.global.api.backurl + "ask/getAskById", {
+          params: params,
+          headers: {
+            "access-token": this.util.generateToken(
+              JSON.stringify(params),
+              timestamp
+            ),
+            timestamp2: timestamp
+          }
+        })
+        .then(response => {
+          this.util.loadingHide(this);
+          if (response.status === 200 && response.data.code === 0) {
+            this.ask=response.data.data[0]
+            this.getAuthorInfo()
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
     viewnumAdd() {
       let params = {
         uuid: this.ask.uuid
