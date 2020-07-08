@@ -7,7 +7,7 @@
         <img :src="setFileIcon()" style="margin-left: 20px;width:48px;height:48px;" />
         <div style="margin-left: 20px;">
           <div v-html="resDetail.discribe"></div>
-          <div style="margin-top:10px;">
+          <div style="margin-top:10px;display: flex;">
             <span class="mytx-tip">
               所需积分：
               <span style="font-size: 16px;color: orange;">{{resDetail.coin}}</span>
@@ -25,6 +25,13 @@
               style="margin-left: 20px;"
             >上传时间：{{util.getShortTime(resDetail.create_at)}}</span>
             <span class="mytx-tip" style="margin-left: 20px;">资源大小：{{resDetail.filesize}} M</span>
+            <img
+              src="statics/share-gray.png"
+              class="ad-vr-ic"
+              @click="resShare"
+              style="cursor: pointer;"
+            />
+            <span class="ad-vr-tx" @click="resShare" style="cursor: pointer;">分享</span>
           </div>
         </div>
       </div>
@@ -38,6 +45,7 @@
     </div>
     <MyFooter />
     <LoginDialog :dialogData="loginDialog" />
+    <ShareDialog :props="shareDialog" />
   </q-page>
 </template>
 
@@ -48,12 +56,14 @@ import GoBack from "../components/GoBack";
 import { openURL } from "quasar";
 import localforage from "localforage";
 import LoginDialog from "../components/LoginDialog";
+import ShareDialog from "../components/ShareDialog";
 
 export default {
   components: {
     MyFooter,
     GoBack,
-    LoginDialog
+    LoginDialog,
+    ShareDialog
   },
   data() {
     return {
@@ -63,7 +73,10 @@ export default {
         show: false,
         title: "快捷登陆"
       },
-      isResPayed:false
+      isResPayed: false,
+      shareDialog: {
+        show: false
+      }
     };
   },
   computed: {
@@ -90,9 +103,15 @@ export default {
     }
 
     this.checkisPayed();
-    this.checkResIsPayed()
+    this.checkResIsPayed();
   },
   methods: {
+    resShare(){
+      this.shareDialog.tx =
+        "https://www.shenlianclass.com/#/ResourceDetail?uuid=" +
+        this.resDetail.uuid;
+      this.shareDialog.show = true;
+    },
     getResById(uuid) {
       let timestamp = new Date().getTime() + this.global.requestExpireT;
       let params = {
@@ -115,7 +134,7 @@ export default {
           if (response.status === 200 && response.data.code === 0) {
             this.resDetail = response.data.data[0];
             this.checkisPayed();
-            this.checkResIsPayed()
+            this.checkResIsPayed();
           }
         })
         .catch(error => {
@@ -161,10 +180,9 @@ export default {
               this.coursePayed = true;
             }
           }
-        })
-
+        });
     },
-    checkResIsPayed(){
+    checkResIsPayed() {
       if (typeof this.user.uuid === "undefined") {
         return;
       }
@@ -191,7 +209,7 @@ export default {
               this.isResPayed = true;
             }
           }
-        })
+        });
     },
     gotoCourse(courseid) {
       this.$router.push({
@@ -209,9 +227,9 @@ export default {
       }
       if (this.coursePayed) {
         toast("您已购买过该课程，已免积分下载");
-      }else if(this.isResPayed){
+      } else if (this.isResPayed) {
         //已下载过再次下载无需积分
-      }else {
+      } else {
         if (this.user.coin - parseFloat(this.resDetail.coin) < 0) {
           toast("您的积分余额不足，请在个人中心充值后再进行下载");
           return;
@@ -249,7 +267,7 @@ export default {
       let params = {
         coin: newCoin,
         coinChange: this.resDetail.coin,
-        resource_id:this.resDetail.uuid
+        resource_id: this.resDetail.uuid
       };
       this.$axios
         .put(

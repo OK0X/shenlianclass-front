@@ -15,6 +15,8 @@
         <span class="ad-vr-tx">{{totalAnswerNum}}</span>
         <img src="statics/eye.png" class="ad-vr-ic" />
         <span class="ad-vr-tx">{{ask.view_num}}</span>
+        <img src="statics/share-gray.png" class="ad-vr-ic" @click="askShare" style="cursor: pointer;"/>
+        <span class="ad-vr-tx" @click="askShare" style="cursor: pointer;">分享</span>
       </div>
       <div v-html="ask.detail" v-highlight style="margin-top: 30px;"></div>
       <div class="flex-col" v-if="ask.user_id!==user.uuid&&myanswer===''">
@@ -99,6 +101,7 @@
     </div>
     <MyFooter />
     <LoginDialog :dialogData="loginDialog" />
+    <ShareDialog :props="shareDialog" />
   </q-page>
 </template>
 
@@ -111,6 +114,7 @@ import LoginDialog from "../components/LoginDialog";
 import { bus } from "../bus.js";
 import localforage from "localforage";
 import CommentReply from "../components/CommentReply";
+import ShareDialog from "../components/ShareDialog";
 
 export default {
   components: {
@@ -118,7 +122,8 @@ export default {
     VueEditor,
     MyFooter,
     LoginDialog,
-    CommentReply
+    CommentReply,
+    ShareDialog
   },
   data() {
     return {
@@ -145,6 +150,9 @@ export default {
       author: {
         avatar: "",
         nick: ""
+      },
+      shareDialog: {
+        show: false
       }
     };
   },
@@ -161,8 +169,8 @@ export default {
   mounted() {
     if (typeof this.$route.query.uuid !== "undefined") {
       // console.log(888, this.$route.query.uuid);
-      this.ask.uuid=this.$route.query.uuid
-      this.getAskDetailById(this.ask.uuid)
+      this.ask.uuid = this.$route.query.uuid;
+      this.getAskDetailById(this.ask.uuid);
     } else {
       if (this.$route.query.arg === "[object Object]") {
         this.ask = this.global.routeCache.askDetail;
@@ -184,6 +192,12 @@ export default {
     this.viewnumAdd();
   },
   methods: {
+    askShare(){
+      this.shareDialog.tx =
+        "https://www.shenlianclass.com/#/AskDetail?uuid=" +
+        this.ask.uuid;
+      this.shareDialog.show = true;
+    },
     getAskDetailById(askid) {
       let timestamp = new Date().getTime() + this.global.requestExpireT;
       let params = {
@@ -204,8 +218,8 @@ export default {
         .then(response => {
           this.util.loadingHide(this);
           if (response.status === 200 && response.data.code === 0) {
-            this.ask=response.data.data[0]
-            this.getAuthorInfo()
+            this.ask = response.data.data[0];
+            this.getAuthorInfo();
           }
         })
         .catch(error => {
@@ -714,10 +728,7 @@ export default {
   color: red;
   margin-left: 5px;
 }
-.ad-vr-tx {
-  color: #888888;
-  margin-left: 5px;
-}
+
 .post-info {
   display: flex;
   align-items: center;
@@ -728,9 +739,5 @@ export default {
   height: 29px;
   border-radius: 50%;
 }
-.ad-vr-ic {
-  width: 20px;
-  height: 20px;
-  margin-left: 20px;
-}
+
 </style>
