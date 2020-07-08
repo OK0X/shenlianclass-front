@@ -157,10 +157,11 @@
 <script>
 /* eslint-disable */
 import localforage from "localforage";
-import LoginDialog from "../components/LoginDialog";
-import { bus } from "../bus.js";
-import FeedbackDialog from "../components/FeedbackDialog";
 
+import { bus } from "../bus.js";
+
+import LoginDialog from "../components/LoginDialog";
+import FeedbackDialog from "../components/FeedbackDialog";
 export default {
   components: {
     LoginDialog,

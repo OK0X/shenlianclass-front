@@ -99,9 +99,9 @@ import { VueEditor } from "vue2-editor";
 import localforage from "localforage";
 import CryptoJS from "crypto-js";
 import { Base64 } from "js-base64";
-import LoginDialog from "../components/LoginDialog";
-import AskItem from "../components/AskItem";
 
+import AskItem from "../components/AskItem";
+import LoginDialog from "../components/LoginDialog";
 export default {
   components: {
     MyFooter,

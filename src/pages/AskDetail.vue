@@ -110,12 +110,12 @@
 import MyFooter from "../components/MyFooter";
 import GoBack from "../components/GoBack";
 import { VueEditor } from "vue2-editor";
-import LoginDialog from "../components/LoginDialog";
+
 import { bus } from "../bus.js";
 import localforage from "localforage";
 import CommentReply from "../components/CommentReply";
 import ShareDialog from "../components/ShareDialog";
-
+import LoginDialog from "../components/LoginDialog";
 export default {
   components: {
     GoBack,

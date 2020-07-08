@@ -45,10 +45,10 @@
 <script>
 /* eslint-disable */
 import MyFooter from "../components/MyFooter";
-import LoginDialog from "../components/LoginDialog";
+
 import { bus } from "../bus.js";
 import ShareDialog from "../components/ShareDialog";
-
+import LoginDialog from "../components/LoginDialog";
 export default {
   components: {
     MyFooter,

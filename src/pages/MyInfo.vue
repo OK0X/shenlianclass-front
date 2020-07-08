@@ -57,14 +57,15 @@
 import MyFooter from "../components/MyFooter";
 import GoBack from "../components/GoBack";
 import CropperDialog from "../components/CropperDialog";
-import LoginDialog from "../components/LoginDialog";
+
 import PayWaitDialog from "../components/PayWaitDialog";
 import { openURL } from "quasar";
 import localforage from "localforage";
 import { bus } from "../bus.js";
-import FeedbackDialog from "../components/FeedbackDialog";
-import CoinChargeDialog from "../components/CoinChargeDialog";
 
+import CoinChargeDialog from "../components/CoinChargeDialog";
+import LoginDialog from "../components/LoginDialog";
+import FeedbackDialog from "../components/FeedbackDialog";
 export default {
   components: {
     MyFooter,

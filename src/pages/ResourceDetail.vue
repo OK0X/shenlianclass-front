@@ -55,9 +55,9 @@ import MyFooter from "../components/MyFooter";
 import GoBack from "../components/GoBack";
 import { openURL } from "quasar";
 import localforage from "localforage";
-import LoginDialog from "../components/LoginDialog";
-import ShareDialog from "../components/ShareDialog";
 
+import ShareDialog from "../components/ShareDialog";
+import LoginDialog from "../components/LoginDialog";
 export default {
   components: {
     MyFooter,

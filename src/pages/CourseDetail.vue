@@ -234,16 +234,17 @@
 import MyFooter from "../components/MyFooter";
 import VideoDialog from "../components/VideoDialog";
 import { openURL } from "quasar";
-import LoginDialog from "../components/LoginDialog";
+
 import GoBack from "../components/GoBack";
 import { bus } from "../bus.js";
 import localforage from "localforage";
 import PayWaitDialog from "../components/PayWaitDialog";
 import { VueEditor } from "vue2-editor";
 import CommentReply from "../components/CommentReply";
-import FeedbackDialog from "../components/FeedbackDialog";
-import ShareDialog from "../components/ShareDialog";
 
+import ShareDialog from "../components/ShareDialog";
+import LoginDialog from "../components/LoginDialog";
+import FeedbackDialog from "../components/FeedbackDialog";
 export default {
   components: {
     MyFooter,
