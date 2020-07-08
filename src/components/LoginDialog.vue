@@ -5,8 +5,8 @@
       <div style="margin-left:10px;margin-right:10px;">
         <q-input :dense="true" v-model="mobile" :placeholder="placeholder()" />
         <div style="display: flex;margin-top:15px;justify-content: space-between;">
-          <q-input :dense="true" v-model="smscode" placeholder="请输入验证码" style="width: 50%;" />
-          <q-btn unelevated rounded :label="'发送验证码'+smsbtnTx" color="primary" @click="sendsmscode" />
+          <q-input :dense="true" v-model="smscode" placeholder="请输入验证码" style="width: 50%;" v-on:keyup.enter="onOk"/>
+          <q-btn flat :label="'获取验证码'+smsbtnTx" color="primary" @click="sendsmscode" :disable="!canSendSMS"/>
         </div>
       </div>
       <q-card-actions align="right" class="text-primary">
@@ -28,7 +28,8 @@ export default {
       mobile: "",
       smscode: "",
       smsbtnTx: "",
-      mcount: 60
+      mcount: 60,
+      canSendSMS:true
     };
   },
   computed: {
@@ -49,12 +50,14 @@ export default {
       return this.dialogData.placeholder;
     },
     smsBtnCountdown() {
+      this.canSendSMS=false
       var smstask = setInterval(() => {
         this.smsbtnTx = "(" + this.mcount + "S)";
         this.mcount--;
         if (this.mcount === -1) {
           this.mcount = 60;
           this.smsbtnTx = "";
+          this.canSendSMS=true
           clearInterval(smstask);
         }
       }, 1000);

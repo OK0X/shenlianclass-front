@@ -14,7 +14,7 @@
         <q-btn flat label="腾讯云" style="font-weight: 400;" @click="openLink(8)" />
       </div>
     </div>
-    <div class="footer">
+    <!-- <div class="footer"> -->
       <div class="footer-content">
         <div class="beian">
           <img src="statics/foot-logo.png" style="width:156px;50px;" />
@@ -32,7 +32,7 @@
           </div>
         </div>
       </div>
-    </div>
+    <!-- </div> -->
   </div>
 </template>
 <script>
@@ -81,7 +81,7 @@ export default {
 <style scoped>
 .relate-link {
   width: 100%;
-  height: 100px;
+  height: fit-content;
   display: flex;
   background-color: white;
   justify-content: center;
@@ -110,6 +110,7 @@ export default {
   max-width: 1200px;
   align-self: center;
   justify-content: space-between;
+  margin: 30px 0;
 }
 .beian {
   display: flex;

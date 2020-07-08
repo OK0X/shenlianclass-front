@@ -1,8 +1,9 @@
 <template>
   <q-page class="mypage">
     <div class="page-content">
+      <span v-show="typeof user.uuid === 'undefined'">登陆后可见！</span>
       <span v-show="noPayedCourses">你还未购买过课程，先去首页看看哦！</span>
-      <div class="flex-col" v-if="typeof user.uuid !== 'undefined'">
+      <div class="flex-col" v-show="typeof user.uuid !== 'undefined'">
         <div
           style=" height: 355px;display: flex;flex-direction: column;"
           v-for="(item,index) in payedCourses"

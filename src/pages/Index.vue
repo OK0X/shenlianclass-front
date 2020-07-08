@@ -217,13 +217,7 @@ export default {
   justify-content: space-between;
   margin: 0 10px 10px 10px;
 }
-.relate-link {
-  width: 100%;
-  height: 100px;
-  display: flex;
-  background-color: white;
-  justify-content: center;
-}
+
 .relate-content {
   width: 100%;
   max-width: 1200px;

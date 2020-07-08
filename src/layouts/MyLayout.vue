@@ -406,9 +406,11 @@ export default {
 .myheader {
   background-color: white;
   /* background: linear-gradient(#B2CCFF, #FFFFFF); */
-  /* box-shadow: 0px 2px 9px 0px #1918184a; */
+  /* box-shadow: 0px 0px 6px 0px #1918184a; */
+  /* box-shadow: 0 0 10px 2px rgba(0,0,0,0.2), 0 0px 10px rgba(0,0,0,0.24); */
+  box-shadow: 0 2px 20px 0 rgba(0,0,0,.08);
   color: black;
-  height: 186px;
+  height: 110px;
   width: 100%;
   display: flex;
   flex-direction: column;
