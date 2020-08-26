@@ -41,7 +41,7 @@ function isEmpty(e) {
 
 function generateToken(str, timestamp) {
   str = str === null ? '{}' : str
-  str = str + '900a06ca65a211e98eae00163e11f2fe' + timestamp
+  str = '900a06ca65a211e98eae00163e11f2fe' + timestamp
   var hash = 1315423911, i, ch;
   for (i = str.length - 1; i >= 0; i--) {
     ch = str.charCodeAt(i);
